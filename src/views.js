@@ -43,11 +43,11 @@ function homeView() {
     <div class="h-top"><div><small>${fmtDay(t)} · ${fmtHijriShort(t)}</small>
       <h1>${mem ? `أهلاً يا ${esc(firstName(ME.name))}` : `إنجاز ${esc(memberFirst())}`}</h1>
       <p>${p.phase === "before" ? `الانطلاق ${fmtDay(startDate())}` : p.phase === "after" ? "اكتملت الأشهر الستة" : `اليوم ${p.day} من ${TOTAL_DAYS} · الأسبوع ${p.week} · الشهر ${ORD[p.month]}`}</p>
-      <span class="pace ${good || p.phase === "before" ? "good" : "slow"}">${pace}</span></div>
+      <a class="pace rep" href="#/report">${I.print} التقرير</a> <span class="pace ${good || p.phase === "before" ? "good" : "slow"}">${pace}</span></div>
       ${ring(st.overall, `${lantern("inring")}<b>${pct(st.overall)}<i>٪</i></b>`)}</div>
     <div class="h-stats"><div><b>${p.phase === "before" ? "—" : pct(st.committed) + "<i>٪</i>"}</b><small>الالتزام</small></div><div><b>${st.streak}</b><small>${I.fire} أيام متتالية</small></div><div><b>${st.avg ? st.avg.toFixed(1) : "—"}</b><small>متوسط التقييم</small></div><div><b>${st.tafsirDone}</b><small>وجهاً مفسَّراً</small></div></div>
     <style>.hero .lglow{opacity:${(0.25 + st.overall * 0.75).toFixed(2)}}</style></section>`;
-  const wird = p.phase === "during" ? `<section class="card wird ${S.tafsir[t] ? "done" : ""}"><span class="ric c-quran big">${I.quran}</span><div class="grow"><small>وِرد اليوم · التفسير الميسر</small><b>الوجه ${p.day} — صفحة ${tafsirPage(p.di)}</b><small>${MONTHS[p.month].tafsir}</small></div>
+  const wird = p.phase === "during" ? `<section class="card wird ${S.tafsir[t] ? "done" : ""}"><span class="ric c-quran big">${I.quran}</span><div class="grow"><small>وِرد اليوم · التفسير الميسر</small><b>اليوم ${p.day} — ${tafsirLabel(p.di)}</b><small>${MONTHS[p.month].tafsir} · <a href="#/guide/tafsir">جدول الصفحات</a></small></div>
       ${mem ? `<button class="btn ${S.tafsir[t] ? "okf" : "gold"}" data-tafsir-today>${I.check} ${S.tafsir[t] ? "أُنجز" : "أتممتُه"}</button>` : `<span class="chip ${S.tafsir[t] ? "approved" : "due"}">${S.tafsir[t] ? "أُنجز اليوم" : "لم يُسجَّل"}</span>`}</section>` : "";
   return `${hero}
     ${wird}
@@ -63,9 +63,9 @@ function pathView(arg) {
   const p = nowPos(), m = Math.min(6, Math.max(1, +arg || p.month)), M = MONTHS[m], t = today(), mem = isMember();
   const weeks = [1, 2, 3, 4].map((i) => {
     const w = (m - 1) * 4 + i, ws = weekStart(w), state = weekState(w);
-    const days = WD.map((l, d) => { const ds = addDays(ws, d), on = S.tafsir[ds], fut = ds > t; return `<button class="td ${on ? "on" : fut ? "fut" : "miss"} ${ds === t ? "today" : ""}" ${mem && !fut ? `data-tafsir="${ds}"` : "disabled"} title="${fmtDay(ds)} · صفحة ${tafsirPage(diffDays(ds, startDate()))}"><i>${on ? I.check : l}</i></button>`; }).join("");
+    const days = WD.map((l, d) => { const ds = addDays(ws, d), on = S.tafsir[ds], fut = ds > t; return `<button class="td ${on ? "on" : fut ? "fut" : "miss"} ${ds === t ? "today" : ""}" ${mem && !fut ? `data-tafsir="${ds}"` : "disabled"} title="${fmtDay(ds)} · ${tafsirLabel(diffDays(ds, startDate()))}"><i>${on ? I.check : l}</i></button>`; }).join("");
     return `<section class="card week ${state}"><div class="ch"><h3><i class="lamp ${state}"></i> الأسبوع ${w}</h3><small>${fmtShort(ws)} – ${fmtShort(weekEnd(w))}</small></div>
-      <div class="tafsir"><small>${I.quran} التفسير: وجهٌ كل يوم (ص ${tafsirPage((w - 1) * 7)}–${tafsirPage(w * 7 - 1)})</small><div class="tds">${days}</div></div>
+      <div class="tafsir"><small>${I.quran} التفسير: وجهٌ كل يوم (${w > 23 ? "مراجعة جزء عمّ" : `ص ${tafsirRange((w - 1) * 7)[0]}–${(tafsirRange(w * 7 - 1) || [0, 604])[1]}`})</small><div class="tds">${days}</div></div>
       <div class="reqs">${REQS.filter((r) => r.week === w && !r.monthly).map((r) => reqRow(r)).join("")}</div></section>`;
   }).join("");
   return `<div class="tabs">${[1, 2, 3, 4, 5, 6].map((i) => `<a href="#/path/${i}" class="${i === m ? "on" : ""} ${p.phase === "during" && p.month === i ? "cur" : ""}">الشهر ${ORD[i]}</a>`).join("")}</div>
@@ -98,7 +98,7 @@ function calView() {
   if (inf.start) items.push(`<div class="al k-navy"><span class="aic">${I.spark}</span><span class="grow"><b>انطلاق مشروع سراج</b></span></div>`);
   if (inf.meet) items.push(`<div class="al k-navy"><span class="aic">${I.people}</span><span class="grow"><b>اللقاء ${ORD[inf.meet]}: ${esc(MONTHS[inf.meet].meet)}</b><small>${esc(MONTHS[inf.meet].source)}</small></span></div>`);
   inf.events.forEach((e) => items.push(`<div class="al k-info"><span class="aic">${I.cal}</span><span class="grow"><b>${esc(e.title)}</b>${e.note ? `<small>${esc(e.note)}</small>` : ""}</span>${mem ? "" : `<button class="btn sm ghost" data-delev="${e.id}">حذف</button>`}</div>`));
-  if (inf.inProj) { const on = S.tafsir[calSel], fut = calSel > t; items.push(`<div class="al k-${on ? "ok" : fut ? "info" : "warn"}"><span class="aic">${I.quran}</span><span class="grow"><b>التفسير: الوجه ${inf.di + 1} — صفحة ${tafsirPage(inf.di)}</b><small>${on ? "أُنجز" : fut ? "قادم" : "لم يُسجَّل"}</small></span>${mem && !fut ? `<button class="btn sm ${on ? "ghost" : "gold"}" data-tafsir="${calSel}">${on ? "إلغاء" : "أتممتُه"}</button>` : ""}</div>`); }
+  if (inf.inProj) { const on = S.tafsir[calSel], fut = calSel > t; items.push(`<div class="al k-${on ? "ok" : fut ? "info" : "warn"}"><span class="aic">${I.quran}</span><span class="grow"><b>التفسير: اليوم ${inf.di + 1} — ${tafsirLabel(inf.di)}</b><small>${on ? "أُنجز" : fut ? "قادم" : "لم يُسجَّل"}</small></span>${mem && !fut ? `<button class="btn sm ${on ? "ghost" : "gold"}" data-tafsir="${calSel}">${on ? "إلغاء" : "أتممتُه"}</button>` : ""}</div>`); }
   return `<section class="card cal"><div class="calh"><button class="ib" data-cal="-1" aria-label="الشهر السابق">${I.chevR}</button><div><h2>${F_GM.format(first)}</h2><small>${F_HM.format(first)} – ${F_HM.format(new Date(y, mo - 1, n, 12))}</small></div><button class="ib" data-cal="1" aria-label="الشهر التالي">${I.chevL}</button></div>
     <div class="wd">${["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"].map((d) => `<span>${d}</span>`).join("")}</div>
     <div class="grid7">${cells}</div>
@@ -120,7 +120,7 @@ function fileView() {
   const st = stats(), subs = Object.values(S.subs).sort((a, b) => (a.at < b.at ? 1 : -1));
   const list = subs.filter((s) => fileFilter === "all" || REQ[s.reqId]?.type === fileFilter);
   const cnt = (ty) => subs.filter((s) => REQ[s.reqId]?.type === ty).length;
-  return `<section class="mhead"><div class="h-rays"></div><small>ملف الإنجاز</small><h1>كل إنجازٍ يُرفع، وكل ملخصٍ يُحفظ</h1>
+  return `<section class="mhead"><div class="h-rays"></div><small>ملف الإنجاز</small><h1>كل إنجازٍ يُرفع، وكل ملخصٍ يُحفظ</h1><a class="btn gold" href="#/report" style="margin-bottom:14px">${I.print} طباعة تقرير المستفيد</a>
       <div class="mgrid"><div><small>ملفات مرفوعة</small><b>${subs.length}</b></div><div><small>معتمدة</small><b>${subs.filter((s) => s.status === "approved").length}</b></div><div><small>متوسط التقييم</small><b>${st.avg ? st.avg.toFixed(1) + " / 5" : "—"}</b></div><div><small>أوجه التفسير</small><b>${st.tafsirDone} / ${TOTAL_DAYS}</b></div></div></section>
     <div class="tabs">${[["all", "الكل", subs.length], ...["tadabbur", "fiqh", "source", "report"].map((k) => [k, TYPES[k].name, cnt(k)])].map(([k, n, c]) => `<button data-ff="${k}" class="${fileFilter === k ? "on" : ""}">${n} <i>${c}</i></button>`).join("")}</div>
     <section class="card"><div class="reqs">${list.length ? list.map((s) => reqRow(REQ[s.reqId])).join("") : `<div class="empty">${I.folder}<p>${isMember() ? "لم تُرفع ملفات بعد — ابدأ من صفحة المسار" : "لم يرفع المستفيد شيئاً بعد"}</p></div>`}</div></section>`;

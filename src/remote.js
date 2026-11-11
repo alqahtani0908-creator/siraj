@@ -26,7 +26,7 @@ if (CFG && window.supabase && !DEMO) {
       ])).map(must);
       const names = Object.fromEntries(pr.map((p) => [p.role, p.name]));
       const n = blank();
-      n.settings = { start: st?.start || n.settings.start, meetings: st?.meetings || [], names: { ...n.settings.names, ...names }, fontFiles: st?.font_files || {} };
+      n.settings = { start: st?.start || n.settings.start, meetings: st?.meetings || [], names: { ...n.settings.names, ...names }, fontFiles: st?.font_files || {}, refs: st?.refs || {} };
       su.forEach((s) => (n.subs[s.req_id] = { reqId: s.req_id, title: s.title, body: s.body, file: s.file, at: s.at, status: s.status, score: s.score, note: s.note, reviewedAt: s.reviewed_at, history: s.history || [] }));
       ch.forEach((c) => (n.checks[c.req_id] = c.at));
       tf.forEach((t) => (n.tafsir[t.day] = true));
@@ -83,6 +83,18 @@ if (CFG && window.supabase && !DEMO) {
       await this.refresh();
       for (const m of moved) await this.note("event", "تغيّر موعد اللقاء", `اللقاء ${ORD[m]} — ${fmtDay(meetingDate(m))}`);
     },
+    async addRef(refId, { label, url, file }) {
+      const it = { id: uid(), label };
+      if (file) {
+        const ext = (file.name.match(/\.([A-Za-z0-9]{1,8})$/) || [, "bin"])[1].toLowerCase(); it.path = `refs/${refId}/${it.id}.${ext}`; it.name = file.name;
+        must(await sb.storage.from("brand").upload(it.path, file, { contentType: file.type || undefined }));
+      } else it.url = url;
+      const refs = { ...(S.settings.refs || {}) }; refs[refId] = [...(refs[refId] || []), it];
+      must(await sb.from("settings").update({ refs }).eq("id", 1)); await this.refresh();
+      await this.note("event", "أُضيف مرجع جديد", label);
+    },
+    async delRef(refId, id) { const refs = { ...(S.settings.refs || {}) }; refs[refId] = (refs[refId] || []).filter((x) => x.id !== id); must(await sb.from("settings").update({ refs }).eq("id", 1)); await this.refresh(); },
+    async refUrl(it) { if (it.url) return it.url; const r = await sb.storage.from("brand").createSignedUrl(it.path, 3600); return r.data?.signedUrl || null; },
     async fileUrl(f) { if (!f?.path) return null; const r = await sb.storage.from("files").createSignedUrl(f.path, 3600); return r.data?.signedUrl || null; },
     async memberInvite() { const r = await sb.rpc("member_invite"); return r.data || null; },
     async uploadFonts(files) {

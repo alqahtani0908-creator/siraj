@@ -19,6 +19,7 @@ const api = {
   async load() {
     this.read();
     if (DEMO && !localStorage.getItem(KEY)) seedDemo();
+    if (DEMO && QS.get("as")) localStorage.setItem("siraj.me", QS.get("as"));
     const r = localStorage.getItem("siraj.me");
     ME = r === "reviewer" || r === "member" ? { role: r, name: S.settings.names[r] } : null;
   },
@@ -58,11 +59,19 @@ const api = {
     moved.forEach((m) => this.notify("member", "event", "تغيّر موعد اللقاء", `اللقاء ${ORD[m]} — ${fmtDay(meetingDate(m))}`));
     this.save();
   },
+  async addRef(refId, { label, url, file }) {
+    const it = { id: uid(), label };
+    if (file) { await idbDo("readwrite", (s) => s.put(file, "ref:" + it.id)); it.name = file.name; it.local = true; } else it.url = url;
+    const refs = { ...(S.settings.refs || {}) }; refs[refId] = [...(refs[refId] || []), it]; S.settings.refs = refs; this.save();
+  },
+  async delRef(refId, id) { const refs = { ...(S.settings.refs || {}) }; refs[refId] = (refs[refId] || []).filter((x) => x.id !== id); S.settings.refs = refs; this.save(); },
+  async refUrl(it) { if (it.url) return it.url; const b = await idbDo("readonly", (s) => s.get("ref:" + it.id)); return b ? URL.createObjectURL(b) : null; },
   async fileUrl(f) { const b = await idbDo("readonly", (s) => s.get(f.id)); return b ? URL.createObjectURL(b) : null; },
 };
 
 // بيانات معاينة فقط (‎?demo) — تُحفظ في مفتاح منفصل ولا تمس البيانات الحقيقية
 function seedDemo() {
+  S.settings.names = { reviewer: "عبدالله", member: "أحمد السالم" };
   const p = nowPos(); if (p.phase === "before") return api.save();
   let x = 11; const rnd = () => (x = (x * 16807) % 2147483647) / 2147483647;
   for (let i = 0; i <= p.di && i < TOTAL_DAYS; i++) if (i === p.di ? false : rnd() > 0.12 || i > p.di - 4) S.tafsir[addDays(startDate(), i)] = true;

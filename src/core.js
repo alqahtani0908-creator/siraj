@@ -59,6 +59,7 @@ const I = {
   spark: svg('<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>'),
   people: svg('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><path d="M16 4.6a3.5 3.5 0 010 6.8M18 14.5a6.5 6.5 0 013.5 5.5"/>'),
   user: svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/>'),
+  print: svg('<path d="M7 8V3h10v5M7 17H5a2 2 0 01-2-2v-4a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2h-2"/><rect x="7" y="14" width="10" height="7" rx="1"/>'),
   out: svg('<path d="M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/><path d="M10 8l-4 4 4 4M6 12h10"/>'),
   plus: svg('<path d="M12 5v14M5 12h14"/>', 2),
   send: svg('<path d="M20 4L3 11l7 3 3 7z"/><path d="M10 14l4-4"/>'),
@@ -70,16 +71,22 @@ I.path = svg('<circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path 
 
 function lantern(cls = "") {
   return `<svg viewBox="0 0 120 170" class="lantern ${cls}" aria-hidden="true">
-  <defs><radialGradient id="lg"><stop offset="0" stop-color="#FFF3C4"/><stop offset=".45" stop-color="#F6B94A" stop-opacity=".75"/><stop offset="1" stop-color="#F6B94A" stop-opacity="0"/></radialGradient></defs>
-  <circle cx="60" cy="94" r="60" fill="url(#lg)" class="lglow"/>
-  <path d="M42 30Q60 2 78 30" fill="none" stroke="#C8963E" stroke-width="3" stroke-linecap="round"/>
-  <rect x="51" y="27" width="18" height="8" rx="2" fill="#C8963E"/>
-  <path d="M37 50h46l-8-15H45z" fill="#9A6A1E"/>
-  <path d="M40 52h40l6 74H34z" fill="rgba(255,236,180,.14)" stroke="#C8963E" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M60 52v74M47 52l-4 74M73 52l4 74" stroke="#C8963E" stroke-width="1" opacity=".45"/>
-  <path d="M60 72c11 15 9 32 0 37-9-5-11-22 0-37z" fill="#FFE9A8" class="flame"/>
-  <path d="M30 126h60l-6 14H36z" fill="#9A6A1E"/>
-  <rect x="43" y="140" width="34" height="6" rx="2" fill="#C8963E"/>
+  <circle cx="60" cy="88" r="62" fill="url(#lg)" class="lglow"/>
+  <g class="lrays" stroke="#FFE9A8" stroke-width="1.6" stroke-linecap="round" opacity=".55"><path d="M60 14v-9M19 40l-7-6M101 40l7-6M6 88H-2M114 88h8M17 132l-7 5M103 132l7 5"/></g>
+  <g class="lstars" fill="#FFE9A8"><path d="M14 62l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6z"/><path d="M106 108l1.3 3.2 3.2 1.3-3.2 1.3-1.3 3.2-1.3-3.2-3.2-1.3 3.2-1.3z"/><path d="M100 54l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z"/></g>
+  <path d="M33 124C24 92 28 44 51 33M87 124C96 92 92 44 69 33" fill="none" stroke="url(#lm)" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="60" cy="17" r="6.5" fill="none" stroke="url(#lm)" stroke-width="2.6"/>
+  <rect x="53" y="23" width="14" height="8" rx="2.5" fill="url(#lm)"/>
+  <path d="M44 41c0-6 7-10 16-10s16 4 16 10z" fill="url(#lm)"/>
+  <rect x="42" y="40" width="36" height="5" rx="2.5" fill="#8F611A"/>
+  <path d="M47 45C33 58 31 96 45 112h30C89 96 87 58 73 45z" fill="url(#lgl)" stroke="#D9A94E" stroke-width="1.6"/>
+  <path d="M42 54C37 68 37 90 42 103" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".38"/>
+  <path d="M36.5 68Q60 75 83.5 68M36.5 90Q60 97 83.5 90" fill="none" stroke="#D9A94E" stroke-width="1.2" opacity=".75"/>
+  <g class="flame"><path d="M60 60c12 15 11 36 0 43-11-7-12-28 0-43z" fill="url(#lf)"/><path d="M60 78c5 7 5 17 0 21-5-4-5-14 0-21z" fill="#FFFBEA"/></g>
+  <rect x="50" y="110" width="20" height="7" rx="2" fill="#8F611A"/>
+  <path d="M29 126q0-9 10-9h42q10 0 10 9v10q0 9-10 9H39q-10 0-10-9z" fill="url(#lm)"/>
+  <path d="M30 130h60" stroke="#6B4712" stroke-width="1.4" opacity=".6"/><circle cx="95" cy="122" r="3.2" fill="#E9BE6A" stroke="#6B4712" stroke-width="1"/>
+  <rect x="34" y="145" width="52" height="5.5" rx="2.75" fill="#8F611A"/>
 </svg>`;
 }
 
@@ -127,7 +134,22 @@ function nowPos() {
   const week = Math.floor(c / 7) + 1;
   return { di, phase: di < 0 ? "before" : di >= TOTAL_DAYS ? "after" : "during", day: c + 1, week, month: monthOfWeek(week) };
 }
-const tafsirPage = (di) => Math.min(604, 440 + di); // وجه كل يوم ابتداءً من سورة يس (ص 440)
+// صفحات التفسير اليومي (مصحف المدينة): وجه كل يوم من يس (ص 440)؛ الشهر الخامس 30 صفحة في 28 يوماً، والسادس 23 صفحة ثم 5 أيام مراجعة
+const SURAHS = [[440, "يس"], [446, "الصافات"], [453, "ص"], [458, "الزمر"], [467, "غافر"], [477, "فصلت"], [483, "الشورى"], [489, "الزخرف"], [496, "الدخان"], [499, "الجاثية"], [502, "الأحقاف"], [507, "محمد"], [511, "الفتح"], [515, "الحجرات"], [518, "ق"], [520, "الذاريات"], [523, "الطور"], [526, "النجم"], [528, "القمر"], [531, "الرحمن"], [534, "الواقعة"], [537, "الحديد"], [542, "المجادلة"], [545, "الحشر"], [549, "الممتحنة"], [551, "الصف"], [553, "الجمعة"], [554, "المنافقون"], [556, "التغابن"], [558, "الطلاق"], [560, "التحريم"], [562, "الملك"], [564, "القلم"], [566, "الحاقة"], [568, "المعارج"], [570, "نوح"], [572, "الجن"], [574, "المزمل"], [575, "المدثر"], [577, "القيامة"], [578, "الإنسان"], [580, "المرسلات"],
+  [582, "النبأ"], [583, "النازعات"], [585, "عبس"], [586, "التكوير"], [587, "الانفطار"], [587, "المطففين"], [589, "الانشقاق"], [590, "البروج"], [591, "الطارق"], [591, "الأعلى"], [592, "الغاشية"], [593, "الفجر"], [594, "البلد"], [595, "الشمس"], [595, "الليل"], [596, "الضحى"], [596, "الشرح"], [597, "التين"], [597, "العلق"], [598, "القدر"], [598, "البينة"], [599, "الزلزلة"], [599, "العاديات"], [600, "القارعة"], [600, "التكاثر"], [601, "العصر"], [601, "الهمزة"], [601, "الفيل"], [602, "قريش"], [602, "الماعون"], [602, "الكوثر"], [603, "الكافرون"], [603, "النصر"], [603, "المسد"], [604, "الإخلاص"], [604, "الفلق"], [604, "الناس"]];
+function tafsirRange(di) { // [من، إلى] أو null لأيام المراجعة
+  if (di < 112) return [440 + di, 440 + di];
+  if (di < 138) return [552 + (di - 112), 552 + (di - 112)];
+  if (di === 138) return [578, 579];
+  if (di === 139) return [580, 581];
+  return di - 140 < 23 ? [582 + (di - 140), 582 + (di - 140)] : null;
+}
+function surahsOf(a, b) { // السور التي تبدأ في الصفحات، وإلا فالسورة المستمرة
+  const st = SURAHS.filter(([p]) => p >= a && p <= b).map((x) => x[1]);
+  return st.length ? st.join("، ") : [...SURAHS].reverse().find(([p]) => p < a)[1];
+}
+const tafsirPage = (di) => { const r = tafsirRange(di); return !r ? "مراجعة" : r[0] === r[1] ? String(r[0]) : `${r[0]}–${r[1]}`; };
+const tafsirLabel = (di) => { const r = tafsirRange(di); return r ? `صفحة ${tafsirPage(di)} · ${surahsOf(r[0], r[1])}` : "مراجعة جزء عمّ وختامه"; };
 
 let REQS = [], REQ = {};
 function buildReqs() {

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>دليل استخدام منصة سراج</title>
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:"Thmanyah Serif Text";src:url("../fonts/thmanyahseriftext-Regular.otf");font-weight:400}
+@font-face{font-family:"Thmanyah Serif Text";src:url("../fonts/thmanyahseriftext-Medium.otf");font-weight:500}
+@font-face{font-family:"Thmanyah Serif Text";src:url("../fonts/thmanyahseriftext-Bold.otf");font-weight:700}
+@font-face{font-family:"Thmanyah Serif Text";src:url("../fonts/thmanyahseriftext-Black.otf");font-weight:900}
+:root{--night:#11131D;--cream:#F5F2EA;--paper:#FFFDF8;--ink:#14161F;--mute:#6E6B63;--line:#E7E0D0;--gold:#C8963E;--gold-deep:#8F611A;--amber:#F0B354;--glow:#FFE9A8}
+*{box-sizing:border-box;margin:0}
+body{font-family:"Thmanyah Serif Text","Noto Naskh Arabic","Geeza Pro",serif;background:var(--cream);color:var(--ink);line-height:1.75;font-size:16px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+main{max-width:860px;margin:0 auto;padding:16px}
+.cover{background:var(--night);color:#fff;border-radius:26px;padding:44px 24px;text-align:center;background-image:radial-gradient(420px 320px at 50% 30%,rgba(240,179,84,.38),transparent 70%)}
+.cover img{width:120px;border-radius:28px}.cover h1{font-size:3rem;font-weight:900;line-height:1.3}.cover p{color:#DDD8CA}.cover .url{display:inline-block;margin-top:14px;padding:6px 18px;border-radius:30px;background:rgba(240,179,84,.18);color:var(--glow);direction:ltr;font-size:.92rem;text-decoration:none}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px;margin:16px 0;padding:0;list-style:none;counter-reset:t}
+.toc a{display:flex;gap:8px;align-items:center;padding:8px 12px;border-radius:12px;background:var(--paper);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:500;font-size:.92rem}
+.toc a:before{counter-increment:t;content:counter(t);width:24px;height:24px;border-radius:50%;background:var(--night);color:var(--glow);display:grid;place-items:center;font-size:.78rem;font-weight:900;flex:none}
+section{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:22px;margin-top:14px;break-inside:avoid}
+section>small{color:var(--gold-deep);font-weight:700}
+h2{font-size:1.5rem;font-weight:900;line-height:1.4;margin-bottom:6px}h3{font-size:1.02rem;color:var(--gold-deep);margin:14px 0 4px}
+p{margin:6px 0}.mute{color:var(--mute)}
+.two{display:grid;grid-template-columns:1fr 230px;gap:22px;align-items:start}
+.phone{width:230px;border-radius:30px;border:7px solid var(--night);overflow:hidden;box-shadow:0 14px 34px -16px rgba(0,0,0,.5);background:var(--night);justify-self:center}
+.phone img{display:block;width:100%}
+.phones{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:12px}.phones figure{text-align:center;font-size:.82rem;color:var(--mute)}.phones .phone{width:210px;margin-bottom:6px}
+ol,ul{padding-inline-start:22px;margin:6px 0}li{margin:3px 0}li::marker{color:var(--gold-deep);font-weight:700}
+.note{background:#FAF0D9;border-inline-start:4px solid var(--gold);border-radius:12px;padding:10px 14px;margin-top:10px;font-size:.94rem}
+.plat{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:10px}.plat div{background:var(--cream);border-radius:16px;padding:14px}.plat b{display:block;font-size:1.05rem}
+kbd{font-family:inherit;background:var(--night);color:var(--glow);border-radius:7px;padding:1px 8px;font-size:.88em;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:.92rem;margin-top:8px}th,td{text-align:start;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}thead th{border-bottom:2px solid var(--ink);color:var(--mute);font-weight:500}
+footer{text-align:center;color:var(--mute);font-size:.85rem;padding:20px}
+@media (max-width:640px){.two{grid-template-columns:1fr}.cover h1{font-size:2.3rem}}
+@media print{@page{size:A4;margin:12mm}body{background:#fff;font-size:12.5px}main{max-width:none;padding:0}.cover{break-after:avoid}.phone{width:190px}.two{grid-template-columns:1fr 190px}.phones .phone{width:160px}.phone{box-shadow:none}section{margin-top:10px;padding:16px}}
+</style>
+</head>
+<body><main>
+<div class="cover"><img src="../icon-512.png" alt=""><h1>دليل استخدام منصة سراج</h1><p>شرح كامل للمنصة: الدخول، الإضافة إلى الشاشة الرئيسية، رفع الإنجاز، التقييم، التقويم، والتقرير</p><a class="url" href="https://alqahtani0908-creator.github.io/siraj/">alqahtani0908-creator.github.io/siraj</a></div>
+<ol class="toc">
+<li><a href="#s1">ما هي منصة سراج؟</a></li><li><a href="#s2">الدخول وتفعيل الحساب</a></li><li><a href="#s3">الإضافة إلى الشاشة الرئيسية</a></li><li><a href="#s4">الرسالة التحفيزية</a></li><li><a href="#s5">الصفحة الرئيسية والتنبيهات</a></li><li><a href="#s6">المسار والمتطلبات</a></li><li><a href="#s7">رفع متطلب (المستفيد)</a></li><li><a href="#s8">التقييم (المتابع)</a></li><li><a href="#s9">التقويم</a></li><li><a href="#s10">ملف الإنجاز</a></li><li><a href="#s11">محتوى المشروع</a></li><li><a href="#s12">تقرير المستفيد والطباعة</a></li><li><a href="#s13">إعدادات المتابع</a></li><li><a href="#s14">أسئلة شائعة</a></li>
+</ol>
+
+<section id="s1"><small>01</small><h2>ما هي منصة سراج؟</h2>
+<p>منصة متابعة لمشروع «سراج» التأهيلي الممتد ستة أشهر. تعمل من المتصفح على الجوال والكمبيوتر، وفيها حسابان:</p>
+<table><thead><tr><th>الحساب</th><th>ما يفعله</th></tr></thead><tbody>
+<tr><th>المستفيد</th><td>يسجّل وجه التفسير اليومي، يرفع ورقة التدبر والملخص الفقهي أسبوعياً، وملخص مصدر اللقاء والتقرير الشهري، ويتلقى التقييم والتنبيهات.</td></tr>
+<tr><th>المتابع والمقيّم</th><td>يرى التقدم لحظة بلحظة، يعتمد المرفوعات أو يطلب استكمالها مع تقييم بالنجوم، يرسل التذكيرات، يضبط المواعيد، ويطبع التقرير.</td></tr></tbody></table></section>
+
+<section id="s2"><small>02</small><h2>الدخول وتفعيل الحساب</h2><div class="two"><div>
+<h3>أول مرة (مرة واحدة فقط)</h3><ol><li>افتح رابط المنصة.</li><li>اضغط <kbd>أول مرة؟ فعّل حسابك برمز التفعيل</kbd>.</li><li>اكتب بريدك الإلكتروني، ثم رمز التفعيل الذي وصلك، ثم اختر كلمة مرور من 8 أحرف على الأقل.</li><li>اضغط <kbd>تفعيل الحساب والدخول</kbd>.</li></ol>
+<h3>بعد ذلك</h3><p>اكتب البريد وكلمة المرور واضغط <kbd>دخول</kbd>. يبقى الحساب مسجّلاً في المتصفح حتى تختار تسجيل الخروج.</p>
+<div class="note">رمز تفعيل المستفيد يظهر للمتابع داخل نافذة حسابه إلى أن يُستخدم، فيرسله له مع الرابط.</div></div>
+<div class="phone"><img src="img/login.jpg" alt="شاشة الدخول"></div></div></section>
+
+<section id="s3"><small>03</small><h2>إضافة المنصة إلى الشاشة الرئيسية</h2>
+<p>بعد الإضافة تظهر أيقونة «سراج» بين تطبيقاتك وتفتح المنصة بملء الشاشة كأنها تطبيق، دون شريط المتصفح.</p>
+<div class="plat">
+<div><b>آيفون (Safari)</b><ol><li>افتح رابط المنصة في متصفح Safari.</li><li>اضغط زر المشاركة (المربع الذي يخرج منه سهم للأعلى) أسفل الشاشة.</li><li>مرّر القائمة واختر <kbd>إضافة إلى الشاشة الرئيسية</kbd>.</li><li>اضغط <kbd>إضافة</kbd> أعلى الشاشة.</li></ol></div>
+<div><b>أندرويد (Chrome)</b><ol><li>افتح رابط المنصة في Chrome.</li><li>اضغط القائمة (النقاط الثلاث ⋮) أعلى الشاشة.</li><li>اختر <kbd>إضافة إلى الشاشة الرئيسية</kbd> أو <kbd>تثبيت التطبيق</kbd>.</li><li>أكّد بالضغط على <kbd>إضافة</kbd> أو <kbd>تثبيت</kbd>.</li></ol></div>
+<div><b>الكمبيوتر (Chrome أو Edge)</b><ol><li>افتح رابط المنصة.</li><li>اضغط أيقونة التثبيت في طرف شريط العنوان، أو من القائمة ⋮ اختر <kbd>تثبيت سراج</kbd>.</li><li>تُفتح المنصة في نافذة مستقلة ولها أيقونة على سطح المكتب.</li></ol></div></div>
+<div class="note">افتح المنصة من الأيقونة وسجّل دخولك مرة واحدة منها؛ فالأيقونة تحفظ دخولها مستقلاً عن المتصفح. والتنبيهات تظهر داخل المنصة عند فتحها، ولا تصل إشعارات والمنصة مغلقة.</div></section>
+
+<section id="s4"><small>04</small><h2>الرسالة التحفيزية</h2><div class="two"><div>
+<p>عند كل دخول تظهر شاشة كاملة تخاطبك باسمك الأول برسالة تتبدل في كل مرة، وتحتها سطر عن وضعك الفعلي: عدد المتطلبات التي بانتظارك، أو وِرد اليوم، أو نسبة ما أنجزت.</p>
+<p>اضغط <kbd>لنبدأ</kbd> أو أي مكان في الشاشة للمتابعة. ويمكن إعادة عرضها من نافذة الحساب بزر <kbd>رسالة اليوم</kbd>.</p></div>
+<div class="phone"><img src="img/greet.jpg" alt="الرسالة التحفيزية"></div></div></section>
+
+<section id="s5"><small>05</small><h2>الصفحة الرئيسية والتنبيهات</h2>
+<ul><li><b>بطاقة التقدم:</b> اليوم والأسبوع والشهر من المشروع، ونسبة الإنجاز داخل حلقة يتوهج فيها السراج كلما تقدمت، مع نسبة الالتزام، والأيام المتتالية، ومتوسط التقييم، وعدد الأوجه.</li>
+<li><b>وِرد اليوم:</b> رقم وجه التفسير وصفحته، وزر <kbd>أتممتُه</kbd> لتسجيله بضغطة.</li>
+<li><b>التنبيهات:</b> المتأخر (أحمر)، ما يحتاج استكمالاً (برتقالي)، ما يقترب موعده (ذهبي)، اللقاء الشهري القريب (كحلي)، ونتائج التقييم والرسائل. اضغط أي تنبيه ليفتح المتطلب مباشرة.</li>
+<li><b>مطلوب هذا الأسبوع</b> و<b>الجدارات الخمس</b> و<b>مسار المصابيح</b>: مصباح لكل أسبوع يضيء عند اكتماله.</li>
+<li><b>الجرس</b> أعلى الشاشة: كل التنبيهات السابقة، وزر لإرسال رسالة قصيرة للطرف الآخر.</li></ul>
+<div class="phones"><figure><div class="phone"><img src="img/home.jpg" alt=""></div>رئيسية المستفيد</figure><figure><div class="phone"><img src="img/rhome.jpg" alt=""></div>رئيسية المتابع (مع زر «ذكّره»)</figure></div></section>
+
+<section id="s6"><small>06</small><h2>المسار والمتطلبات</h2><div class="two"><div>
+<p>صفحة <kbd>المسار</kbd> تعرض الأشهر الستة، ولكل شهر أسابيعه الأربعة:</p>
+<ul><li><b>أيام التفسير السبعة:</b> يضغط المستفيد اليوم ليسجّله أو يستدرك يوماً فائتاً.</li><li><b>متطلبات الأسبوع:</b> ورقة التدبر، الملخص الفقهي، قراءة ربع المقرر.</li><li><b>قبل اللقاء الشهري:</b> ملخص مصدر اللقاء والتقرير الشهري.</li></ul>
+<h3>حالات المتطلب</h3><table><tbody><tr><th>قادم</th><td>لم يحن أسبوعه بعد</td></tr><tr><th>مطلوب</th><td>في أسبوعه الحالي</td></tr><tr><th>بانتظار التقييم</th><td>رُفع ولم يُقيَّم</td></tr><tr><th>معتمد</th><td>اعتمده المتابع</td></tr><tr><th>يحتاج استكمالاً</th><td>أعاده المتابع بملاحظة</td></tr><tr><th>متأخر</th><td>فات موعده ولم يُرفع</td></tr></tbody></table></div>
+<div class="phone"><img src="img/path.jpg" alt="المسار"></div></div></section>
+
+<section id="s7"><small>07</small><h2>رفع متطلب (المستفيد)</h2><div class="two"><div>
+<ol><li>اضغط المتطلب من الرئيسية أو المسار أو التقويم.</li><li>اكتب الملخص في الخانة، أو أرفق ملفاً (PDF أو صورة أو Word حتى 20 م.ب)، أو كليهما.</li><li>اضغط <kbd>رفع</kbd>. يصل تنبيه للمتابع فوراً.</li></ol>
+<p>قراءة المقرر لا تحتاج رفعاً: يكفي زر <kbd>أتممتُ قراءة هذا المقرر</kbd>.</p>
+<div class="note">بعد الرفع لا يُعدَّل المتطلب إلا إذا أعاده المتابع بحالة «يحتاج استكمالاً»، وعندها يظهر زر <kbd>إعادة الرفع</kbd>.</div></div>
+<div class="phone"><img src="img/upload.jpg" alt="رفع متطلب"></div></div></section>
+
+<section id="s8"><small>08</small><h2>التقييم (المتابع)</h2><div class="two"><div>
+<ol><li>افتح المتطلب من تنبيه «بانتظار تقييمك» أو من أي صفحة.</li><li>اقرأ الملخص وافتح الملف المرفق.</li><li>اختر التقييم بالنجوم واكتب ملاحظتك.</li><li>اضغط <kbd>اعتماد</kbd>، أو <kbd>يحتاج استكمالاً</kbd> (ويلزم معه كتابة المطلوب).</li></ol>
+<p>يصل التقييم للمستفيد تنبيهاً في رئيسيته. وللمتطلبات المتأخرة زر <kbd>ذكّره</kbd> يرسل له تذكيراً.</p></div>
+<div class="phone"><img src="img/review.jpg" alt="التقييم"></div></div></section>
+
+<section id="s9"><small>09</small><h2>التقويم</h2><div class="two"><div>
+<p>تقويم شهري بالتاريخين الميلادي والهجري:</p><ul><li>الأيام الخضراء: وجه مُسجَّل. الحمراء: يوم فائت.</li><li>النقاط: كحلي للقاء، ذهبي لمتطلب، أخضر لمُنجز، أحمر لمتأخر.</li><li>اضغط أي يوم لترى ما فيه، وسجّل وجهه منه.</li></ul>
+<p><b>للمتابع:</b> زر <kbd>إضافة موعد في هذا اليوم</kbd> يضيف موعداً ويبلّغ المستفيد به.</p></div>
+<div class="phone"><img src="img/cal.jpg" alt="التقويم"></div></div></section>
+
+<section id="s10"><small>10</small><h2>ملف الإنجاز</h2><div class="two"><div>
+<p>أرشيف كل ما رُفع مع حالته وتقييمه، ويمكن تصفيته حسب النوع: ورقة التدبر، الملخص الفقهي، ملخص مصدر اللقاء، التقرير الشهري. تبقى الملفات مرجعاً بعد انتهاء المشروع.</p></div>
+<div class="phone"><img src="img/file.jpg" alt="ملف الإنجاز"></div></div></section>
+
+<section id="s11"><small>11</small><h2>محتوى المشروع والمراجع</h2>
+<p>صفحة <kbd>المحتوى</kbd> تضم وثيقة المشروع كاملة، وشريط العناوين أعلاها ينقلك لأي قسم:</p>
+<ul><li><b>المراجع:</b> كل كتاب وسلسلة ومقالة مع صفحاتها وموضعها من الخطة، وروابط السلاسل المرئية والمقالة. ويستطيع المتابع أن يرفق لكل مرجع رابطاً أو ملف PDF بزر <kbd>إضافة رابط أو ملف</kbd> ليفتحه المستفيد من المنصة مباشرة.</li>
+<li><b>صفحات التفسير لكل يوم:</b> جدول للأيام الـ168 فيه التاريخ ورقم صفحة المصحف والسورة، مع تمييز اليوم الحالي وما أُنجز وما فات.</li>
+<li><b>بقية الوثيقة:</b> الفكرة، الجدارات الخمس، المسار الزمني، خطة اللقاءات، جدول القراءة، الإيقاع الأسبوعي، مسؤوليات الأطراف، والمخرج النهائي.</li></ul>
+<div class="phones"><figure><div class="phone"><img src="img/content.jpg" alt=""></div>صفحة المحتوى</figure><figure><div class="phone"><img src="img/tafsir.jpg" alt=""></div>جدول صفحات التفسير</figure></div></section>
+
+<section id="s12"><small>12</small><h2>تقرير المستفيد والطباعة</h2><div class="two"><div>
+<p>يُفتح من زر <kbd>التقرير</kbd> في بطاقة الرئيسية، أو من ملف الإنجاز، أو من نافذة الحساب. يحتوي:</p>
+<ul><li>ستة مؤشرات: الإنجاز الكلي، الالتزام، متوسط التقييم، الأوجه، المرفوعات، المتأخرات.</li><li>التقدم الفعلي مقابل المخطط، وتقدّم الجدارات الخمس.</li><li>خريطة الورد اليومي للأسابيع الأربعة والعشرين.</li><li>جدول الإنجاز الشهري، وسجل المرفوعات بتقييمها وملاحظات المقيّم.</li><li>خانة ملاحظات يكتب فيها المتابع توصياته قبل الطباعة، وخانتا توقيع.</li></ul>
+<h3>الطباعة أو الحفظ PDF</h3><ol><li>اضغط <kbd>طباعة / حفظ PDF</kbd>.</li><li>اختر الطابعة، أو «حفظ بتنسيق PDF».</li><li>على الجوال: من نافذة الطباعة اختر المشاركة أو الحفظ في الملفات.</li></ol></div>
+<div class="phone"><img src="img/report.jpg" alt="التقرير"></div></div></section>
+
+<section id="s13"><small>13</small><h2>إعدادات المتابع</h2>
+<p>اضغط دائرة الحساب أعلى الشاشة:</p>
+<ul><li><b>الأسماء:</b> اسم المتابع واسم المستفيد كما يظهران في المنصة والتقرير.</li><li><b>تاريخ الانطلاق:</b> تغييره يعيد حساب الأسابيع ومواعيد اللقاءات.</li><li><b>مواعيد اللقاءات الستة:</b> وتغيير أي موعد يبلّغ المستفيد.</li><li><b>رمز تفعيل المستفيد:</b> يظهر إلى أن يُستخدم.</li><li><b>خط المنصة:</b> ارفع ملفات خط ثمانية الخمسة (Light, Regular, Medium, Bold, Black) مرة واحدة ليظهر الخط للحسابين.</li></ul></section>
+
+<section id="s14"><small>14</small><h2>أسئلة شائعة</h2>
+<h3>نسيت كلمة المرور؟</h3><p>لا توجد استعادة ذاتية حالياً؛ تُعاد من مدير المنصة.</p>
+<h3>لم يظهر لي تنبيه جديد؟</h3><p>التنبيهات تُحدَّث فورياً والمنصة مفتوحة، وعند العودة إليها. أغلق المنصة وافتحها إن طال الانتظار.</p>
+<h3>فاتني تسجيل وجه أمس؟</h3><p>سجّله من التقويم أو من أيام الأسبوع في صفحة المسار.</p>
+<h3>هل يرى أحدٌ غيرنا البيانات؟</h3><p>لا. البيانات والملفات محفوظة خلف تسجيل الدخول للحسابين فقط.</p></section>
+<footer>منصة سراج · نورٌ يُوقَد في المربي، ليضيء به مَن حوله</footer>
+</main></body></html>

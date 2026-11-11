@@ -1,12 +1,13 @@
 // ───────────────────────── التشغيل والتوجيه ─────────────────────────
-function route() { const [r, a] = (location.hash.replace(/^#\/?/, "") || "home").split("/"); return { r: ["home", "path", "cal", "file"].includes(r) ? r : "home", a }; }
+function route() { const [r, a] = (location.hash.replace(/^#\/?/, "") || "home").split("/"); return { r: ["home", "path", "cal", "file", "guide", "report"].includes(r) ? r : "home", a }; }
 function render() {
   const app = $("#app");
   if (!ME) { app.innerHTML = loginView(); return; }
   const { r, a } = route(), y = window.scrollY;
   app.innerHTML = shell(r);
-  $("#view").innerHTML = `<div class="page p-${r} ${render.keep ? "" : "anim"}">${{ home: homeView, path: () => pathView(a), cal: calView, file: fileView }[r]()}</div>`;
+  $("#view").innerHTML = `<div class="page p-${r} ${render.keep ? "" : "anim"}">${{ home: homeView, path: () => pathView(a), cal: calView, file: fileView, guide: () => guideView(), report: reportView }[r]()}</div>`;
   window.scrollTo(0, render.keep ? y : 0); render.keep = false;
+  if (r === "guide" && a) $("#g-" + a)?.scrollIntoView();
 }
 const rerender = () => { render.keep = true; render(); };
 
@@ -27,6 +28,11 @@ document.addEventListener("click", async (e) => {
   if ((b = q("[data-go]"))) return (location.hash = b.dataset.go);
   if ((b = q("[data-day]"))) { calSel = b.dataset.day; return rerender(); }
   if ((b = q("[data-cal]"))) { const [y, m] = calYM.split("-").map(Number), d = new Date(y, m - 1 + +b.dataset.cal, 1, 12); calYM = d2s(d).slice(0, 7); return rerender(); }
+  if ((b = q("[data-print]"))) return window.print();
+  if ((b = q("[data-refadd]"))) return refSheet(b.dataset.refadd);
+  if ((b = q("[data-refdel]"))) { const [r, id] = b.dataset.refdel.split(":"); await api.delRef(r, id); return rerender(); }
+  if ((b = q("[data-refopen]"))) { const [r, id] = b.dataset.refopen.split(":"), it = (S.settings.refs?.[r] || []).find((x) => x.id === id); if (!it) return; if (it.url) return window.open(it.url, "_blank", "noopener"); const w = window.open("", "_blank"), u = await api.refUrl(it); if (u && w) w.location = u; else { w?.close(); toast("تعذّر فتح الملف", "err"); } return; }
+  if ((b = q("[data-gsec]"))) return $("#g-" + b.dataset.gsec)?.scrollIntoView({ behavior: "smooth", block: "start" });
   if ((b = q("[data-ff]"))) { fileFilter = b.dataset.ff; return rerender(); }
 });
 document.addEventListener("submit", async (e) => {
@@ -58,4 +64,5 @@ window.addEventListener("storage", (e) => {
   try { await Promise.race([document.fonts.load('700 20px "Thmanyah Serif Text"'), new Promise((r) => setTimeout(r, 1500))]); } catch {}
   render();
   showGreeting();
+  if (DEMO && QS.get("open")) reqSheet(QS.get("open"));
 })();

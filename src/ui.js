@@ -25,7 +25,7 @@ const memberFirst = () => firstName(S.settings.names.member);
 
 // ───── الرسالة التحفيزية بملء الشاشة عند الدخول ─────
 function showGreeting(force) {
-  if (!ME || (!force && showGreeting.done)) return;
+  if (!ME || (!force && (showGreeting.done || QS.has("nogreet")))) return;
   showGreeting.done = true;
   const st = stats(), p = nowPos(), q = pickQuote(ME.role);
   let sub = "";
@@ -48,14 +48,14 @@ function showGreeting(force) {
 }
 
 // ───── الهيكل ─────
-const NAV = [["home", "الرئيسية", I.home], ["path", "المسار", I.path], ["cal", "التقويم", I.cal], ["file", "ملف الإنجاز", I.folder]];
+const NAV = [["home", "الرئيسية", I.home], ["path", "المسار", I.path], ["cal", "التقويم", I.cal], ["file", "ملف الإنجاز", I.folder], ["guide", "المحتوى", I.book]];
 const unreadMine = () => S.notifs.filter((n) => n.to === ME.role && !n.read);
 function shell(route) {
   const un = unreadMine().length;
   const links = (cls) => NAV.map(([r, t, ic]) => `<a href="#/${r}" class="${cls} ${route === r ? "on" : ""}">${ic}<span>${t}</span></a>`).join("");
   return `<div class="app">
   <aside class="side"><div class="logo">${lantern("mini")}<div><b>سراج</b><small>منصة المتابعة</small></div></div>
-    <nav>${links("sl")}</nav>
+    <nav>${links("sl")}<a href="#/report" class="sl ${route === "report" ? "on" : ""}">${I.print}<span>تقرير المستفيد</span></a></nav>
     <button class="who" data-act="account"><span class="av">${esc(firstName(ME.name)[0] || "")}</span><span><b>${esc(ME.name)}</b><small>${isMember() ? "المستفيد" : "المتابع والمقيّم"}</small></span></button></aside>
   <div class="main">
     <header class="top"><div class="logo sm">${lantern("mini")}<b>سراج</b></div>
@@ -69,7 +69,7 @@ function shell(route) {
 
 // ───── شاشة الدخول ─────
 function loginView() {
-  if (api.mode === "remote") return `<div class="login"><div class="g-rays"></div><div class="l-in">${lantern("big")}
+  if (api.mode === "remote" || QS.get("login") === "form") return `<div class="login"><div class="g-rays"></div><div class="l-in">${lantern("big")}
     <h1>سراج</h1><p class="l-tag">نورٌ يُوقَد في المربي، ليضيء به مَن حوله</p>
     <form class="l-form" id="authf" data-mode="in" novalidate>
       <label>البريد الإلكتروني<input name="email" type="email" autocomplete="email" dir="ltr" required></label>
@@ -124,6 +124,7 @@ function accountSheet() {
     <div class="grid2">${[1, 2, 3, 4, 5, 6].map((m) => `<label>اللقاء ${ORD[m]}<input type="date" data-meet="${m}" value="${meetingDate(m)}"></label>`).join("")}</div>
     <button class="btn gold wide" data-save>حفظ الإعدادات</button>
     ${api.mode === "remote" ? `<div id="invite"></div><h3>خط المنصة (ثمانية)</h3><label class="drop">${I.upload}<span id="fn-name">${Object.keys(st.fontFiles || {}).length ? `مرفوع: ${Object.keys(st.fontFiles).length} أوزان — اضغط للاستبدال` : "ارفع ملفات الخط الخمسة (otf) مرة واحدة"}</span><input id="fn-file" type="file" accept=".otf,.ttf" multiple hidden></label>` : ""}` : ""}
+    <div class="row gap"><a class="btn ghost" href="#/report">${I.print} تقرير المستفيد</a><a class="btn ghost" href="guide/" target="_blank">${I.book} شرح المنصة</a></div>
     <div class="row gap"><button class="btn ghost" data-greet>${I.spark} رسالة اليوم</button><button class="btn ghost danger" data-out>${I.out} تسجيل الخروج</button></div>`, (el) => {
     $("[data-out]", el).onclick = async () => { await api.signOut(); closeSheet(); render(); };
     $("[data-greet]", el).onclick = () => { closeSheet(); showGreeting(true); };

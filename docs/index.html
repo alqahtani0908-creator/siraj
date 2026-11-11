@@ -9,6 +9,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="سراج">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 @font-face{font-family:"Thmanyah Serif Text";src:url("fonts/thmanyahseriftext-Light.otf") format("opentype");font-weight:300;font-display:swap}
 @font-face{font-family:"Thmanyah Serif Text";src:url("fonts/thmanyahseriftext-Regular.otf") format("opentype");font-weight:400;font-display:swap}
@@ -39,11 +43,16 @@ em{font-style:normal}
 
 /* ── المصباح ── */
 .lantern{width:auto;height:auto;overflow:visible}
-.lantern .flame{transform-origin:60px 108px;animation:flick 2.4s ease-in-out infinite}
-.lantern .lglow{animation:breath 3.6s ease-in-out infinite;transform-origin:60px 94px}
+.lantern .flame{transform-origin:60px 103px;animation:flick 2.4s ease-in-out infinite}
+.lantern .lglow{animation:breath 3.6s ease-in-out infinite;transform-origin:60px 88px}
+.lantern .lrays{transform-origin:60px 88px;animation:rays 3.6s ease-in-out infinite}
+.lantern .lstars path{animation:twinkle 2.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center}.lantern .lstars path:nth-child(2){animation-delay:.9s}.lantern .lstars path:nth-child(3){animation-delay:1.7s}
+.lantern.mini .lrays,.lantern.mini .lstars,.lantern.inring .lrays,.lantern.inring .lstars{display:none}
+@keyframes rays{0%,100%{opacity:.25;transform:scale(.96)}50%{opacity:.7;transform:scale(1.05)}}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(.6)}50%{opacity:1;transform:scale(1.1)}}
 @keyframes flick{0%,100%{transform:scale(1,1) rotate(-1.5deg)}35%{transform:scale(.94,1.07) rotate(2deg)}70%{transform:scale(1.05,.95) rotate(-1deg)}}
 @keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-.lantern.mini{width:30px;height:42px}.lantern.big{width:150px;height:212px}.lantern.inring{width:46px;height:64px}
+.lantern.mini{width:30px;height:42px}.lantern.big{width:170px;height:240px}.lantern.inring{width:46px;height:64px}
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 
 /* ── الهيكل ── */
@@ -63,7 +72,7 @@ em{font-style:normal}
 .page.anim{animation:pagein .3s ease}
 @keyframes pagein{from{transform:translateY(8px)}}
 @keyframes rise{from{opacity:0;transform:translateY(8px)}}
-.bnav{position:fixed;bottom:0;inset-inline:0;z-index:30;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(255,253,248,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+.bnav{position:fixed;bottom:0;inset-inline:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);background:rgba(255,253,248,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
 .bl{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px;border-radius:14px;color:var(--mute);font-size:.74rem;font-weight:500}
 .bl svg{width:23px;height:23px}.bl.on{color:var(--night);background:linear-gradient(180deg,rgba(240,179,84,.28),rgba(240,179,84,.08));font-weight:700}.bl.on svg{color:var(--gold-deep)}
 @media (min-width:900px){
@@ -224,9 +233,70 @@ input:focus,textarea:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3
 .toast.ok{background:var(--ok)}.toast.err{background:var(--bad)}.toast.notif{border:1px solid var(--amber);color:var(--glow)}.toast.bye{opacity:0;transform:translateY(8px)}
 @media (min-width:900px){#toasts{bottom:28px}}
 
+/* ── محتوى المشروع ── */
+.ghead{text-align:center}.ghead h1{font-size:3.4rem;margin:0}.ghead p{color:#DDD8CA;max-width:520px;margin:0 auto 16px}.ghead .mgrid{text-align:start}.lantern.gl{width:84px;height:118px;margin:0 auto -6px;display:block}
+.gend{text-align:center}.gend h1{font-size:2.6rem;margin:0}.gend p{color:var(--amber)}
+.gtabs{position:sticky;top:58px;z-index:10;background:var(--cream);padding-block:8px}.gtabs button{cursor:pointer}
+.gsec{scroll-margin-top:120px}.gsec h2{font-size:1.4rem;font-weight:900;margin:2px 0 4px}.gsec h3{font-size:.98rem;color:var(--gold-deep);margin:16px 0 8px}
+.kick{color:var(--gold-deep);font-weight:700}.lead{color:var(--mute);margin-bottom:12px}
+.steps{list-style:none;padding:0;display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.steps li{display:flex;gap:10px;align-items:center;background:var(--cream);border-radius:14px;padding:10px 12px;font-weight:500;font-size:.92rem}
+.steps i{font-style:normal;width:30px;height:30px;border-radius:50%;background:var(--night);color:var(--glow);display:grid;place-items:center;font-weight:900;flex:none}
+.nums{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}.nums div{background:var(--night);color:#fff;border-radius:16px;padding:12px 14px}.nums b{font-size:2.2rem;font-weight:900;color:var(--amber);line-height:1.1;display:block}.nums span{font-weight:700;display:block}.nums small{color:#BDB8AA}
+.glist{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.gitem{display:flex;gap:11px;align-items:center;background:var(--cream);border-radius:14px;padding:11px 13px}.gitem.col{flex-direction:column;align-items:flex-start;gap:2px}.gitem b{display:block}.gitem small{display:block;line-height:1.55}
+.chips6{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.chips6 div{border:1px solid var(--line);border-radius:14px;padding:9px 12px}.chips6 b{display:block}
+.cols2{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.bul{padding-inline-start:20px;margin:6px 0;font-size:.93rem}.bul li::marker{color:var(--gold)}
+.xl{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-weight:700;font-size:.9rem;padding:6px 12px;border-radius:10px;background:#F6E7C6}.xl svg{width:16px;height:16px;transform:scaleX(-1)}
+.tw{overflow-x:auto;margin-inline:-4px;padding-inline:4px}.tb{width:100%;border-collapse:collapse;font-size:.88rem;min-width:520px}.tb th,.tb td{text-align:start;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tb thead th{color:var(--mute);font-weight:500;font-size:.8rem;border-bottom:2px solid var(--ink);white-space:nowrap}.tb tbody th{font-weight:700;color:var(--ink)}.tb tbody th small{display:block;font-weight:400}
+@media (min-width:900px){.nums{grid-template-columns:repeat(4,1fr)}.chips6{grid-template-columns:repeat(6,1fr)}.gtabs{top:0}.ghead h1{font-size:4.6rem}}
+
+/* ── تقرير المستفيد ── */
+.pace.rep{background:rgba(255,255,255,.12);color:#fff}.pace.rep svg{width:14px;height:14px}
+.rp-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.report{background:#fff;border:1px solid var(--line);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--sh)}
+.rp-head{position:relative;overflow:hidden;isolation:isolate;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--night);color:#fff;border-radius:18px;padding:18px 20px}
+.rp-head small{color:#BDB8AA;display:block}.rp-head h1{font-size:1.15rem;color:var(--amber);font-weight:700}.rp-head h2{font-size:1.9rem;font-weight:900;line-height:1.3}.lantern.rpl{width:62px;height:88px;flex:none}
+.rp-date{text-align:start;border-inline-start:1px solid rgba(255,255,255,.15);padding-inline-start:16px}.rp-date b{display:block;color:var(--glow)}
+.rp-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.rp-kpis div{border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--paper);border-top:3px solid var(--gold)}
+.rp-kpis b{font-size:1.7rem;font-weight:900;line-height:1.15;display:block}.rp-kpis span{font-weight:700;font-size:.88rem;display:block}.rp-kpis small{font-size:.74rem}
+.rp-row{display:grid;gap:12px}.rp-box{border:1px solid var(--line);border-radius:16px;padding:14px;break-inside:avoid}.rp-box h3{font-size:1rem;margin-bottom:10px;padding-bottom:7px;border-bottom:2px solid var(--ink)}.rp-box h3 small{font-weight:400}
+.rp-ring{display:flex;flex-direction:column;align-items:center}.rp-ring h3{align-self:stretch}.rp-ring .ring{width:150px;height:150px}.rp-ring .rt{stroke:#EFEAE0}.rp-ring .rv{stroke:var(--gold);filter:none}.rp-ring .rin b{font-size:2.1rem;color:var(--ink);margin:0}
+.rp-vs{align-self:stretch;margin-top:10px}.rp-vs div{display:flex;align-items:center;gap:8px;font-size:.82rem}.rp-vs span{width:44px}.rp-vs .bar{flex:1;height:9px}.rp-vs em{width:38px;font-weight:700;text-align:end}
+.rp-verdict{margin-top:10px;font-weight:700;padding:5px 14px;border-radius:20px;font-size:.88rem}.rp-verdict.good{background:var(--ok-bg);color:var(--ok)}.rp-verdict.slow{background:var(--warn-bg);color:var(--warn)}
+.heat{display:grid;grid-template-columns:repeat(24,1fr);gap:3px;direction:rtl}.hw{display:flex;flex-direction:column;gap:3px;align-items:stretch}.hw i{aspect-ratio:1;border-radius:3px;background:#EFEAE0}.hw i.on{background:var(--c-quran)}.hw i.miss{background:#E9B5A9}.hw i.now{box-shadow:inset 0 0 0 2px var(--amber)}.hw small{font-size:.58rem;text-align:center;line-height:1.2}.hw:nth-child(4n+1) small{font-weight:900;color:var(--gold-deep)}
+.sq.on{background:var(--c-quran);border-color:var(--c-quran)}.sq.miss{background:#E9B5A9;border-color:#E9B5A9}.sq{background:#EFEAE0;border-color:#EFEAE0}
+.tb.rpt{font-size:.82rem;min-width:560px}.tb.rpt td,.tb.rpt th{padding:7px 8px}.tb.log td:last-child{min-width:150px;color:var(--mute)}
+.rc{display:inline-block;padding:1px 9px;border-radius:12px;font-size:.76rem;font-weight:700;white-space:nowrap;background:#EFECE4;color:var(--mute)}.rc.approved,.rc.done{background:var(--ok-bg);color:var(--ok)}.rc.submitted{background:var(--info-bg);color:var(--navy)}.rc.revise{background:var(--warn-bg);color:var(--warn)}.rc.late{background:var(--bad-bg);color:var(--bad)}.rc.due{background:#F6E7C6;color:var(--gold-deep)}
+.rp-edit{min-height:74px;border:1.5px dashed #D3C8AE;border-radius:12px;padding:10px 12px;white-space:pre-wrap}.rp-edit:empty:before{content:attr(data-ph);color:#B5AFA0}.rp-edit:focus{outline:0;border-color:var(--gold)}
+.rp-sign{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:16px}.rp-sign small,.rp-sign b{display:block}.rp-sign i{display:block;border-bottom:1.5px solid var(--ink);height:34px}
+.rp-foot{text-align:center;font-size:.76rem;color:var(--mute);padding-top:4px}
+@media (min-width:760px){.rp-kpis{grid-template-columns:repeat(6,1fr)}.rp-row{grid-template-columns:300px 1fr}.report{padding:26px}}
+@media print{
+  @page{size:A4;margin:11mm}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  html,body{background:#fff!important;font-size:11.5px}
+  .side,.top,.bnav,#toasts,.rp-tools,.scrim,.greet{display:none!important}
+  .app{display:block;min-height:0}#view{padding:0!important}.page{max-width:none;gap:0}
+  .report{border:0;box-shadow:none;padding:0;border-radius:0;gap:9px}
+  .rp-kpis{grid-template-columns:repeat(6,1fr)}.rp-row{grid-template-columns:240px 1fr}
+  .rp-edit{border-style:solid;border-color:var(--line)}.rp-edit:empty:before{content:""}
+  .tw{overflow:visible}.tb{min-width:0!important}.tb tr{break-inside:avoid}.rp-box h3{break-after:avoid}
+  .lantern *{animation:none!important}
+  .card,.mhead,.hero{break-inside:avoid;box-shadow:none}.gtabs,.tabs{display:none}.page{gap:10px}
+}
+
+.reflist{display:grid;gap:8px}.ref{display:flex;gap:12px;align-items:flex-start;background:var(--cream);border-radius:16px;padding:12px 14px}.ref b{display:block;font-size:1.05rem}.ref small{display:block;line-height:1.6}
+.ratt{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.ratt .xl{margin:0}.xl.att{padding:0;background:var(--ok-bg);color:var(--ok)}.xl.att button{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;font-weight:700;color:inherit}.xl.att svg{transform:none}.xl.att .rx{padding:6px 8px 6px 4px;opacity:.6}
+.xl.add{background:transparent;border:1.5px dashed #D3C8AE;color:var(--gold-deep);cursor:pointer}.xl.add svg{transform:none}
+.tfm{border:1px solid var(--line);border-radius:14px;margin-top:8px;overflow:hidden}.tfm summary{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;padding:11px 14px;cursor:pointer;background:var(--cream);list-style:none}.tfm summary::-webkit-details-marker{display:none}.tfm summary span{color:var(--gold-deep);font-weight:700}.tfm[open] summary{background:var(--night);color:#fff}.tfm[open] summary span{color:var(--amber)}.tfm[open] summary small{color:#BDB8AA}
+.tb.tft{min-width:0;font-size:.86rem}.tb.tft .wk td{background:#F6E7C6;color:var(--gold-deep);font-weight:700;font-size:.78rem;padding:4px 10px}.tb.tft tr.now th,.tb.tft tr.now td{background:#FFF3D2;font-weight:700}.tb.tft th{width:44px}
+@media print{.tfm summary{background:var(--night)!important;color:#fff}.xl.add,.rx{display:none!important}}
+
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><radialGradient id="lg"><stop offset="0" stop-color="#FFF6D0"/><stop offset=".3" stop-color="#F9C866" stop-opacity=".8"/><stop offset=".65" stop-color="#F0B354" stop-opacity=".28"/><stop offset="1" stop-color="#F0B354" stop-opacity="0"/></radialGradient><linearGradient id="lm" x1="0" x2="1"><stop offset="0" stop-color="#7A5216"/><stop offset=".35" stop-color="#E9BE6A"/><stop offset=".6" stop-color="#C8963E"/><stop offset="1" stop-color="#6B4712"/></linearGradient><linearGradient id="lgl" x1="0" x2="1"><stop offset="0" stop-color="#FFE9A8" stop-opacity=".1"/><stop offset=".5" stop-color="#FFE9A8" stop-opacity=".34"/><stop offset="1" stop-color="#FFE9A8" stop-opacity=".1"/></linearGradient><linearGradient id="lf" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#F29A2E"/><stop offset=".45" stop-color="#FFD66B"/><stop offset="1" stop-color="#FFF8DC"/></linearGradient></defs></svg>
 <div id="app"></div>
 <div id="toasts" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -293,6 +363,7 @@ const I = {
   spark: svg('<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>'),
   people: svg('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><path d="M16 4.6a3.5 3.5 0 010 6.8M18 14.5a6.5 6.5 0 013.5 5.5"/>'),
   user: svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/>'),
+  print: svg('<path d="M7 8V3h10v5M7 17H5a2 2 0 01-2-2v-4a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2h-2"/><rect x="7" y="14" width="10" height="7" rx="1"/>'),
   out: svg('<path d="M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/><path d="M10 8l-4 4 4 4M6 12h10"/>'),
   plus: svg('<path d="M12 5v14M5 12h14"/>', 2),
   send: svg('<path d="M20 4L3 11l7 3 3 7z"/><path d="M10 14l4-4"/>'),
@@ -304,16 +375,22 @@ I.path = svg('<circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path 
 
 function lantern(cls = "") {
   return `<svg viewBox="0 0 120 170" class="lantern ${cls}" aria-hidden="true">
-  <defs><radialGradient id="lg"><stop offset="0" stop-color="#FFF3C4"/><stop offset=".45" stop-color="#F6B94A" stop-opacity=".75"/><stop offset="1" stop-color="#F6B94A" stop-opacity="0"/></radialGradient></defs>
-  <circle cx="60" cy="94" r="60" fill="url(#lg)" class="lglow"/>
-  <path d="M42 30Q60 2 78 30" fill="none" stroke="#C8963E" stroke-width="3" stroke-linecap="round"/>
-  <rect x="51" y="27" width="18" height="8" rx="2" fill="#C8963E"/>
-  <path d="M37 50h46l-8-15H45z" fill="#9A6A1E"/>
-  <path d="M40 52h40l6 74H34z" fill="rgba(255,236,180,.14)" stroke="#C8963E" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M60 52v74M47 52l-4 74M73 52l4 74" stroke="#C8963E" stroke-width="1" opacity=".45"/>
-  <path d="M60 72c11 15 9 32 0 37-9-5-11-22 0-37z" fill="#FFE9A8" class="flame"/>
-  <path d="M30 126h60l-6 14H36z" fill="#9A6A1E"/>
-  <rect x="43" y="140" width="34" height="6" rx="2" fill="#C8963E"/>
+  <circle cx="60" cy="88" r="62" fill="url(#lg)" class="lglow"/>
+  <g class="lrays" stroke="#FFE9A8" stroke-width="1.6" stroke-linecap="round" opacity=".55"><path d="M60 14v-9M19 40l-7-6M101 40l7-6M6 88H-2M114 88h8M17 132l-7 5M103 132l7 5"/></g>
+  <g class="lstars" fill="#FFE9A8"><path d="M14 62l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6z"/><path d="M106 108l1.3 3.2 3.2 1.3-3.2 1.3-1.3 3.2-1.3-3.2-3.2-1.3 3.2-1.3z"/><path d="M100 54l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z"/></g>
+  <path d="M33 124C24 92 28 44 51 33M87 124C96 92 92 44 69 33" fill="none" stroke="url(#lm)" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="60" cy="17" r="6.5" fill="none" stroke="url(#lm)" stroke-width="2.6"/>
+  <rect x="53" y="23" width="14" height="8" rx="2.5" fill="url(#lm)"/>
+  <path d="M44 41c0-6 7-10 16-10s16 4 16 10z" fill="url(#lm)"/>
+  <rect x="42" y="40" width="36" height="5" rx="2.5" fill="#8F611A"/>
+  <path d="M47 45C33 58 31 96 45 112h30C89 96 87 58 73 45z" fill="url(#lgl)" stroke="#D9A94E" stroke-width="1.6"/>
+  <path d="M42 54C37 68 37 90 42 103" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".38"/>
+  <path d="M36.5 68Q60 75 83.5 68M36.5 90Q60 97 83.5 90" fill="none" stroke="#D9A94E" stroke-width="1.2" opacity=".75"/>
+  <g class="flame"><path d="M60 60c12 15 11 36 0 43-11-7-12-28 0-43z" fill="url(#lf)"/><path d="M60 78c5 7 5 17 0 21-5-4-5-14 0-21z" fill="#FFFBEA"/></g>
+  <rect x="50" y="110" width="20" height="7" rx="2" fill="#8F611A"/>
+  <path d="M29 126q0-9 10-9h42q10 0 10 9v10q0 9-10 9H39q-10 0-10-9z" fill="url(#lm)"/>
+  <path d="M30 130h60" stroke="#6B4712" stroke-width="1.4" opacity=".6"/><circle cx="95" cy="122" r="3.2" fill="#E9BE6A" stroke="#6B4712" stroke-width="1"/>
+  <rect x="34" y="145" width="52" height="5.5" rx="2.75" fill="#8F611A"/>
 </svg>`;
 }
 
@@ -361,7 +438,22 @@ function nowPos() {
   const week = Math.floor(c / 7) + 1;
   return { di, phase: di < 0 ? "before" : di >= TOTAL_DAYS ? "after" : "during", day: c + 1, week, month: monthOfWeek(week) };
 }
-const tafsirPage = (di) => Math.min(604, 440 + di); // وجه كل يوم ابتداءً من سورة يس (ص 440)
+// صفحات التفسير اليومي (مصحف المدينة): وجه كل يوم من يس (ص 440)؛ الشهر الخامس 30 صفحة في 28 يوماً، والسادس 23 صفحة ثم 5 أيام مراجعة
+const SURAHS = [[440, "يس"], [446, "الصافات"], [453, "ص"], [458, "الزمر"], [467, "غافر"], [477, "فصلت"], [483, "الشورى"], [489, "الزخرف"], [496, "الدخان"], [499, "الجاثية"], [502, "الأحقاف"], [507, "محمد"], [511, "الفتح"], [515, "الحجرات"], [518, "ق"], [520, "الذاريات"], [523, "الطور"], [526, "النجم"], [528, "القمر"], [531, "الرحمن"], [534, "الواقعة"], [537, "الحديد"], [542, "المجادلة"], [545, "الحشر"], [549, "الممتحنة"], [551, "الصف"], [553, "الجمعة"], [554, "المنافقون"], [556, "التغابن"], [558, "الطلاق"], [560, "التحريم"], [562, "الملك"], [564, "القلم"], [566, "الحاقة"], [568, "المعارج"], [570, "نوح"], [572, "الجن"], [574, "المزمل"], [575, "المدثر"], [577, "القيامة"], [578, "الإنسان"], [580, "المرسلات"],
+  [582, "النبأ"], [583, "النازعات"], [585, "عبس"], [586, "التكوير"], [587, "الانفطار"], [587, "المطففين"], [589, "الانشقاق"], [590, "البروج"], [591, "الطارق"], [591, "الأعلى"], [592, "الغاشية"], [593, "الفجر"], [594, "البلد"], [595, "الشمس"], [595, "الليل"], [596, "الضحى"], [596, "الشرح"], [597, "التين"], [597, "العلق"], [598, "القدر"], [598, "البينة"], [599, "الزلزلة"], [599, "العاديات"], [600, "القارعة"], [600, "التكاثر"], [601, "العصر"], [601, "الهمزة"], [601, "الفيل"], [602, "قريش"], [602, "الماعون"], [602, "الكوثر"], [603, "الكافرون"], [603, "النصر"], [603, "المسد"], [604, "الإخلاص"], [604, "الفلق"], [604, "الناس"]];
+function tafsirRange(di) { // [من، إلى] أو null لأيام المراجعة
+  if (di < 112) return [440 + di, 440 + di];
+  if (di < 138) return [552 + (di - 112), 552 + (di - 112)];
+  if (di === 138) return [578, 579];
+  if (di === 139) return [580, 581];
+  return di - 140 < 23 ? [582 + (di - 140), 582 + (di - 140)] : null;
+}
+function surahsOf(a, b) { // السور التي تبدأ في الصفحات، وإلا فالسورة المستمرة
+  const st = SURAHS.filter(([p]) => p >= a && p <= b).map((x) => x[1]);
+  return st.length ? st.join("، ") : [...SURAHS].reverse().find(([p]) => p < a)[1];
+}
+const tafsirPage = (di) => { const r = tafsirRange(di); return !r ? "مراجعة" : r[0] === r[1] ? String(r[0]) : `${r[0]}–${r[1]}`; };
+const tafsirLabel = (di) => { const r = tafsirRange(di); return r ? `صفحة ${tafsirPage(di)} · ${surahsOf(r[0], r[1])}` : "مراجعة جزء عمّ وختامه"; };
 
 let REQS = [], REQ = {};
 function buildReqs() {
@@ -469,6 +561,7 @@ const api = {
   async load() {
     this.read();
     if (DEMO && !localStorage.getItem(KEY)) seedDemo();
+    if (DEMO && QS.get("as")) localStorage.setItem("siraj.me", QS.get("as"));
     const r = localStorage.getItem("siraj.me");
     ME = r === "reviewer" || r === "member" ? { role: r, name: S.settings.names[r] } : null;
   },
@@ -508,11 +601,19 @@ const api = {
     moved.forEach((m) => this.notify("member", "event", "تغيّر موعد اللقاء", `اللقاء ${ORD[m]} — ${fmtDay(meetingDate(m))}`));
     this.save();
   },
+  async addRef(refId, { label, url, file }) {
+    const it = { id: uid(), label };
+    if (file) { await idbDo("readwrite", (s) => s.put(file, "ref:" + it.id)); it.name = file.name; it.local = true; } else it.url = url;
+    const refs = { ...(S.settings.refs || {}) }; refs[refId] = [...(refs[refId] || []), it]; S.settings.refs = refs; this.save();
+  },
+  async delRef(refId, id) { const refs = { ...(S.settings.refs || {}) }; refs[refId] = (refs[refId] || []).filter((x) => x.id !== id); S.settings.refs = refs; this.save(); },
+  async refUrl(it) { if (it.url) return it.url; const b = await idbDo("readonly", (s) => s.get("ref:" + it.id)); return b ? URL.createObjectURL(b) : null; },
   async fileUrl(f) { const b = await idbDo("readonly", (s) => s.get(f.id)); return b ? URL.createObjectURL(b) : null; },
 };
 
 // بيانات معاينة فقط (‎?demo) — تُحفظ في مفتاح منفصل ولا تمس البيانات الحقيقية
 function seedDemo() {
+  S.settings.names = { reviewer: "عبدالله", member: "أحمد السالم" };
   const p = nowPos(); if (p.phase === "before") return api.save();
   let x = 11; const rnd = () => (x = (x * 16807) % 2147483647) / 2147483647;
   for (let i = 0; i <= p.di && i < TOTAL_DAYS; i++) if (i === p.di ? false : rnd() > 0.12 || i > p.di - 4) S.tafsir[addDays(startDate(), i)] = true;
@@ -561,7 +662,7 @@ if (CFG && window.supabase && !DEMO) {
       ])).map(must);
       const names = Object.fromEntries(pr.map((p) => [p.role, p.name]));
       const n = blank();
-      n.settings = { start: st?.start || n.settings.start, meetings: st?.meetings || [], names: { ...n.settings.names, ...names }, fontFiles: st?.font_files || {} };
+      n.settings = { start: st?.start || n.settings.start, meetings: st?.meetings || [], names: { ...n.settings.names, ...names }, fontFiles: st?.font_files || {}, refs: st?.refs || {} };
       su.forEach((s) => (n.subs[s.req_id] = { reqId: s.req_id, title: s.title, body: s.body, file: s.file, at: s.at, status: s.status, score: s.score, note: s.note, reviewedAt: s.reviewed_at, history: s.history || [] }));
       ch.forEach((c) => (n.checks[c.req_id] = c.at));
       tf.forEach((t) => (n.tafsir[t.day] = true));
@@ -618,6 +719,18 @@ if (CFG && window.supabase && !DEMO) {
       await this.refresh();
       for (const m of moved) await this.note("event", "تغيّر موعد اللقاء", `اللقاء ${ORD[m]} — ${fmtDay(meetingDate(m))}`);
     },
+    async addRef(refId, { label, url, file }) {
+      const it = { id: uid(), label };
+      if (file) {
+        const ext = (file.name.match(/\.([A-Za-z0-9]{1,8})$/) || [, "bin"])[1].toLowerCase(); it.path = `refs/${refId}/${it.id}.${ext}`; it.name = file.name;
+        must(await sb.storage.from("brand").upload(it.path, file, { contentType: file.type || undefined }));
+      } else it.url = url;
+      const refs = { ...(S.settings.refs || {}) }; refs[refId] = [...(refs[refId] || []), it];
+      must(await sb.from("settings").update({ refs }).eq("id", 1)); await this.refresh();
+      await this.note("event", "أُضيف مرجع جديد", label);
+    },
+    async delRef(refId, id) { const refs = { ...(S.settings.refs || {}) }; refs[refId] = (refs[refId] || []).filter((x) => x.id !== id); must(await sb.from("settings").update({ refs }).eq("id", 1)); await this.refresh(); },
+    async refUrl(it) { if (it.url) return it.url; const r = await sb.storage.from("brand").createSignedUrl(it.path, 3600); return r.data?.signedUrl || null; },
     async fileUrl(f) { if (!f?.path) return null; const r = await sb.storage.from("files").createSignedUrl(f.path, 3600); return r.data?.signedUrl || null; },
     async memberInvite() { const r = await sb.rpc("member_invite"); return r.data || null; },
     async uploadFonts(files) {
@@ -672,7 +785,7 @@ const memberFirst = () => firstName(S.settings.names.member);
 
 // ───── الرسالة التحفيزية بملء الشاشة عند الدخول ─────
 function showGreeting(force) {
-  if (!ME || (!force && showGreeting.done)) return;
+  if (!ME || (!force && (showGreeting.done || QS.has("nogreet")))) return;
   showGreeting.done = true;
   const st = stats(), p = nowPos(), q = pickQuote(ME.role);
   let sub = "";
@@ -695,14 +808,14 @@ function showGreeting(force) {
 }
 
 // ───── الهيكل ─────
-const NAV = [["home", "الرئيسية", I.home], ["path", "المسار", I.path], ["cal", "التقويم", I.cal], ["file", "ملف الإنجاز", I.folder]];
+const NAV = [["home", "الرئيسية", I.home], ["path", "المسار", I.path], ["cal", "التقويم", I.cal], ["file", "ملف الإنجاز", I.folder], ["guide", "المحتوى", I.book]];
 const unreadMine = () => S.notifs.filter((n) => n.to === ME.role && !n.read);
 function shell(route) {
   const un = unreadMine().length;
   const links = (cls) => NAV.map(([r, t, ic]) => `<a href="#/${r}" class="${cls} ${route === r ? "on" : ""}">${ic}<span>${t}</span></a>`).join("");
   return `<div class="app">
   <aside class="side"><div class="logo">${lantern("mini")}<div><b>سراج</b><small>منصة المتابعة</small></div></div>
-    <nav>${links("sl")}</nav>
+    <nav>${links("sl")}<a href="#/report" class="sl ${route === "report" ? "on" : ""}">${I.print}<span>تقرير المستفيد</span></a></nav>
     <button class="who" data-act="account"><span class="av">${esc(firstName(ME.name)[0] || "")}</span><span><b>${esc(ME.name)}</b><small>${isMember() ? "المستفيد" : "المتابع والمقيّم"}</small></span></button></aside>
   <div class="main">
     <header class="top"><div class="logo sm">${lantern("mini")}<b>سراج</b></div>
@@ -716,7 +829,7 @@ function shell(route) {
 
 // ───── شاشة الدخول ─────
 function loginView() {
-  if (api.mode === "remote") return `<div class="login"><div class="g-rays"></div><div class="l-in">${lantern("big")}
+  if (api.mode === "remote" || QS.get("login") === "form") return `<div class="login"><div class="g-rays"></div><div class="l-in">${lantern("big")}
     <h1>سراج</h1><p class="l-tag">نورٌ يُوقَد في المربي، ليضيء به مَن حوله</p>
     <form class="l-form" id="authf" data-mode="in" novalidate>
       <label>البريد الإلكتروني<input name="email" type="email" autocomplete="email" dir="ltr" required></label>
@@ -771,6 +884,7 @@ function accountSheet() {
     <div class="grid2">${[1, 2, 3, 4, 5, 6].map((m) => `<label>اللقاء ${ORD[m]}<input type="date" data-meet="${m}" value="${meetingDate(m)}"></label>`).join("")}</div>
     <button class="btn gold wide" data-save>حفظ الإعدادات</button>
     ${api.mode === "remote" ? `<div id="invite"></div><h3>خط المنصة (ثمانية)</h3><label class="drop">${I.upload}<span id="fn-name">${Object.keys(st.fontFiles || {}).length ? `مرفوع: ${Object.keys(st.fontFiles).length} أوزان — اضغط للاستبدال` : "ارفع ملفات الخط الخمسة (otf) مرة واحدة"}</span><input id="fn-file" type="file" accept=".otf,.ttf" multiple hidden></label>` : ""}` : ""}
+    <div class="row gap"><a class="btn ghost" href="#/report">${I.print} تقرير المستفيد</a><a class="btn ghost" href="guide/" target="_blank">${I.book} شرح المنصة</a></div>
     <div class="row gap"><button class="btn ghost" data-greet>${I.spark} رسالة اليوم</button><button class="btn ghost danger" data-out>${I.out} تسجيل الخروج</button></div>`, (el) => {
     $("[data-out]", el).onclick = async () => { await api.signOut(); closeSheet(); render(); };
     $("[data-greet]", el).onclick = () => { closeSheet(); showGreeting(true); };
@@ -884,11 +998,11 @@ function homeView() {
     <div class="h-top"><div><small>${fmtDay(t)} · ${fmtHijriShort(t)}</small>
       <h1>${mem ? `أهلاً يا ${esc(firstName(ME.name))}` : `إنجاز ${esc(memberFirst())}`}</h1>
       <p>${p.phase === "before" ? `الانطلاق ${fmtDay(startDate())}` : p.phase === "after" ? "اكتملت الأشهر الستة" : `اليوم ${p.day} من ${TOTAL_DAYS} · الأسبوع ${p.week} · الشهر ${ORD[p.month]}`}</p>
-      <span class="pace ${good || p.phase === "before" ? "good" : "slow"}">${pace}</span></div>
+      <a class="pace rep" href="#/report">${I.print} التقرير</a> <span class="pace ${good || p.phase === "before" ? "good" : "slow"}">${pace}</span></div>
       ${ring(st.overall, `${lantern("inring")}<b>${pct(st.overall)}<i>٪</i></b>`)}</div>
     <div class="h-stats"><div><b>${p.phase === "before" ? "—" : pct(st.committed) + "<i>٪</i>"}</b><small>الالتزام</small></div><div><b>${st.streak}</b><small>${I.fire} أيام متتالية</small></div><div><b>${st.avg ? st.avg.toFixed(1) : "—"}</b><small>متوسط التقييم</small></div><div><b>${st.tafsirDone}</b><small>وجهاً مفسَّراً</small></div></div>
     <style>.hero .lglow{opacity:${(0.25 + st.overall * 0.75).toFixed(2)}}</style></section>`;
-  const wird = p.phase === "during" ? `<section class="card wird ${S.tafsir[t] ? "done" : ""}"><span class="ric c-quran big">${I.quran}</span><div class="grow"><small>وِرد اليوم · التفسير الميسر</small><b>الوجه ${p.day} — صفحة ${tafsirPage(p.di)}</b><small>${MONTHS[p.month].tafsir}</small></div>
+  const wird = p.phase === "during" ? `<section class="card wird ${S.tafsir[t] ? "done" : ""}"><span class="ric c-quran big">${I.quran}</span><div class="grow"><small>وِرد اليوم · التفسير الميسر</small><b>اليوم ${p.day} — ${tafsirLabel(p.di)}</b><small>${MONTHS[p.month].tafsir} · <a href="#/guide/tafsir">جدول الصفحات</a></small></div>
       ${mem ? `<button class="btn ${S.tafsir[t] ? "okf" : "gold"}" data-tafsir-today>${I.check} ${S.tafsir[t] ? "أُنجز" : "أتممتُه"}</button>` : `<span class="chip ${S.tafsir[t] ? "approved" : "due"}">${S.tafsir[t] ? "أُنجز اليوم" : "لم يُسجَّل"}</span>`}</section>` : "";
   return `${hero}
     ${wird}
@@ -904,9 +1018,9 @@ function pathView(arg) {
   const p = nowPos(), m = Math.min(6, Math.max(1, +arg || p.month)), M = MONTHS[m], t = today(), mem = isMember();
   const weeks = [1, 2, 3, 4].map((i) => {
     const w = (m - 1) * 4 + i, ws = weekStart(w), state = weekState(w);
-    const days = WD.map((l, d) => { const ds = addDays(ws, d), on = S.tafsir[ds], fut = ds > t; return `<button class="td ${on ? "on" : fut ? "fut" : "miss"} ${ds === t ? "today" : ""}" ${mem && !fut ? `data-tafsir="${ds}"` : "disabled"} title="${fmtDay(ds)} · صفحة ${tafsirPage(diffDays(ds, startDate()))}"><i>${on ? I.check : l}</i></button>`; }).join("");
+    const days = WD.map((l, d) => { const ds = addDays(ws, d), on = S.tafsir[ds], fut = ds > t; return `<button class="td ${on ? "on" : fut ? "fut" : "miss"} ${ds === t ? "today" : ""}" ${mem && !fut ? `data-tafsir="${ds}"` : "disabled"} title="${fmtDay(ds)} · ${tafsirLabel(diffDays(ds, startDate()))}"><i>${on ? I.check : l}</i></button>`; }).join("");
     return `<section class="card week ${state}"><div class="ch"><h3><i class="lamp ${state}"></i> الأسبوع ${w}</h3><small>${fmtShort(ws)} – ${fmtShort(weekEnd(w))}</small></div>
-      <div class="tafsir"><small>${I.quran} التفسير: وجهٌ كل يوم (ص ${tafsirPage((w - 1) * 7)}–${tafsirPage(w * 7 - 1)})</small><div class="tds">${days}</div></div>
+      <div class="tafsir"><small>${I.quran} التفسير: وجهٌ كل يوم (${w > 23 ? "مراجعة جزء عمّ" : `ص ${tafsirRange((w - 1) * 7)[0]}–${(tafsirRange(w * 7 - 1) || [0, 604])[1]}`})</small><div class="tds">${days}</div></div>
       <div class="reqs">${REQS.filter((r) => r.week === w && !r.monthly).map((r) => reqRow(r)).join("")}</div></section>`;
   }).join("");
   return `<div class="tabs">${[1, 2, 3, 4, 5, 6].map((i) => `<a href="#/path/${i}" class="${i === m ? "on" : ""} ${p.phase === "during" && p.month === i ? "cur" : ""}">الشهر ${ORD[i]}</a>`).join("")}</div>
@@ -939,7 +1053,7 @@ function calView() {
   if (inf.start) items.push(`<div class="al k-navy"><span class="aic">${I.spark}</span><span class="grow"><b>انطلاق مشروع سراج</b></span></div>`);
   if (inf.meet) items.push(`<div class="al k-navy"><span class="aic">${I.people}</span><span class="grow"><b>اللقاء ${ORD[inf.meet]}: ${esc(MONTHS[inf.meet].meet)}</b><small>${esc(MONTHS[inf.meet].source)}</small></span></div>`);
   inf.events.forEach((e) => items.push(`<div class="al k-info"><span class="aic">${I.cal}</span><span class="grow"><b>${esc(e.title)}</b>${e.note ? `<small>${esc(e.note)}</small>` : ""}</span>${mem ? "" : `<button class="btn sm ghost" data-delev="${e.id}">حذف</button>`}</div>`));
-  if (inf.inProj) { const on = S.tafsir[calSel], fut = calSel > t; items.push(`<div class="al k-${on ? "ok" : fut ? "info" : "warn"}"><span class="aic">${I.quran}</span><span class="grow"><b>التفسير: الوجه ${inf.di + 1} — صفحة ${tafsirPage(inf.di)}</b><small>${on ? "أُنجز" : fut ? "قادم" : "لم يُسجَّل"}</small></span>${mem && !fut ? `<button class="btn sm ${on ? "ghost" : "gold"}" data-tafsir="${calSel}">${on ? "إلغاء" : "أتممتُه"}</button>` : ""}</div>`); }
+  if (inf.inProj) { const on = S.tafsir[calSel], fut = calSel > t; items.push(`<div class="al k-${on ? "ok" : fut ? "info" : "warn"}"><span class="aic">${I.quran}</span><span class="grow"><b>التفسير: اليوم ${inf.di + 1} — ${tafsirLabel(inf.di)}</b><small>${on ? "أُنجز" : fut ? "قادم" : "لم يُسجَّل"}</small></span>${mem && !fut ? `<button class="btn sm ${on ? "ghost" : "gold"}" data-tafsir="${calSel}">${on ? "إلغاء" : "أتممتُه"}</button>` : ""}</div>`); }
   return `<section class="card cal"><div class="calh"><button class="ib" data-cal="-1" aria-label="الشهر السابق">${I.chevR}</button><div><h2>${F_GM.format(first)}</h2><small>${F_HM.format(first)} – ${F_HM.format(new Date(y, mo - 1, n, 12))}</small></div><button class="ib" data-cal="1" aria-label="الشهر التالي">${I.chevL}</button></div>
     <div class="wd">${["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"].map((d) => `<span>${d}</span>`).join("")}</div>
     <div class="grid7">${cells}</div>
@@ -961,21 +1075,159 @@ function fileView() {
   const st = stats(), subs = Object.values(S.subs).sort((a, b) => (a.at < b.at ? 1 : -1));
   const list = subs.filter((s) => fileFilter === "all" || REQ[s.reqId]?.type === fileFilter);
   const cnt = (ty) => subs.filter((s) => REQ[s.reqId]?.type === ty).length;
-  return `<section class="mhead"><div class="h-rays"></div><small>ملف الإنجاز</small><h1>كل إنجازٍ يُرفع، وكل ملخصٍ يُحفظ</h1>
+  return `<section class="mhead"><div class="h-rays"></div><small>ملف الإنجاز</small><h1>كل إنجازٍ يُرفع، وكل ملخصٍ يُحفظ</h1><a class="btn gold" href="#/report" style="margin-bottom:14px">${I.print} طباعة تقرير المستفيد</a>
       <div class="mgrid"><div><small>ملفات مرفوعة</small><b>${subs.length}</b></div><div><small>معتمدة</small><b>${subs.filter((s) => s.status === "approved").length}</b></div><div><small>متوسط التقييم</small><b>${st.avg ? st.avg.toFixed(1) + " / 5" : "—"}</b></div><div><small>أوجه التفسير</small><b>${st.tafsirDone} / ${TOTAL_DAYS}</b></div></div></section>
     <div class="tabs">${[["all", "الكل", subs.length], ...["tadabbur", "fiqh", "source", "report"].map((k) => [k, TYPES[k].name, cnt(k)])].map(([k, n, c]) => `<button data-ff="${k}" class="${fileFilter === k ? "on" : ""}">${n} <i>${c}</i></button>`).join("")}</div>
     <section class="card"><div class="reqs">${list.length ? list.map((s) => reqRow(REQ[s.reqId])).join("") : `<div class="empty">${I.folder}<p>${isMember() ? "لم تُرفع ملفات بعد — ابدأ من صفحة المسار" : "لم يرفع المستفيد شيئاً بعد"}</p></div>`}</div></section>`;
 }
 
+// ───────────────────────── محتوى المشروع (وثيقة سراج كاملة) ─────────────────────────
+const LINKS = { fiqh1: "https://www.youtube.com/watch?v=OQfMcVwehII&list=PLF8wQ8_AW0LxNTFYRmIZVrPxZxoGuIBT3", fiqh2: "https://www.youtube.com/playlist?list=PLF8wQ8_AW0Lx2OJqaZ6OjoQsgTx9hzfaL", article: "https://mohammedaameri.com/blog/220" };
+const ext = (u, t) => `<a class="xl" href="${u}" target="_blank" rel="noopener">${I.out}${t}</a>`;
+const steps = (a) => `<ol class="steps">${a.map((x, i) => `<li><i>${i + 1}</i><span>${x}</span></li>`).join("")}</ol>`;
+const tbl = (head, rows, cls = "") => `<div class="tw"><table class="tb ${cls}"><thead><tr>${head.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((c, i) => (i === 0 ? `<th>${c}</th>` : `<td>${c}</td>`)).join("")}</tr>`).join("")}</tbody></table></div>`;
+const GUIDE = [
+  ["idea", "فكرة المشروع"], ["refs", "المراجع"], ["tafsir", "صفحات التفسير"], ["comps", "الجدارات"], ["quran", "القرآنية"], ["edu", "التربوية والقيادية"], ["sharia", "الشرعية"], ["skill", "القيادية والمهارية"],
+  ["time", "المسار الزمني"], ["meet", "اللقاءات"], ["read", "القراءة"], ["week", "الإيقاع الأسبوعي"], ["monthly", "اللقاء الشهري"], ["uploads", "ما يُرفع"], ["roles", "الأطراف"], ["out", "المخرج النهائي"],
+];
+const REFS = [
+  { id: "tafsir", comp: "quran", title: "التفسير الميسر", by: "ربع يس: من سورة يس إلى سورة الناس", part: "صفحات المصحف 440 – 604 · وجهٌ كل يوم", when: "طوال الأشهر الستة" },
+  { id: "fiqh1", comp: "sharia", title: "الفقه الأكبر والمدخل", by: "سلسلة مرئية", part: "تؤسس للتأهيل الشرعي قبل أبواب العبادات", when: "الشهر الأول", url: LINKS.fiqh1, urlText: "السلسلة على يوتيوب" },
+  { id: "fiqh2", comp: "sharia", title: "فقه العبادات: التأهيل الفقهي", by: "سلسلة مرئية · 39 مقطعاً", part: "قرابة مقطعين في الأسبوع", when: "من الشهر الثاني إلى السادس", url: LINKS.fiqh2, urlText: "السلسلة على يوتيوب" },
+  { id: "b1", comp: "edu", title: "أصول التربية الإسلامية", by: "عبدالرحمن النحلاوي", part: "الفصل الرابع: غاية التربية الإسلامية وهدفها · ص 88 – 107 (20 صفحة)", when: "الشهر الأول · اللقاء الأول" },
+  { id: "b2", comp: "skill", title: "المذهّبات", by: "فايز الزهراني", part: "تربية العقل الناقد · ص 55 – 72 (18 صفحة)", when: "الشهر الثاني · اللقاء الثاني" },
+  { id: "b3", comp: "edu", title: "التربية من جديد", by: "فايز الزهراني", part: "المبحث السابع: المربون في العصر الجديد · ص 215 – 234 (20 صفحة)", when: "الشهر الثالث · اللقاء الثالث" },
+  { id: "b4", comp: "edu", title: "المعايشة التربوية", by: "سالم البطاطي", part: "الكتاب كاملاً · ص 3 – 50 (48 صفحة)", when: "الشهر الرابع · اللقاء الرابع" },
+  { id: "b5", comp: "edu", title: "معيار المربي", by: "فايز الزهراني", part: "قسما شخصية المربي والمهارات التربوية · ص 75 – 139 (50 صفحة)", when: "الشهر الخامس · اللقاء الخامس" },
+  { id: "b6", comp: "lead", title: "مقالة «القيادة الخدمية»", by: "د. محمد العامري", part: "مفهوم القيادة · القيادة الخدمية · الأنماط والنظريات · قيادة التغيير", when: "الشهر السادس · اللقاء السادس", url: LINKS.article, urlText: "قراءة المقالة" },
+];
+function refsBlock() {
+  const rev = ME && !isMember(), R = S.settings.refs || {};
+  return `<div class="reflist">${REFS.map((r) => `<div class="ref"><span class="ric c-${r.comp}">${COMPS[r.comp].icon}</span><div class="grow"><small>${r.when}</small><b>${r.title}</b><small>${r.by}</small><small>${r.part}</small>
+    <div class="ratt">${r.url ? ext(r.url, r.urlText) : ""}${(R[r.id] || []).map((x) => `<span class="xl att"><button data-refopen="${r.id}:${x.id}">${x.url ? I.out : I.file}${esc(x.label)}</button>${rev ? `<button class="rx" data-refdel="${r.id}:${x.id}" aria-label="حذف">${I.x}</button>` : ""}</span>`).join("")}${rev ? `<button class="xl add" data-refadd="${r.id}">${I.plus} إضافة رابط أو ملف</button>` : ""}</div></div></div>`).join("")}</div>
+    <p class="hint">${rev ? "أرفق لكل مرجع رابطه أو ملفه (PDF) ليفتحه المستفيد من المنصة مباشرة. الملفات تُحفظ في مخزن خاص بالحسابين." : "المراجع التي أرفق المتابع روابطها أو ملفاتها تُفتح من هنا مباشرة."}</p>`;
+}
+function tafsirTable() {
+  const p = nowPos(), t = today();
+  return [1, 2, 3, 4, 5, 6].map((m) => `<details class="tfm" ${(p.phase === "during" ? p.month : 1) === m ? "open" : ""}><summary><b>الشهر ${ORD[m]}</b><span>${MONTHS[m].tafsir}</span><small>${fmtShort(weekStart(m * 4 - 3))} – ${fmtShort(weekEnd(m * 4))}</small></summary>
+    <div class="tw"><table class="tb tft"><thead><tr><th>اليوم</th><th>التاريخ</th><th>الصفحة</th><th>السورة</th><th></th></tr></thead><tbody>${Array.from({ length: 28 }, (_, i) => { const di = (m - 1) * 28 + i, ds = addDays(startDate(), di), r = tafsirRange(di);
+      return `${i % 7 === 0 ? `<tr class="wk"><td colspan="5">الأسبوع ${di / 7 + 1}</td></tr>` : ""}<tr class="${ds === t ? "now" : ""}"><th>${di + 1}</th><td>${fmtDay(ds)}</td><td>${r ? tafsirPage(di) : "—"}</td><td>${r ? surahsOf(r[0], r[1]) : "مراجعة جزء عمّ وختامه"}</td><td>${S.tafsir[ds] ? `<span class="rc approved">أُنجز</span>` : ds < t ? `<span class="rc late">فائت</span>` : ""}</td></tr>`; }).join("")}</tbody></table></div></details>`).join("");
+}
+function refSheet(refId) {
+  const r = REFS.find((x) => x.id === refId);
+  openSheet(`<h2>إرفاق مرجع</h2><p class="mute">${r.title} — ${r.by}</p>
+    <label>الاسم الظاهر<input id="rf-l" value="${esc(r.title)}"></label>
+    <label>رابط (اختياري)<input id="rf-u" dir="ltr" placeholder="https://"></label>
+    <label class="drop">${I.upload}<span id="rf-n">أو أرفق ملفاً (PDF حتى 50 م.ب)</span><input id="rf-f" type="file" accept=".pdf,.doc,.docx,.epub,image/*" hidden></label>
+    <button class="btn gold wide" data-ok>إضافة</button>`, (el) => {
+    let file = null;
+    $("#rf-f", el).onchange = (e) => { file = e.target.files[0] || null; if (file && file.size > 50 * 1024 * 1024) { file = null; return toast("الحد الأقصى 50 م.ب", "err"); } if (file) $("#rf-n", el).textContent = file.name; };
+    $("[data-ok]", el).onclick = async (e) => {
+      const url = $("#rf-u", el).value.trim(), label = $("#rf-l", el).value.trim() || r.title;
+      if (!file && !/^https?:\/\//i.test(url)) return toast("أدخل رابطاً يبدأ بـ https أو أرفق ملفاً", "err");
+      e.currentTarget.disabled = true;
+      try { await api.addRef(refId, { label, url, file }); closeSheet(); rerender(); toast("أُضيف المرجع", "ok"); } catch (err) { e.currentTarget.disabled = false; toast("تعذّرت الإضافة: " + err.message, "err"); }
+    };
+  });
+}
+function guideView() {
+  const sec = (id, kicker, title, lead, body) => `<section class="card gsec" id="g-${id}"><small class="kick">${kicker}</small><h2>${title}</h2>${lead ? `<p class="lead">${lead}</p>` : ""}${body}</section>`;
+  const ms = [1, 2, 3, 4, 5, 6];
+  return `<section class="mhead ghead"><div class="h-rays"></div>${lantern("gl")}<small>المجلس التربوي · مشروع تأهيلي ذاتي · ستة أشهر</small><h1>سراج</h1>
+      <p>مشروعٌ يُعِدّ المربي في خمس جدارات: قرآنية، وتربوية، وشرعية، وقيادية، ومهارية</p>
+      <div class="mgrid"><div><small>آلية التنفيذ</small><b>تعلّم ذاتي ولقاء شهري</b></div><div><small>مالك المشروع</small><b>المجلس التربوي</b></div><div><small>انطلاق المشروع</small><b>${fmtDay(startDate())}</b></div><div><small>اللقاء الختامي</small><b>نهاية الشهر السادس</b></div></div></section>
+    <div class="tabs gtabs">${GUIDE.map(([id, t]) => `<button data-gsec="${id}">${t}</button>`).join("")}</div>
+    ${sec("idea", "01 · فكرة المشروع", "مشروعٌ ذاتيّ يمتد ستة أشهر", "يُعِدّ المربي في خمس جدارات، ويجمعه كل شهر لقاءٌ يعمّق المعنى الكبير من كل جدارة.",
+      steps(["تفسير وجهٍ كل يوم", "جلسة تدبرية أسبوعية", "ملخص فقهي أسبوعي", "لقاء شهري", "منصة تحفظ الإنجاز"]) +
+      `<div class="nums"><div><b>5</b><span>جدارات</span><small>قرآنية، تربوية، شرعية، قيادية، مهارية</small></div><div><b>6</b><span>أشهر</span><small>مدة المشروع بطابع ذاتي</small></div><div><b>6</b><span>لقاءات شهرية</span><small>لكل لقاء عنوانه ومصدره القرائي</small></div><div><b>24</b><span>جلسة تدبرية</span><small>بواقع جلسة كل أسبوع</small></div></div>`)}
+    ${sec("refs", "المراجع", "مراجع المشروع ومصادره", "كل ما يُقرأ ويُشاهد في المشروع، مع موضعه من الخطة.", refsBlock())}
+    ${sec("tafsir", "التفسير اليومي", "صفحات التفسير لكل يوم", "وجهٌ من التفسير الميسر كل يوم بصفحات مصحف المدينة، من سورة يس (ص 440) إلى سورة الناس (ص 604).", tafsirTable() + `<p class="hint">في الشهر الخامس 30 صفحة في 28 يوماً، فيُقرأ في آخر يومين منه صفحتان. وفي الشهر السادس 23 صفحة، وتبقى خمسة أيام للمراجعة والختام.</p>`)}
+    ${sec("comps", "02 · جدارات المشروع", "خمس جدارات تبني المربي", "لكل جدارة مكوّناتها ومصادرها، وموضعها في خطة الأشهر الستة.",
+      `<div class="glist">${[["quran", "القرآنية", "التفسير الميسر لربع يس وجهاً كل يوم، وجلسة تدبرية أسبوعية"], ["edu", "التربوية", "الغاية التربوية، المراحل العمرية، القيادة التربوية، القرار التربوي، مهارات المربي"], ["sharia", "الشرعية", "الفقه الأكبر والمدخل، ثم فقه العبادات، مع ملخص أسبوعي"], ["lead", "القيادية", "القيادة الخادمة"], ["skill", "المهارية", "التفكير الناقد، التعلم الذاتي، تقديم البرامج والتحضير المتقن"]].map(([k, n, d]) => `<div class="gitem"><span class="ric c-${k}">${COMPS[k].icon}</span><div><b>${n}</b><small>${d}</small></div></div>`).join("")}</div>`)}
+    ${sec("quran", "03 · الجدارة القرآنية", "تفسيرٌ يُقرأ، وتدبّرٌ يُعاش", "وجهٌ كل يوم من التفسير الميسر لربع يس، وجلسة تدبر كل أسبوع.",
+      `<h3>توزيع التفسير على الأشهر، بواقع وجهٍ يومياً</h3><div class="chips6">${ms.map((m) => `<div><small>الشهر ${ORD[m]}</small><b>${MONTHS[m].tafsir}</b></div>`).join("")}</div>
+       <h3>الجلسة التدبرية الأسبوعية</h3>${steps(["اختيار آيات من أوجه الأسبوع", "تدوين المعنى والوقفة والعمل", "رفع ورقة التدبر على المنصة", "عرض أبرز الوقفات في اللقاء الشهري"])}`)}
+    ${sec("edu", "04 · الجدارتان التربوية والقيادية", "ستة مكوّنات، ولكلٍّ مصدره", "يُقرأ المصدر خلال الشهر، ثم يُعمَّق في لقائه.",
+      tbl(["المكوّن", "اللقاء", "المصدر"], [["الغاية التربوية", "الأول", "أصول التربية الإسلامية، النحلاوي: الفصل الرابع، غاية التربية الإسلامية وهدفها"], ["المراحل العمرية", "الثالث", "التربية من جديد، فايز الزهراني: المربون في العصر الجديد"], ["القيادة التربوية", "الرابع", "المعايشة التربوية، سالم البطاطي: الكتاب كاملاً"], ["القرار التربوي", "الرابع", "المعايشة التربوية، سالم البطاطي: الكتاب كاملاً"], ["مهارات المربي", "الخامس", "معيار المربي، فايز الزهراني: قسما شخصية المربي والمهارات التربوية"], ["القيادة الخادمة", "السادس", "مقالة «القيادة الخدمية»، د. محمد العامري"]]))}
+    ${sec("sharia", "05 · الجدارة الشرعية", "مدخلٌ يؤسس، وفقهٌ يُعبَد به", "سلسلتان مرئيتان، يُختم كل أسبوع منهما بملخص يُرفع على المنصة.",
+      `<div class="glist"><div class="gitem col"><small>أولاً · الشهر الأول</small><b>الفقه الأكبر والمدخل</b><small>سلسلة مرئية تؤسس للتأهيل الشرعي قبل الدخول في أبواب العبادات</small>${ext(LINKS.fiqh1, "رابط السلسلة على يوتيوب")}</div>
+       <div class="gitem col"><small>ثانياً · من الشهر الثاني إلى السادس</small><b>فقه العبادات: التأهيل الفقهي</b><small>39 مقطعاً مقسّماً، بواقع مقطعين تقريباً في الأسبوع</small>${ext(LINKS.fiqh2, "رابط السلسلة على يوتيوب")}</div></div>
+       <p class="hint">الملخص الأسبوعي: صفحة واحدة تجمع مسائل مقاطع الأسبوع وأدلتها المختصرة.</p>`)}
+    ${sec("skill", "06 · الجدارتان القيادية والمهارية", "قيادةٌ تخدم، ومهاراتٌ تُتقن", "ولكل مهارة أدواتها التطبيقية، تُعرض في لقاء شهرها.",
+      `<h3>الجدارة القيادية · اللقاء السادس: القيادة الخادمة</h3><ul class="bul"><li>مفهوم القيادة والفرق بينها وبين الإدارة</li><li>صفات القائد الخادم ونماذج من السيرة</li><li>قيادة التغيير ومفاتيحه</li></ul>${ext(LINKS.article, "مقالة «القيادة الخدمية»، د. محمد العامري")}
+       <h3>الجدارة المهارية</h3><div class="glist">${[["اللقاء الأول", "التعلم الذاتي", "أدواته التطبيقية لبناء خطة التعلم في المشروع"], ["اللقاء الثاني", "التفكير الناقد", "المذهّبات، فايز الزهراني: تربية العقل الناقد"], ["اللقاء الثالث", "تقديم البرامج والتحضير المتقن", "أدواته التطبيقية في الإعداد والتقديم"]].map(([a, b, c]) => `<div class="gitem col"><small>${a}</small><b>${b}</b><small>${c}</small></div>`).join("")}</div>`)}
+    ${sec("time", "07 · المسار الزمني", "مسار ستة أشهر", "وطوال الأشهر الستة: وجهٌ من التفسير كل يوم، وجلسة تدبر وملخص فقهي كل أسبوع.",
+      tbl(["الشهر", "الفترة", "التفسير الميسر", "التأهيل الشرعي", "اللقاء الشهري"], ms.map((m) => [ORD[m], `${fmtShort(weekStart(m * 4 - 3))} – ${fmtShort(weekEnd(m * 4))}`, MONTHS[m].tafsir, MONTHS[m].fiqh, MONTHS[m].meet])))}
+    ${sec("meet", "08 · خطة اللقاءات", "ستة لقاءات، لكلٍّ عنوانه ومصدره", "ويتضمن كل لقاء حديثاً عن الأدوات التطبيقية لمهارة شهره.",
+      tbl(["اللقاء", "العنوان", "المصدر", "الجدارة", "الموعد"], ms.map((m) => [m, MONTHS[m].meet, MONTHS[m].source, MONTHS[m].comp, fmtShort(meetingDate(m))])))}
+    ${sec("read", "09 · القراءة الذاتية", "مقرر كل شهر، مقسّماً على أسابيعه", "ربع المقرر كل أسبوع، ويُرفع ملخص القراءة قبل لقاء الشهر.",
+      tbl(["الشهر والمقرر", "الأسبوع الأول", "الأسبوع الثاني", "الأسبوع الثالث", "الأسبوع الرابع"], ms.map((m) => [`${m} · ${MONTHS[m].book}`, ...MONTHS[m].read])))}
+    ${sec("week", "10 · الإيقاع الأسبوعي", "أسبوعك في سراج", "خمس عادات أسبوعية، ولكل منها مخرجٌ يُرفع على المنصة.",
+      tbl(["النشاط", "الإيقاع", "ما يُرفع على المنصة"], [["التفسير الميسر", "وجهٌ كل يوم", "تسجيل إنجاز الأوجه"], ["الجلسة التدبرية", "جلسة كل أسبوع", "ورقة التدبر"], ["التأهيل الشرعي", "مقاطع السلسلة، قرابة مقطعين أسبوعياً", "الملخص الفقهي الأسبوعي"], ["مصدر اللقاء", "ربع المقرر كل أسبوع", "ملخص القراءة وشاهد التطبيق"], ["مراجعة الأسبوع", "نهاية كل أسبوع", "تحديث ملف الإنجاز"]]))}
+    ${sec("monthly", "11 · اللقاء الشهري", "من الإنجاز إلى المعنى الكبير", "لقاءٌ كل شهر بعنوان محدد، يعمّق جدارة الشهر ويربطها بالغاية التربوية الكبرى. ستة لقاءات يديرها المجلس التربوي، ولكل لقاء مصدرٌ قرائي.",
+      steps(["مراجعة إنجاز الشهر على المنصة", "مناقشة مصدر اللقاء وتعميق الجدارة", "الأدوات التطبيقية لمهارة الشهر", "المعنى الكبير ومهام الشهر القادم"]))}
+    ${sec("uploads", "12 · منصة المتابعة", "كل إنجازٍ يُرفع، وكل ملخصٍ يُحفظ", "يراجع المجلس التربوي ما يُرفع قبل كل لقاء، وتبقى الملفات مرجعاً بعد المشروع.",
+      `<div class="glist">${[["أسبوعياً", "ورقة التدبر", "المعنى والوقفة والعمل من جلسة الأسبوع"], ["أسبوعياً", "الملخص الفقهي", "صفحة تجمع مسائل مقاطع الأسبوع وأدلتها المختصرة"], ["شهرياً", "ملخص مصدر اللقاء", "ملخص القراءة وشاهد تطبيق الجدارة"], ["قبل كل لقاء", "التقرير الشهري", "ما أُنجز وما تأخر، وخطة الشهر القادم"]].map(([a, b, c]) => `<div class="gitem col"><small>${a}</small><b>${b}</b><small>${c}</small></div>`).join("")}</div>`)}
+    ${sec("roles", "13 · أطراف المشروع", "مالكٌ يتابع، ومستفيدٌ يُنجز", "مسؤوليات واضحة لكل طرف طوال الأشهر الستة.",
+      `<div class="cols2"><div class="gitem col"><small>مالك المشروع</small><b>المجلس التربوي</b><ul class="bul"><li>اعتماد خطة المشروع ومصادره</li><li>إدارة اللقاءات الشهرية الستة</li><li>مراجعة ما يُرفع على المنصة</li><li>اعتماد إتمام المشروع</li></ul></div>
+       <div class="gitem col"><small>المستفيد</small><b>${esc(S.settings.names.member)}</b><ul class="bul"><li>الالتزام بالورد والجلسة والملخص الأسبوعي</li><li>قراءة مصدر كل لقاء قبل موعده</li><li>حضور اللقاءات الشهرية الستة</li><li>تطبيق كل جدارة في الميدان وتوثيقها</li></ul></div></div>`)}
+    ${sec("out", "14 · المخرج النهائي", "ما يخرج به المربي بعد ستة أشهر", "ملف الإنجاز: كل ما سبق محفوظ على المنصة، ويُعرض حصاده في اللقاء الختامي.",
+      `<div class="glist">${[["01", "تفسير وتدبر", "إتمام التفسير الميسر لربع يس، مع أوراق تدبر أسبوعية محفوظة"], ["02", "ملف شرعي", "ملخصات أسبوعية للفقه الأكبر والمدخل وفقه العبادات، مرجعٌ عملي للمربي"], ["03", "جدارات موثقة", "ملخصات مصادر اللقاءات الستة وشواهد تطبيقها، وبرنامج تربوي محضّر ومقدَّم"]].map(([a, b, c]) => `<div class="gitem col"><small>${a}</small><b>${b}</b><small>${c}</small></div>`).join("")}</div>`)}
+    <section class="mhead gend"><div class="h-rays"></div><h1>سراج</h1><p>نورٌ يُوقَد في المربي، ليضيء به مَن حوله</p></section>`;
+}
+
+// ───────────────────────── تقرير المستفيد (للطباعة) ─────────────────────────
+function reportView() {
+  const st = stats(), p = nowPos(), t = today(), ms = [1, 2, 3, 4, 5, 6];
+  const subs = Object.values(S.subs).filter((s) => REQ[s.reqId]).sort((a, b) => (REQ[a.reqId].due < REQ[b.reqId].due ? -1 : 1));
+  const reviewable = REQS.filter((r) => r.type !== "read"), dueR = reviewable.filter((r) => r.due < t);
+  const approved = subs.filter((s) => s.status === "approved").length;
+  const kpi = [[pct(st.overall) + "٪", "الإنجاز الكلي", `المخطط حتى اليوم ${pct(st.expected)}٪`], [p.phase === "before" ? "—" : pct(st.committed) + "٪", "نسبة الالتزام", "مما حلّ موعده"], [st.avg ? st.avg.toFixed(1) : "—", "متوسط التقييم", st.scored ? `من 5 · ${st.scored} تقييماً` : "لا تقييمات بعد"],
+    [`${st.tafsirDone}`, "أوجه التفسير", `من ${TOTAL_DAYS} وجهاً`], [`${subs.length}`, "ملفات مرفوعة", `${approved} معتمدة`], [`${st.late.length}`, "متطلبات متأخرة", st.revise.length ? `${st.revise.length} تحتاج استكمالاً` : "لا استكمالات معلّقة"]];
+  const stName = { approved: "معتمد", submitted: "بانتظار التقييم", revise: "يحتاج استكمالاً", late: "متأخر", due: "مطلوب", upcoming: "قادم", done: "تمّ" };
+  const cell = (r) => { const s = statusOf(r); return `<span class="rc ${s}">${s === "approved" && S.subs[r.id]?.score ? S.subs[r.id].score + "/5" : s === "upcoming" ? "·" : stName[s]}</span>`; };
+  const heat = Array.from({ length: WEEKS }, (_, w) => `<div class="hw">${Array.from({ length: 7 }, (_, d) => { const ds = addDays(startDate(), w * 7 + d); return `<i class="${S.tafsir[ds] ? "on" : ds < t ? "miss" : ds === t ? "now" : ""}"></i>`; }).join("")}<small>${w + 1}</small></div>`).join("");
+  const mrows = ms.map((m) => {
+    const ws = [1, 2, 3, 4].map((i) => (m - 1) * 4 + i); let td = 0;
+    for (let i = 0; i < 28; i++) if (S.tafsir[addDays(weekStart(ws[0]), i)]) td++;
+    const c = (ty) => ws.filter((w) => isDone(REQ[`${ty}-w${w}`])).length;
+    const sc = REQS.filter((r) => r.month === m && S.subs[r.id]?.score).map((r) => S.subs[r.id].score);
+    return [`${ORD[m]}<small>${MONTHS[m].meet}</small>`, `${td}/28`, `${c("tadabbur")}/4`, `${c("fiqh")}/4`, `${c("read")}/4`, cell(REQ[`source-m${m}`]), cell(REQ[`report-m${m}`]), sc.length ? (sc.reduce((a, b) => a + b, 0) / sc.length).toFixed(1) : "—"];
+  });
+  const open = [...st.revise, ...st.late];
+  return `<div class="rp-tools"><div><h2>تقرير المستفيد</h2><small>يُطبع على ورق A4 أو يُحفظ بصيغة PDF من نافذة الطباعة</small></div><button class="btn gold" data-print>${I.file} طباعة / حفظ PDF</button></div>
+  <article class="report">
+    <header class="rp-head"><div class="h-rays"></div>${lantern("rpl")}<div class="grow"><small>مشروع سراج · المجلس التربوي</small><h1>تقرير إنجاز المستفيد</h1><h2>${esc(S.settings.names.member)}</h2></div>
+      <div class="rp-date"><small>تاريخ التقرير</small><b>${fmtDay(t)}</b><small>${fmtHijri(t)}</small><small>${p.phase === "before" ? "قبل انطلاق المشروع" : p.phase === "after" ? "بعد ختام المشروع" : `اليوم ${p.day} من ${TOTAL_DAYS} · الأسبوع ${p.week} · الشهر ${ORD[p.month]}`}</small></div></header>
+    <section class="rp-kpis">${kpi.map(([v, l, s]) => `<div><b>${v}</b><span>${l}</span><small>${s}</small></div>`).join("")}</section>
+    <section class="rp-row">
+      <div class="rp-box rp-ring"><h3>التقدم الكلي</h3>${ring(st.overall, `<b>${pct(st.overall)}<i>٪</i></b><small>من المشروع</small>`)}
+        <div class="rp-vs"><div><span>الفعلي</span><div class="bar"><i style="width:${pct(st.overall)}%;background:var(--gold)"></i></div><em>${pct(st.overall)}٪</em></div><div><span>المخطط</span><div class="bar"><i style="width:${pct(st.expected)}%;background:var(--night3)"></i></div><em>${pct(st.expected)}٪</em></div></div>
+        <p class="rp-verdict ${st.overall - st.expected >= -0.01 && !st.late.length ? "good" : "slow"}">${p.phase === "before" ? "لم يبدأ المشروع بعد" : st.overall - st.expected >= -0.01 && !st.late.length ? "المستفيد على المسار المخطط" : st.late.length ? `متأخر في ${st.late.length} من المتطلبات` : `متأخر ${Math.max(1, pct(st.expected - st.overall))}٪ عن المخطط`}</p></div>
+      <div class="rp-box"><h3>الجدارات الخمس</h3><div class="comps">${Object.entries(COMPS).map(([k, c]) => `<div class="comp"><span class="ric c-${k}">${c.icon}</span><div class="grow"><div class="row"><b>${c.name}</b><span class="grow"></span><em>${pct(st.byComp[k])}٪</em></div><div class="bar"><i class="c-${k}" style="width:${pct(st.byComp[k])}%"></i></div><small>${c.desc}</small></div></div>`).join("")}</div></div>
+    </section>
+    <section class="rp-box"><h3>خريطة الورد اليومي — التفسير الميسر <small>(${st.tafsirDone} من ${st.passed} يوماً مضت · أطول التزام حالي ${daysWord(st.streak || 0)})</small></h3>
+      <div class="heat">${heat}</div><div class="legend"><span><i class="sq on"></i>مُنجز</span><span><i class="sq miss"></i>فائت</span><span><i class="sq"></i>قادم</span><span>الأعمدة: أسابيع المشروع (1–24) · الصفوف: السبت إلى الجمعة</span></div></section>
+    <section class="rp-box"><h3>الإنجاز الشهري</h3>${tbl(["الشهر", "التفسير", "التدبر", "الفقه", "القراءة", "ملخص المصدر", "التقرير الشهري", "متوسط التقييم"], mrows, "rpt")}</section>
+    <section class="rp-box"><h3>سجل المتطلبات المرفوعة وتقييمها <small>(${subs.length} من ${dueR.length} حلّ موعدها)</small></h3>
+      ${subs.length ? tbl(["المتطلب", "تاريخ الرفع", "الحالة", "التقييم", "ملاحظة المقيّم"], subs.map((s) => [esc(REQ[s.reqId].title), fmtShort(d2s(new Date(s.at))), `<span class="rc ${s.status}">${stName[s.status]}</span>`, s.score ? stars(s.score, "sm") : "—", esc(s.note || "—")]), "rpt log") : `<p class="mute">لم تُرفع متطلبات بعد.</p>`}</section>
+    ${open.length ? `<section class="rp-box"><h3>متطلبات تحتاج متابعة</h3>${tbl(["المتطلب", "الحالة", "الموعد"], open.map((r) => [esc(r.title), `<span class="rc ${statusOf(r)}">${stName[statusOf(r)]}</span>`, dueText(r)]), "rpt")}</section>` : ""}
+    <section class="rp-box rp-note"><h3>ملاحظات المتابع وتوصياته</h3><div class="rp-edit" contenteditable="${isMember() ? "false" : "true"}" data-ph="${isMember() ? "" : "اكتب هنا ملاحظاتك قبل الطباعة…"}"></div>
+      <div class="rp-sign"><div><small>المتابع والمقيّم</small><b>${esc(S.settings.names.reviewer)}</b><i></i></div><div><small>المستفيد</small><b>${esc(S.settings.names.member)}</b><i></i></div></div></section>
+    <footer class="rp-foot">منصة سراج · نورٌ يُوقَد في المربي، ليضيء به مَن حوله · صدر التقرير ${fmtShort(t)}</footer>
+  </article>`;
+}
+
 // ───────────────────────── التشغيل والتوجيه ─────────────────────────
-function route() { const [r, a] = (location.hash.replace(/^#\/?/, "") || "home").split("/"); return { r: ["home", "path", "cal", "file"].includes(r) ? r : "home", a }; }
+function route() { const [r, a] = (location.hash.replace(/^#\/?/, "") || "home").split("/"); return { r: ["home", "path", "cal", "file", "guide", "report"].includes(r) ? r : "home", a }; }
 function render() {
   const app = $("#app");
   if (!ME) { app.innerHTML = loginView(); return; }
   const { r, a } = route(), y = window.scrollY;
   app.innerHTML = shell(r);
-  $("#view").innerHTML = `<div class="page p-${r} ${render.keep ? "" : "anim"}">${{ home: homeView, path: () => pathView(a), cal: calView, file: fileView }[r]()}</div>`;
+  $("#view").innerHTML = `<div class="page p-${r} ${render.keep ? "" : "anim"}">${{ home: homeView, path: () => pathView(a), cal: calView, file: fileView, guide: () => guideView(), report: reportView }[r]()}</div>`;
   window.scrollTo(0, render.keep ? y : 0); render.keep = false;
+  if (r === "guide" && a) $("#g-" + a)?.scrollIntoView();
 }
 const rerender = () => { render.keep = true; render(); };
 
@@ -996,6 +1248,11 @@ document.addEventListener("click", async (e) => {
   if ((b = q("[data-go]"))) return (location.hash = b.dataset.go);
   if ((b = q("[data-day]"))) { calSel = b.dataset.day; return rerender(); }
   if ((b = q("[data-cal]"))) { const [y, m] = calYM.split("-").map(Number), d = new Date(y, m - 1 + +b.dataset.cal, 1, 12); calYM = d2s(d).slice(0, 7); return rerender(); }
+  if ((b = q("[data-print]"))) return window.print();
+  if ((b = q("[data-refadd]"))) return refSheet(b.dataset.refadd);
+  if ((b = q("[data-refdel]"))) { const [r, id] = b.dataset.refdel.split(":"); await api.delRef(r, id); return rerender(); }
+  if ((b = q("[data-refopen]"))) { const [r, id] = b.dataset.refopen.split(":"), it = (S.settings.refs?.[r] || []).find((x) => x.id === id); if (!it) return; if (it.url) return window.open(it.url, "_blank", "noopener"); const w = window.open("", "_blank"), u = await api.refUrl(it); if (u && w) w.location = u; else { w?.close(); toast("تعذّر فتح الملف", "err"); } return; }
+  if ((b = q("[data-gsec]"))) return $("#g-" + b.dataset.gsec)?.scrollIntoView({ behavior: "smooth", block: "start" });
   if ((b = q("[data-ff]"))) { fileFilter = b.dataset.ff; return rerender(); }
 });
 document.addEventListener("submit", async (e) => {
@@ -1027,6 +1284,7 @@ window.addEventListener("storage", (e) => {
   try { await Promise.race([document.fonts.load('700 20px "Thmanyah Serif Text"'), new Promise((r) => setTimeout(r, 1500))]); } catch {}
   render();
   showGreeting();
+  if (DEMO && QS.get("open")) reqSheet(QS.get("open"));
 })();
 
 </script>
