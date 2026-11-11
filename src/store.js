@@ -3,7 +3,7 @@
 // كل الواجهة تمر عبر api.* حتى يُستبدل هذا الملف بمحوّل Supabase دون تغيير الواجهات.
 const DEMO = QS.has("demo");
 const KEY = DEMO ? "siraj.demo" : "siraj.v1";
-const blank = () => ({ settings: { start: "2026-11-21", meetings: [], names: { reviewer: "المتابع", member: "المستفيد" } }, subs: {}, checks: {}, tafsir: {}, events: [], notifs: [] });
+const blank = () => ({ settings: { start: "2026-11-21", meetings: [], names: { reviewer: "المتابع", member: "المستفيد" } }, subs: {}, checks: {}, rasd: {}, tafsir: {}, events: [], notifs: [] });
 let S = blank();
 let ME = null; // {role:'reviewer'|'member', name}
 
@@ -46,6 +46,10 @@ const api = {
     this.notify("member", status === "approved" ? "approved" : "revise", status === "approved" ? "اعتُمد متطلبك" : "متطلب يحتاج استكمالاً", `${r.title}${score ? ` · التقييم ${score}/5` : ""}${note ? ` — ${note}` : ""}`, reqId);
     this.save();
   },
+  async saveRasd(week, d) {
+    const was = S.rasd[week]; S.rasd[week] = { week, ...d, at: new Date().toISOString() };
+    this.notify("reviewer", "submit", was ? "عُدّل الرصد الأسبوعي" : "رُفع الرصد الأسبوعي", `الأسبوع ${week} — ${rasdText(S.rasd[week])}`, `rasd-w${week}`); this.save();
+  },
   async toggleCheck(reqId) { if (S.checks[reqId]) delete S.checks[reqId]; else S.checks[reqId] = new Date().toISOString(); this.save(); },
   async setTafsir(date, on) { if (on) S.tafsir[date] = true; else delete S.tafsir[date]; this.save(); },
   async nudge(reqId) { const r = REQ[reqId]; this.notify("member", "nudge", "تذكير من المتابع", `${r.title} — ${ST[statusOf(r)].label}، ${dueText(r)}`, reqId); this.save(); },
@@ -78,6 +82,7 @@ function seedDemo() {
   const notes = ["ملخص متقن ووقفات عميقة، بارك الله فيك", "جيد، ويحسن ربط الوقفة بتطبيق عملي في الحلقة", "أحسنت، استمر على هذا المستوى", "اختصار مفيد، أضف الأدلة في المرة القادمة"];
   REQS.filter((r) => r.open <= today()).forEach((r) => {
     const past = r.due < today(), last = r.week === p.week - 1;
+    if (r.type === "rasd") { if (past && rnd() > 0.1) { const a = 440 + (r.week - 1) * 7; S.rasd[r.week] = { week: r.week, attendance: rnd() > 0.15 ? "present" : "excused", from: `${surahsOf(a, a)} ص ${a}`, to: `${surahsOf(a + 6, a + 6)} ص ${a + 6}`, note: "", at: new Date(s2d(r.due)).toISOString() }; } return; }
     if (r.type === "read") { if (past ? rnd() > 0.1 : rnd() > 0.6) S.checks[r.id] = new Date().toISOString(); return; }
     if (!past || (r.monthly && r.due >= today())) return;
     if (rnd() < 0.1) return;

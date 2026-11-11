@@ -93,7 +93,7 @@ function guideView() {
     ${sec("read", "09 · القراءة الذاتية", "مقرر كل شهر، مقسّماً على أسابيعه", "ربع المقرر كل أسبوع، ويُرفع ملخص القراءة قبل لقاء الشهر.",
       tbl(["الشهر والمقرر", "الأسبوع الأول", "الأسبوع الثاني", "الأسبوع الثالث", "الأسبوع الرابع"], ms.map((m) => [`${m} · ${MONTHS[m].book}`, ...MONTHS[m].read])))}
     ${sec("week", "10 · الإيقاع الأسبوعي", "أسبوعك في سراج", "خمس عادات أسبوعية، ولكل منها مخرجٌ يُرفع على المنصة.",
-      tbl(["النشاط", "الإيقاع", "ما يُرفع على المنصة"], [["التفسير الميسر", "وجهٌ كل يوم", "تسجيل إنجاز الأوجه"], ["الجلسة التدبرية", "جلسة كل أسبوع", "ورقة التدبر"], ["التأهيل الشرعي", "مقاطع السلسلة، قرابة مقطعين أسبوعياً", "الملخص الفقهي الأسبوعي"], ["مصدر اللقاء", "ربع المقرر كل أسبوع", "ملخص القراءة وشاهد التطبيق"], ["مراجعة الأسبوع", "نهاية كل أسبوع", "تحديث ملف الإنجاز"]]))}
+      tbl(["النشاط", "الإيقاع", "ما يُرفع على المنصة"], [["التفسير الميسر", "وجهٌ كل يوم", "تسجيل إنجاز الأوجه"], ["الجلسة التدبرية", "جلسة كل أسبوع", "ورقة التدبر"], ["التأهيل الشرعي", "مقاطع السلسلة، قرابة مقطعين أسبوعياً", "الملخص الفقهي الأسبوعي"], ["مصدر اللقاء", "ربع المقرر كل أسبوع", "ملخص القراءة وشاهد التطبيق"], ["حلقة التحفيظ", "حضور أسبوعي وتسميع", "الرصد الأسبوعي: الحضور والتسميع من – إلى"], ["مراجعة الأسبوع", "نهاية كل أسبوع", "تحديث ملف الإنجاز"]]))}
     ${sec("monthly", "11 · اللقاء الشهري", "من الإنجاز إلى المعنى الكبير", "لقاءٌ كل شهر بعنوان محدد، يعمّق جدارة الشهر ويربطها بالغاية التربوية الكبرى. ستة لقاءات يديرها المجلس التربوي، ولكل لقاء مصدرٌ قرائي.",
       steps(["مراجعة إنجاز الشهر على المنصة", "مناقشة مصدر اللقاء وتعميق الجدارة", "الأدوات التطبيقية لمهارة الشهر", "المعنى الكبير ومهام الشهر القادم"]))}
     ${sec("uploads", "12 · منصة المتابعة", "كل إنجازٍ يُرفع، وكل ملخصٍ يُحفظ", "يراجع المجلس التربوي ما يُرفع قبل كل لقاء، وتبقى الملفات مرجعاً بعد المشروع.",
@@ -122,7 +122,7 @@ function reportView() {
     for (let i = 0; i < 28; i++) if (S.tafsir[addDays(weekStart(ws[0]), i)]) td++;
     const c = (ty) => ws.filter((w) => isDone(REQ[`${ty}-w${w}`])).length;
     const sc = REQS.filter((r) => r.month === m && S.subs[r.id]?.score).map((r) => S.subs[r.id].score);
-    return [`${ORD[m]}<small>${MONTHS[m].meet}</small>`, `${td}/28`, `${c("tadabbur")}/4`, `${c("fiqh")}/4`, `${c("read")}/4`, cell(REQ[`source-m${m}`]), cell(REQ[`report-m${m}`]), sc.length ? (sc.reduce((a, b) => a + b, 0) / sc.length).toFixed(1) : "—"];
+    return [`${ORD[m]}<small>${MONTHS[m].meet}</small>`, `${td}/28`, `${c("tadabbur")}/4`, `${c("fiqh")}/4`, `${c("read")}/4`, `${c("rasd")}/4`, cell(REQ[`source-m${m}`]), cell(REQ[`report-m${m}`]), sc.length ? (sc.reduce((a, b) => a + b, 0) / sc.length).toFixed(1) : "—"];
   });
   const open = [...st.revise, ...st.late];
   return `<div class="rp-tools"><div><h2>تقرير المستفيد</h2><small>يُطبع على ورق A4 أو يُحفظ بصيغة PDF من نافذة الطباعة</small></div><button class="btn gold" data-print>${I.file} طباعة / حفظ PDF</button></div>
@@ -138,7 +138,9 @@ function reportView() {
     </section>
     <section class="rp-box"><h3>خريطة الورد اليومي — التفسير الميسر <small>(${st.tafsirDone} من ${st.passed} يوماً مضت · أطول التزام حالي ${daysWord(st.streak || 0)})</small></h3>
       <div class="heat">${heat}</div><div class="legend"><span><i class="sq on"></i>مُنجز</span><span><i class="sq miss"></i>فائت</span><span><i class="sq"></i>قادم</span><span>الأعمدة: أسابيع المشروع (1–24) · الصفوف: السبت إلى الجمعة</span></div></section>
-    <section class="rp-box"><h3>الإنجاز الشهري</h3>${tbl(["الشهر", "التفسير", "التدبر", "الفقه", "القراءة", "ملخص المصدر", "التقرير الشهري", "متوسط التقييم"], mrows, "rpt")}</section>
+    <section class="rp-box"><h3>الإنجاز الشهري</h3>${tbl(["الشهر", "التفسير", "التدبر", "الفقه", "القراءة", "الرصد", "ملخص المصدر", "التقرير الشهري", "متوسط التقييم"], mrows, "rpt")}</section>
+    ${(() => { const rs = Object.values(S.rasd).sort((a, b) => a.week - b.week); if (!rs.length) return ""; const pr = rs.filter((x) => x.attendance === "present").length;
+      return `<section class="rp-box"><h3>الرصد الأسبوعي: حضور الحلقة والتسميع <small>(حضر ${pr} من ${rs.length} أسبوعاً مرصوداً · نسبة الحضور ${pct(pr / rs.length)}٪)</small></h3>${tbl(["الأسبوع", "الفترة", "الحضور", "التسميع من", "إلى", "ملاحظات"], rs.map((x) => [x.week, `${fmtShort(weekStart(x.week))} – ${fmtShort(weekEnd(x.week))}`, `<span class="rc ${x.attendance === "present" ? "approved" : x.attendance === "excused" ? "revise" : "late"}">${ATT[x.attendance]}</span>`, esc(x.from || "—"), esc(x.to || "—"), esc(x.note || "—")]), "rpt")}</section>`; })()}
     <section class="rp-box"><h3>سجل المتطلبات المرفوعة وتقييمها <small>(${subs.length} من ${dueR.length} حلّ موعدها)</small></h3>
       ${subs.length ? tbl(["المتطلب", "تاريخ الرفع", "الحالة", "التقييم", "ملاحظة المقيّم"], subs.map((s) => [esc(REQ[s.reqId].title), fmtShort(d2s(new Date(s.at))), `<span class="rc ${s.status}">${stName[s.status]}</span>`, s.score ? stars(s.score, "sm") : "—", esc(s.note || "—")]), "rpt log") : `<p class="mute">لم تُرفع متطلبات بعد.</p>`}</section>
     ${open.length ? `<section class="rp-box"><h3>متطلبات تحتاج متابعة</h3>${tbl(["المتطلب", "الحالة", "الموعد"], open.map((r) => [esc(r.title), `<span class="rc ${statusOf(r)}">${stName[statusOf(r)]}</span>`, dueText(r)]), "rpt")}</section>` : ""}

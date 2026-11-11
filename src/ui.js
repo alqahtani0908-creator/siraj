@@ -148,7 +148,25 @@ function reqSheet(id) {
   const T = TYPES[r.type], st = statusOf(r), s = S.subs[id], mem = isMember();
   const head = `<div class="rs-head"><span class="ric big c-${r.comp}">${T.icon}</span><div><small>${r.monthly ? `الشهر ${ORD[r.month]}` : `الأسبوع ${r.week} · الشهر ${ORD[r.month]}`} · الجدارة ${COMPS[r.comp].name}</small><h2>${esc(r.title)}</h2></div></div>
     <div class="rs-meta">${chip(st)}<span class="mute">${I.cal} ${fmtDay(r.due)} · ${dueText(r)}</span></div>
-    <p class="hint">${esc(r.sub)}${r.type !== "read" ? ` — ${esc(T.hint)}` : ""}</p>`;
+    <p class="hint">${esc(r.sub)}${T.review ? ` — ${esc(T.hint)}` : ""}</p>`;
+  if (r.type === "rasd") {
+    const x = S.rasd[r.week];
+    const view = x ? `<div class="subm"><div class="sm-h"><b>${ATT[x.attendance]}</b><em>سُجّل ${fmtShort(d2s(new Date(x.at)))}</em></div><div class="mgrid2"><div><small>التسميع من</small><b>${esc(x.from || "—")}</b></div><div><small>إلى</small><b>${esc(x.to || "—")}</b></div></div>${x.note ? `<p class="body">${esc(x.note)}</p>` : ""}</div>` : "";
+    if (!mem) return openSheet(head + (view || `<p class="mute center">لم يُرفع رصد هذا الأسبوع بعد.</p>${st !== "upcoming" ? `<button class="btn ghost wide" data-nudge>${I.bell} أرسل تذكيراً للمستفيد</button>` : ""}`), (el) => { $("[data-nudge]", el)?.addEventListener("click", async () => { await api.nudge(id); closeSheet(); toast("أُرسل التذكير", "ok"); }); });
+    return openSheet(head + `<h3>حضور الحلقة هذا الأسبوع</h3><div class="seg" id="att">${Object.entries(ATT).map(([k, v]) => `<button type="button" data-att="${k}" class="${(x?.attendance || "present") === k ? "on" : ""}">${v}</button>`).join("")}</div>
+      <h3>التسميع</h3><div class="grid2"><label>من<input id="rs-from" value="${esc(x?.from || "")}" placeholder="مثال: يس آية 1"></label><label>إلى<input id="rs-to" value="${esc(x?.to || "")}" placeholder="مثال: يس آية 40"></label></div>
+      <label>ملاحظات (اختياري)<textarea id="rs-note" rows="2" placeholder="مثل: سبب الغياب، أو مستوى الحفظ">${esc(x?.note || "")}</textarea></label>
+      <button class="btn gold wide" data-save>${I.check} ${x ? "حفظ التعديل" : "رفع الرصد"}</button>`, (el) => {
+      let att = x?.attendance || "present";
+      $("#att", el).onclick = (e) => { const b = e.target.closest("[data-att]"); if (!b) return; att = b.dataset.att; $$("[data-att]", el).forEach((q) => q.classList.toggle("on", q === b)); };
+      $("[data-save]", el).onclick = async (e) => {
+        const from = $("#rs-from", el).value.trim(), to = $("#rs-to", el).value.trim();
+        if (att === "present" && (!from || !to)) return toast("اكتب التسميع من وإلى", "err");
+        e.currentTarget.disabled = true;
+        try { await api.saveRasd(r.week, { attendance: att, from, to, note: $("#rs-note", el).value.trim() }); closeSheet(); render.keep = true; render(); toast("حُفظ الرصد، وأُرسل تنبيه للمتابع", "ok"); } catch (err) { e.currentTarget.disabled = false; toast("تعذّر الحفظ: " + err.message, "err"); }
+      };
+    });
+  }
   if (r.type === "read") {
     return openSheet(head + (mem ? `<button class="btn ${S.checks[id] ? "ghost" : "gold"} wide" data-chk>${I.check} ${S.checks[id] ? "إلغاء علامة الإتمام" : "أتممتُ قراءة هذا المقرر"}</button>` : `<p class="mute">${S.checks[id] ? "أتمّ المستفيد القراءة." : "لم تُسجَّل القراءة بعد."}</p>${!S.checks[id] && st !== "upcoming" ? `<button class="btn ghost wide" data-nudge>${I.bell} أرسل تذكيراً</button>` : ""}`), (el) => {
       $("[data-chk]", el)?.addEventListener("click", async () => { await api.toggleCheck(id); closeSheet(); render(); });

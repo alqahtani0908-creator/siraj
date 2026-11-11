@@ -294,6 +294,9 @@ input:focus,textarea:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3
 @media print{.tfm summary{background:var(--night)!important;color:#fff}.xl.add,.rx{display:none!important}}
 .drop.bulk{margin-bottom:10px;white-space:normal}.drop.bulk span{white-space:normal}.drop.bulk b{color:var(--ink)}
 @media print{.drop.bulk{display:none!important}}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--cream);padding:5px;border-radius:14px}.seg button{padding:10px 4px;border-radius:10px;font-weight:700;text-align:center;color:var(--mute)}
+.seg [data-att=excused].on{background:var(--warn);color:#fff}.seg [data-att=absent].on{background:var(--bad);color:#fff}.seg [data-att=present].on{background:var(--ok);color:#fff}
+.mgrid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}.mgrid2 small,.mgrid2 b{display:block}
 
 </style>
 </head>
@@ -416,10 +419,13 @@ const COMPS = {
 const TYPES = {
   tadabbur: { name: "ورقة التدبر", hint: "المعنى والوقفة والعمل من جلسة الأسبوع", icon: I.quran, review: true },
   fiqh: { name: "الملخص الفقهي", hint: "صفحة تجمع مسائل مقاطع الأسبوع وأدلتها المختصرة", icon: I.scale, review: true },
+  rasd: { name: "الرصد الأسبوعي", hint: "حضور الحلقة الأسبوعي، والتسميع من – إلى", icon: I.people, review: false },
   read: { name: "قراءة المقرر", hint: "ربع مقرر الشهر", icon: I.book, review: false },
   source: { name: "ملخص مصدر اللقاء", hint: "ملخص القراءة وشاهد تطبيق الجدارة", icon: I.file, review: true },
   report: { name: "التقرير الشهري", hint: "ما أُنجز وما تأخر، وخطة الشهر القادم", icon: I.flag, review: true },
 };
+const ATT = { present: "حاضر", excused: "غائب بعذر", absent: "غائب" };
+const rasdText = (x) => `${ATT[x.attendance]}${x.from || x.to ? ` · التسميع من ${x.from || "—"} إلى ${x.to || "—"}` : ""}`;
 const ST = {
   approved: { label: "معتمد", icon: I.check }, done: { label: "تمّ", icon: I.check },
   submitted: { label: "بانتظار التقييم", icon: I.clock }, revise: { label: "يحتاج استكمال", icon: I.alert },
@@ -464,6 +470,7 @@ function buildReqs() {
     const m = monthOfWeek(w), wi = (w - 1) % 4, base = { week: w, month: m, open: weekStart(w), due: weekEnd(w) };
     REQS.push({ id: `tadabbur-w${w}`, type: "tadabbur", comp: "quran", title: `ورقة التدبر — الأسبوع ${w}`, sub: `آيات من ${MONTHS[m].tafsir}`, ...base });
     REQS.push({ id: `fiqh-w${w}`, type: "fiqh", comp: "sharia", title: `الملخص الفقهي — الأسبوع ${w}`, sub: MONTHS[m].fiqh, ...base });
+    REQS.push({ id: `rasd-w${w}`, type: "rasd", comp: "quran", title: `الرصد الأسبوعي — الأسبوع ${w}`, sub: "حضور الحلقة · التسميع من – إلى", ...base });
     REQS.push({ id: `read-w${w}`, type: "read", comp: m === 6 ? "lead" : "edu", title: `قراءة: ${MONTHS[m].book}`, sub: MONTHS[m].read[wi], ...base });
   }
   for (let m = 1; m <= 6; m++) {
@@ -475,7 +482,7 @@ function buildReqs() {
 }
 function statusOf(r) {
   const t = today();
-  if (r.type === "read") return S.checks[r.id] ? "done" : t > r.due ? "late" : t >= r.open ? "due" : "upcoming";
+  if (r.type === "read" || r.type === "rasd") return (r.type === "read" ? S.checks[r.id] : S.rasd[r.week]) ? "done" : t > r.due ? "late" : t >= r.open ? "due" : "upcoming";
   const s = S.subs[r.id];
   if (s) return s.status;
   return t > r.due ? "late" : t >= r.open ? "due" : "upcoming";
@@ -506,7 +513,7 @@ function stats() {
   const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
   const cnt = (f) => REQS.filter(f).length, dn = (f) => REQS.filter((r) => f(r) && isDone(r)).length;
   const byComp = {
-    quran: (tafsirDone / 7 + dn((r) => r.type === "tadabbur")) / (WEEKS * 2),
+    quran: (tafsirDone / 7 + dn((r) => r.type === "tadabbur" || r.type === "rasd")) / (WEEKS * 3),
     sharia: dn((r) => r.type === "fiqh") / WEEKS,
     edu: dn((r) => r.comp === "edu") / cnt((r) => r.comp === "edu"),
     lead: dn((r) => r.comp === "lead") / cnt((r) => r.comp === "lead"),
@@ -547,7 +554,7 @@ function pickQuote(role) {
 // كل الواجهة تمر عبر api.* حتى يُستبدل هذا الملف بمحوّل Supabase دون تغيير الواجهات.
 const DEMO = QS.has("demo");
 const KEY = DEMO ? "siraj.demo" : "siraj.v1";
-const blank = () => ({ settings: { start: "2026-11-21", meetings: [], names: { reviewer: "المتابع", member: "المستفيد" } }, subs: {}, checks: {}, tafsir: {}, events: [], notifs: [] });
+const blank = () => ({ settings: { start: "2026-11-21", meetings: [], names: { reviewer: "المتابع", member: "المستفيد" } }, subs: {}, checks: {}, rasd: {}, tafsir: {}, events: [], notifs: [] });
 let S = blank();
 let ME = null; // {role:'reviewer'|'member', name}
 
@@ -590,6 +597,10 @@ const api = {
     this.notify("member", status === "approved" ? "approved" : "revise", status === "approved" ? "اعتُمد متطلبك" : "متطلب يحتاج استكمالاً", `${r.title}${score ? ` · التقييم ${score}/5` : ""}${note ? ` — ${note}` : ""}`, reqId);
     this.save();
   },
+  async saveRasd(week, d) {
+    const was = S.rasd[week]; S.rasd[week] = { week, ...d, at: new Date().toISOString() };
+    this.notify("reviewer", "submit", was ? "عُدّل الرصد الأسبوعي" : "رُفع الرصد الأسبوعي", `الأسبوع ${week} — ${rasdText(S.rasd[week])}`, `rasd-w${week}`); this.save();
+  },
   async toggleCheck(reqId) { if (S.checks[reqId]) delete S.checks[reqId]; else S.checks[reqId] = new Date().toISOString(); this.save(); },
   async setTafsir(date, on) { if (on) S.tafsir[date] = true; else delete S.tafsir[date]; this.save(); },
   async nudge(reqId) { const r = REQ[reqId]; this.notify("member", "nudge", "تذكير من المتابع", `${r.title} — ${ST[statusOf(r)].label}، ${dueText(r)}`, reqId); this.save(); },
@@ -622,6 +633,7 @@ function seedDemo() {
   const notes = ["ملخص متقن ووقفات عميقة، بارك الله فيك", "جيد، ويحسن ربط الوقفة بتطبيق عملي في الحلقة", "أحسنت، استمر على هذا المستوى", "اختصار مفيد، أضف الأدلة في المرة القادمة"];
   REQS.filter((r) => r.open <= today()).forEach((r) => {
     const past = r.due < today(), last = r.week === p.week - 1;
+    if (r.type === "rasd") { if (past && rnd() > 0.1) { const a = 440 + (r.week - 1) * 7; S.rasd[r.week] = { week: r.week, attendance: rnd() > 0.15 ? "present" : "excused", from: `${surahsOf(a, a)} ص ${a}`, to: `${surahsOf(a + 6, a + 6)} ص ${a + 6}`, note: "", at: new Date(s2d(r.due)).toISOString() }; } return; }
     if (r.type === "read") { if (past ? rnd() > 0.1 : rnd() > 0.6) S.checks[r.id] = new Date().toISOString(); return; }
     if (!past || (r.monthly && r.due >= today())) return;
     if (rnd() < 0.1) return;
@@ -658,15 +670,16 @@ if (CFG && window.supabase && !DEMO) {
       this.subscribe(); this.loadFonts();
     },
     async refresh() {
-      const [pr, st, su, ch, tf, ev, nf] = (await Promise.all([
+      const [pr, st, su, ch, tf, ev, nf, rs] = (await Promise.all([
         sb.from("profiles").select("role,name,user_id"), sb.from("settings").select("*").eq("id", 1).maybeSingle(), sb.from("submissions").select("*"),
-        sb.from("checks").select("*"), sb.from("tafsir").select("*"), sb.from("events").select("*").order("date"), sb.from("notifs").select("*").order("at", { ascending: false }).limit(300),
+        sb.from("checks").select("*"), sb.from("tafsir").select("*"), sb.from("events").select("*").order("date"), sb.from("notifs").select("*").order("at", { ascending: false }).limit(300), sb.from("rasd").select("*"),
       ])).map(must);
       const names = Object.fromEntries(pr.map((p) => [p.role, p.name]));
       const n = blank();
       n.settings = { start: st?.start || n.settings.start, meetings: st?.meetings || [], names: { ...n.settings.names, ...names }, fontFiles: st?.font_files || {}, refs: st?.refs || {} };
       su.forEach((s) => (n.subs[s.req_id] = { reqId: s.req_id, title: s.title, body: s.body, file: s.file, at: s.at, status: s.status, score: s.score, note: s.note, reviewedAt: s.reviewed_at, history: s.history || [] }));
       ch.forEach((c) => (n.checks[c.req_id] = c.at));
+      rs.forEach((x) => (n.rasd[x.week] = { week: x.week, attendance: x.attendance, from: x.from_text, to: x.to_text, note: x.note, at: x.at }));
       tf.forEach((t) => (n.tafsir[t.day] = true));
       n.events = ev;
       n.notifs = nf.map((x) => ({ id: x.id, to: x.to_role, kind: x.kind, title: x.title, body: x.body, req: x.req, at: x.at, read: x.read }));
@@ -707,6 +720,7 @@ if (CFG && window.supabase && !DEMO) {
       await this.refresh();
     },
     async review(reqId, { status, score, note }) { must(await sb.from("submissions").update({ status, score, note }).eq("req_id", reqId)); await this.refresh(); },
+    async saveRasd(week, d) { must(await sb.from("rasd").upsert({ week, attendance: d.attendance, from_text: d.from, to_text: d.to, note: d.note })); await this.refresh(); },
     async toggleCheck(reqId) { must(S.checks[reqId] ? await sb.from("checks").delete().eq("req_id", reqId) : await sb.from("checks").insert({ req_id: reqId })); await this.refresh(); },
     async setTafsir(day, on) { must(on ? await sb.from("tafsir").upsert({ day }, { ignoreDuplicates: true }) : await sb.from("tafsir").delete().eq("day", day)); if (on) S.tafsir[day] = true; else delete S.tafsir[day]; },
     note(kind, title, body, req) { return sb.rpc("send_note", { p_kind: kind, p_title: title, p_body: body || "", p_req: req || null }).then(must); },
@@ -910,7 +924,25 @@ function reqSheet(id) {
   const T = TYPES[r.type], st = statusOf(r), s = S.subs[id], mem = isMember();
   const head = `<div class="rs-head"><span class="ric big c-${r.comp}">${T.icon}</span><div><small>${r.monthly ? `الشهر ${ORD[r.month]}` : `الأسبوع ${r.week} · الشهر ${ORD[r.month]}`} · الجدارة ${COMPS[r.comp].name}</small><h2>${esc(r.title)}</h2></div></div>
     <div class="rs-meta">${chip(st)}<span class="mute">${I.cal} ${fmtDay(r.due)} · ${dueText(r)}</span></div>
-    <p class="hint">${esc(r.sub)}${r.type !== "read" ? ` — ${esc(T.hint)}` : ""}</p>`;
+    <p class="hint">${esc(r.sub)}${T.review ? ` — ${esc(T.hint)}` : ""}</p>`;
+  if (r.type === "rasd") {
+    const x = S.rasd[r.week];
+    const view = x ? `<div class="subm"><div class="sm-h"><b>${ATT[x.attendance]}</b><em>سُجّل ${fmtShort(d2s(new Date(x.at)))}</em></div><div class="mgrid2"><div><small>التسميع من</small><b>${esc(x.from || "—")}</b></div><div><small>إلى</small><b>${esc(x.to || "—")}</b></div></div>${x.note ? `<p class="body">${esc(x.note)}</p>` : ""}</div>` : "";
+    if (!mem) return openSheet(head + (view || `<p class="mute center">لم يُرفع رصد هذا الأسبوع بعد.</p>${st !== "upcoming" ? `<button class="btn ghost wide" data-nudge>${I.bell} أرسل تذكيراً للمستفيد</button>` : ""}`), (el) => { $("[data-nudge]", el)?.addEventListener("click", async () => { await api.nudge(id); closeSheet(); toast("أُرسل التذكير", "ok"); }); });
+    return openSheet(head + `<h3>حضور الحلقة هذا الأسبوع</h3><div class="seg" id="att">${Object.entries(ATT).map(([k, v]) => `<button type="button" data-att="${k}" class="${(x?.attendance || "present") === k ? "on" : ""}">${v}</button>`).join("")}</div>
+      <h3>التسميع</h3><div class="grid2"><label>من<input id="rs-from" value="${esc(x?.from || "")}" placeholder="مثال: يس آية 1"></label><label>إلى<input id="rs-to" value="${esc(x?.to || "")}" placeholder="مثال: يس آية 40"></label></div>
+      <label>ملاحظات (اختياري)<textarea id="rs-note" rows="2" placeholder="مثل: سبب الغياب، أو مستوى الحفظ">${esc(x?.note || "")}</textarea></label>
+      <button class="btn gold wide" data-save>${I.check} ${x ? "حفظ التعديل" : "رفع الرصد"}</button>`, (el) => {
+      let att = x?.attendance || "present";
+      $("#att", el).onclick = (e) => { const b = e.target.closest("[data-att]"); if (!b) return; att = b.dataset.att; $$("[data-att]", el).forEach((q) => q.classList.toggle("on", q === b)); };
+      $("[data-save]", el).onclick = async (e) => {
+        const from = $("#rs-from", el).value.trim(), to = $("#rs-to", el).value.trim();
+        if (att === "present" && (!from || !to)) return toast("اكتب التسميع من وإلى", "err");
+        e.currentTarget.disabled = true;
+        try { await api.saveRasd(r.week, { attendance: att, from, to, note: $("#rs-note", el).value.trim() }); closeSheet(); render.keep = true; render(); toast("حُفظ الرصد، وأُرسل تنبيه للمتابع", "ok"); } catch (err) { e.currentTarget.disabled = false; toast("تعذّر الحفظ: " + err.message, "err"); }
+      };
+    });
+  }
   if (r.type === "read") {
     return openSheet(head + (mem ? `<button class="btn ${S.checks[id] ? "ghost" : "gold"} wide" data-chk>${I.check} ${S.checks[id] ? "إلغاء علامة الإتمام" : "أتممتُ قراءة هذا المقرر"}</button>` : `<p class="mute">${S.checks[id] ? "أتمّ المستفيد القراءة." : "لم تُسجَّل القراءة بعد."}</p>${!S.checks[id] && st !== "upcoming" ? `<button class="btn ghost wide" data-nudge>${I.bell} أرسل تذكيراً</button>` : ""}`), (el) => {
       $("[data-chk]", el)?.addEventListener("click", async () => { await api.toggleCheck(id); closeSheet(); render(); });
@@ -956,7 +988,7 @@ function reqSheet(id) {
 }
 
 // ───────────────────────── الصفحات ─────────────────────────
-const reqRow = (r, extra = "") => { const st = statusOf(r), s = S.subs[r.id]; return `<button class="req st-${st}" data-req="${r.id}"><span class="ric c-${r.comp}">${TYPES[r.type].icon}</span><span class="rmain"><b>${esc(r.title)}</b><small>${esc(r.sub)}</small><small class="due">${st === "approved" && s?.score ? stars(s.score, "sm") : dueText(r)}</small></span>${chip(st)}${extra}</button>`; };
+const reqRow = (r, extra = "") => { const st = statusOf(r), s = S.subs[r.id]; return `<button class="req st-${st}" data-req="${r.id}"><span class="ric c-${r.comp}">${TYPES[r.type].icon}</span><span class="rmain"><b>${esc(r.title)}</b><small>${esc(r.sub)}</small><small class="due">${st === "approved" && s?.score ? stars(s.score, "sm") : r.type === "rasd" && S.rasd[r.week] ? esc(rasdText(S.rasd[r.week])) : dueText(r)}</small></span>${chip(st)}${extra}</button>`; };
 const ring = (v, inner) => `<div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="rt"/><circle cx="60" cy="60" r="52" class="rv" stroke-dasharray="${(v * 326.7).toFixed(1)} 326.7"/></svg><div class="rin">${inner}</div></div>`;
 
 function trail() {
@@ -1075,11 +1107,12 @@ function eventSheet() {
 let fileFilter = "all";
 function fileView() {
   const st = stats(), subs = Object.values(S.subs).sort((a, b) => (a.at < b.at ? 1 : -1));
-  const list = subs.filter((s) => fileFilter === "all" || REQ[s.reqId]?.type === fileFilter);
+  const rasd = REQS.filter((r) => r.type === "rasd" && S.rasd[r.week]);
+  const list = fileFilter === "rasd" ? rasd.map((r) => ({ reqId: r.id })) : subs.filter((s) => fileFilter === "all" || REQ[s.reqId]?.type === fileFilter);
   const cnt = (ty) => subs.filter((s) => REQ[s.reqId]?.type === ty).length;
   return `<section class="mhead"><div class="h-rays"></div><small>ملف الإنجاز</small><h1>كل إنجازٍ يُرفع، وكل ملخصٍ يُحفظ</h1><a class="btn gold" href="#/report" style="margin-bottom:14px">${I.print} طباعة تقرير المستفيد</a>
       <div class="mgrid"><div><small>ملفات مرفوعة</small><b>${subs.length}</b></div><div><small>معتمدة</small><b>${subs.filter((s) => s.status === "approved").length}</b></div><div><small>متوسط التقييم</small><b>${st.avg ? st.avg.toFixed(1) + " / 5" : "—"}</b></div><div><small>أوجه التفسير</small><b>${st.tafsirDone} / ${TOTAL_DAYS}</b></div></div></section>
-    <div class="tabs">${[["all", "الكل", subs.length], ...["tadabbur", "fiqh", "source", "report"].map((k) => [k, TYPES[k].name, cnt(k)])].map(([k, n, c]) => `<button data-ff="${k}" class="${fileFilter === k ? "on" : ""}">${n} <i>${c}</i></button>`).join("")}</div>
+    <div class="tabs">${[["all", "الكل", subs.length], ...["tadabbur", "fiqh", "source", "report"].map((k) => [k, TYPES[k].name, cnt(k)]), ["rasd", "الرصد الأسبوعي", rasd.length]].map(([k, n, c]) => `<button data-ff="${k}" class="${fileFilter === k ? "on" : ""}">${n} <i>${c}</i></button>`).join("")}</div>
     <section class="card"><div class="reqs">${list.length ? list.map((s) => reqRow(REQ[s.reqId])).join("") : `<div class="empty">${I.folder}<p>${isMember() ? "لم تُرفع ملفات بعد — ابدأ من صفحة المسار" : "لم يرفع المستفيد شيئاً بعد"}</p></div>`}</div></section>`;
 }
 
@@ -1178,7 +1211,7 @@ function guideView() {
     ${sec("read", "09 · القراءة الذاتية", "مقرر كل شهر، مقسّماً على أسابيعه", "ربع المقرر كل أسبوع، ويُرفع ملخص القراءة قبل لقاء الشهر.",
       tbl(["الشهر والمقرر", "الأسبوع الأول", "الأسبوع الثاني", "الأسبوع الثالث", "الأسبوع الرابع"], ms.map((m) => [`${m} · ${MONTHS[m].book}`, ...MONTHS[m].read])))}
     ${sec("week", "10 · الإيقاع الأسبوعي", "أسبوعك في سراج", "خمس عادات أسبوعية، ولكل منها مخرجٌ يُرفع على المنصة.",
-      tbl(["النشاط", "الإيقاع", "ما يُرفع على المنصة"], [["التفسير الميسر", "وجهٌ كل يوم", "تسجيل إنجاز الأوجه"], ["الجلسة التدبرية", "جلسة كل أسبوع", "ورقة التدبر"], ["التأهيل الشرعي", "مقاطع السلسلة، قرابة مقطعين أسبوعياً", "الملخص الفقهي الأسبوعي"], ["مصدر اللقاء", "ربع المقرر كل أسبوع", "ملخص القراءة وشاهد التطبيق"], ["مراجعة الأسبوع", "نهاية كل أسبوع", "تحديث ملف الإنجاز"]]))}
+      tbl(["النشاط", "الإيقاع", "ما يُرفع على المنصة"], [["التفسير الميسر", "وجهٌ كل يوم", "تسجيل إنجاز الأوجه"], ["الجلسة التدبرية", "جلسة كل أسبوع", "ورقة التدبر"], ["التأهيل الشرعي", "مقاطع السلسلة، قرابة مقطعين أسبوعياً", "الملخص الفقهي الأسبوعي"], ["مصدر اللقاء", "ربع المقرر كل أسبوع", "ملخص القراءة وشاهد التطبيق"], ["حلقة التحفيظ", "حضور أسبوعي وتسميع", "الرصد الأسبوعي: الحضور والتسميع من – إلى"], ["مراجعة الأسبوع", "نهاية كل أسبوع", "تحديث ملف الإنجاز"]]))}
     ${sec("monthly", "11 · اللقاء الشهري", "من الإنجاز إلى المعنى الكبير", "لقاءٌ كل شهر بعنوان محدد، يعمّق جدارة الشهر ويربطها بالغاية التربوية الكبرى. ستة لقاءات يديرها المجلس التربوي، ولكل لقاء مصدرٌ قرائي.",
       steps(["مراجعة إنجاز الشهر على المنصة", "مناقشة مصدر اللقاء وتعميق الجدارة", "الأدوات التطبيقية لمهارة الشهر", "المعنى الكبير ومهام الشهر القادم"]))}
     ${sec("uploads", "12 · منصة المتابعة", "كل إنجازٍ يُرفع، وكل ملخصٍ يُحفظ", "يراجع المجلس التربوي ما يُرفع قبل كل لقاء، وتبقى الملفات مرجعاً بعد المشروع.",
@@ -1207,7 +1240,7 @@ function reportView() {
     for (let i = 0; i < 28; i++) if (S.tafsir[addDays(weekStart(ws[0]), i)]) td++;
     const c = (ty) => ws.filter((w) => isDone(REQ[`${ty}-w${w}`])).length;
     const sc = REQS.filter((r) => r.month === m && S.subs[r.id]?.score).map((r) => S.subs[r.id].score);
-    return [`${ORD[m]}<small>${MONTHS[m].meet}</small>`, `${td}/28`, `${c("tadabbur")}/4`, `${c("fiqh")}/4`, `${c("read")}/4`, cell(REQ[`source-m${m}`]), cell(REQ[`report-m${m}`]), sc.length ? (sc.reduce((a, b) => a + b, 0) / sc.length).toFixed(1) : "—"];
+    return [`${ORD[m]}<small>${MONTHS[m].meet}</small>`, `${td}/28`, `${c("tadabbur")}/4`, `${c("fiqh")}/4`, `${c("read")}/4`, `${c("rasd")}/4`, cell(REQ[`source-m${m}`]), cell(REQ[`report-m${m}`]), sc.length ? (sc.reduce((a, b) => a + b, 0) / sc.length).toFixed(1) : "—"];
   });
   const open = [...st.revise, ...st.late];
   return `<div class="rp-tools"><div><h2>تقرير المستفيد</h2><small>يُطبع على ورق A4 أو يُحفظ بصيغة PDF من نافذة الطباعة</small></div><button class="btn gold" data-print>${I.file} طباعة / حفظ PDF</button></div>
@@ -1223,7 +1256,9 @@ function reportView() {
     </section>
     <section class="rp-box"><h3>خريطة الورد اليومي — التفسير الميسر <small>(${st.tafsirDone} من ${st.passed} يوماً مضت · أطول التزام حالي ${daysWord(st.streak || 0)})</small></h3>
       <div class="heat">${heat}</div><div class="legend"><span><i class="sq on"></i>مُنجز</span><span><i class="sq miss"></i>فائت</span><span><i class="sq"></i>قادم</span><span>الأعمدة: أسابيع المشروع (1–24) · الصفوف: السبت إلى الجمعة</span></div></section>
-    <section class="rp-box"><h3>الإنجاز الشهري</h3>${tbl(["الشهر", "التفسير", "التدبر", "الفقه", "القراءة", "ملخص المصدر", "التقرير الشهري", "متوسط التقييم"], mrows, "rpt")}</section>
+    <section class="rp-box"><h3>الإنجاز الشهري</h3>${tbl(["الشهر", "التفسير", "التدبر", "الفقه", "القراءة", "الرصد", "ملخص المصدر", "التقرير الشهري", "متوسط التقييم"], mrows, "rpt")}</section>
+    ${(() => { const rs = Object.values(S.rasd).sort((a, b) => a.week - b.week); if (!rs.length) return ""; const pr = rs.filter((x) => x.attendance === "present").length;
+      return `<section class="rp-box"><h3>الرصد الأسبوعي: حضور الحلقة والتسميع <small>(حضر ${pr} من ${rs.length} أسبوعاً مرصوداً · نسبة الحضور ${pct(pr / rs.length)}٪)</small></h3>${tbl(["الأسبوع", "الفترة", "الحضور", "التسميع من", "إلى", "ملاحظات"], rs.map((x) => [x.week, `${fmtShort(weekStart(x.week))} – ${fmtShort(weekEnd(x.week))}`, `<span class="rc ${x.attendance === "present" ? "approved" : x.attendance === "excused" ? "revise" : "late"}">${ATT[x.attendance]}</span>`, esc(x.from || "—"), esc(x.to || "—"), esc(x.note || "—")]), "rpt")}</section>`; })()}
     <section class="rp-box"><h3>سجل المتطلبات المرفوعة وتقييمها <small>(${subs.length} من ${dueR.length} حلّ موعدها)</small></h3>
       ${subs.length ? tbl(["المتطلب", "تاريخ الرفع", "الحالة", "التقييم", "ملاحظة المقيّم"], subs.map((s) => [esc(REQ[s.reqId].title), fmtShort(d2s(new Date(s.at))), `<span class="rc ${s.status}">${stName[s.status]}</span>`, s.score ? stars(s.score, "sm") : "—", esc(s.note || "—")]), "rpt log") : `<p class="mute">لم تُرفع متطلبات بعد.</p>`}</section>
     ${open.length ? `<section class="rp-box"><h3>متطلبات تحتاج متابعة</h3>${tbl(["المتطلب", "الحالة", "الموعد"], open.map((r) => [esc(r.title), `<span class="rc ${statusOf(r)}">${stName[statusOf(r)]}</span>`, dueText(r)]), "rpt")}</section>` : ""}

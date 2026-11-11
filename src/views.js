@@ -1,5 +1,5 @@
 // ───────────────────────── الصفحات ─────────────────────────
-const reqRow = (r, extra = "") => { const st = statusOf(r), s = S.subs[r.id]; return `<button class="req st-${st}" data-req="${r.id}"><span class="ric c-${r.comp}">${TYPES[r.type].icon}</span><span class="rmain"><b>${esc(r.title)}</b><small>${esc(r.sub)}</small><small class="due">${st === "approved" && s?.score ? stars(s.score, "sm") : dueText(r)}</small></span>${chip(st)}${extra}</button>`; };
+const reqRow = (r, extra = "") => { const st = statusOf(r), s = S.subs[r.id]; return `<button class="req st-${st}" data-req="${r.id}"><span class="ric c-${r.comp}">${TYPES[r.type].icon}</span><span class="rmain"><b>${esc(r.title)}</b><small>${esc(r.sub)}</small><small class="due">${st === "approved" && s?.score ? stars(s.score, "sm") : r.type === "rasd" && S.rasd[r.week] ? esc(rasdText(S.rasd[r.week])) : dueText(r)}</small></span>${chip(st)}${extra}</button>`; };
 const ring = (v, inner) => `<div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="rt"/><circle cx="60" cy="60" r="52" class="rv" stroke-dasharray="${(v * 326.7).toFixed(1)} 326.7"/></svg><div class="rin">${inner}</div></div>`;
 
 function trail() {
@@ -118,10 +118,11 @@ function eventSheet() {
 let fileFilter = "all";
 function fileView() {
   const st = stats(), subs = Object.values(S.subs).sort((a, b) => (a.at < b.at ? 1 : -1));
-  const list = subs.filter((s) => fileFilter === "all" || REQ[s.reqId]?.type === fileFilter);
+  const rasd = REQS.filter((r) => r.type === "rasd" && S.rasd[r.week]);
+  const list = fileFilter === "rasd" ? rasd.map((r) => ({ reqId: r.id })) : subs.filter((s) => fileFilter === "all" || REQ[s.reqId]?.type === fileFilter);
   const cnt = (ty) => subs.filter((s) => REQ[s.reqId]?.type === ty).length;
   return `<section class="mhead"><div class="h-rays"></div><small>ملف الإنجاز</small><h1>كل إنجازٍ يُرفع، وكل ملخصٍ يُحفظ</h1><a class="btn gold" href="#/report" style="margin-bottom:14px">${I.print} طباعة تقرير المستفيد</a>
       <div class="mgrid"><div><small>ملفات مرفوعة</small><b>${subs.length}</b></div><div><small>معتمدة</small><b>${subs.filter((s) => s.status === "approved").length}</b></div><div><small>متوسط التقييم</small><b>${st.avg ? st.avg.toFixed(1) + " / 5" : "—"}</b></div><div><small>أوجه التفسير</small><b>${st.tafsirDone} / ${TOTAL_DAYS}</b></div></div></section>
-    <div class="tabs">${[["all", "الكل", subs.length], ...["tadabbur", "fiqh", "source", "report"].map((k) => [k, TYPES[k].name, cnt(k)])].map(([k, n, c]) => `<button data-ff="${k}" class="${fileFilter === k ? "on" : ""}">${n} <i>${c}</i></button>`).join("")}</div>
+    <div class="tabs">${[["all", "الكل", subs.length], ...["tadabbur", "fiqh", "source", "report"].map((k) => [k, TYPES[k].name, cnt(k)]), ["rasd", "الرصد الأسبوعي", rasd.length]].map(([k, n, c]) => `<button data-ff="${k}" class="${fileFilter === k ? "on" : ""}">${n} <i>${c}</i></button>`).join("")}</div>
     <section class="card"><div class="reqs">${list.length ? list.map((s) => reqRow(REQ[s.reqId])).join("") : `<div class="empty">${I.folder}<p>${isMember() ? "لم تُرفع ملفات بعد — ابدأ من صفحة المسار" : "لم يرفع المستفيد شيئاً بعد"}</p></div>`}</div></section>`;
 }

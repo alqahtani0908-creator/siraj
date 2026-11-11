@@ -20,15 +20,16 @@ if (CFG && window.supabase && !DEMO) {
       this.subscribe(); this.loadFonts();
     },
     async refresh() {
-      const [pr, st, su, ch, tf, ev, nf] = (await Promise.all([
+      const [pr, st, su, ch, tf, ev, nf, rs] = (await Promise.all([
         sb.from("profiles").select("role,name,user_id"), sb.from("settings").select("*").eq("id", 1).maybeSingle(), sb.from("submissions").select("*"),
-        sb.from("checks").select("*"), sb.from("tafsir").select("*"), sb.from("events").select("*").order("date"), sb.from("notifs").select("*").order("at", { ascending: false }).limit(300),
+        sb.from("checks").select("*"), sb.from("tafsir").select("*"), sb.from("events").select("*").order("date"), sb.from("notifs").select("*").order("at", { ascending: false }).limit(300), sb.from("rasd").select("*"),
       ])).map(must);
       const names = Object.fromEntries(pr.map((p) => [p.role, p.name]));
       const n = blank();
       n.settings = { start: st?.start || n.settings.start, meetings: st?.meetings || [], names: { ...n.settings.names, ...names }, fontFiles: st?.font_files || {}, refs: st?.refs || {} };
       su.forEach((s) => (n.subs[s.req_id] = { reqId: s.req_id, title: s.title, body: s.body, file: s.file, at: s.at, status: s.status, score: s.score, note: s.note, reviewedAt: s.reviewed_at, history: s.history || [] }));
       ch.forEach((c) => (n.checks[c.req_id] = c.at));
+      rs.forEach((x) => (n.rasd[x.week] = { week: x.week, attendance: x.attendance, from: x.from_text, to: x.to_text, note: x.note, at: x.at }));
       tf.forEach((t) => (n.tafsir[t.day] = true));
       n.events = ev;
       n.notifs = nf.map((x) => ({ id: x.id, to: x.to_role, kind: x.kind, title: x.title, body: x.body, req: x.req, at: x.at, read: x.read }));
@@ -69,6 +70,7 @@ if (CFG && window.supabase && !DEMO) {
       await this.refresh();
     },
     async review(reqId, { status, score, note }) { must(await sb.from("submissions").update({ status, score, note }).eq("req_id", reqId)); await this.refresh(); },
+    async saveRasd(week, d) { must(await sb.from("rasd").upsert({ week, attendance: d.attendance, from_text: d.from, to_text: d.to, note: d.note })); await this.refresh(); },
     async toggleCheck(reqId) { must(S.checks[reqId] ? await sb.from("checks").delete().eq("req_id", reqId) : await sb.from("checks").insert({ req_id: reqId })); await this.refresh(); },
     async setTafsir(day, on) { must(on ? await sb.from("tafsir").upsert({ day }, { ignoreDuplicates: true }) : await sb.from("tafsir").delete().eq("day", day)); if (on) S.tafsir[day] = true; else delete S.tafsir[day]; },
     note(kind, title, body, req) { return sb.rpc("send_note", { p_kind: kind, p_title: title, p_body: body || "", p_req: req || null }).then(must); },

@@ -278,3 +278,6 @@ input:focus,textarea:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3
 @media print{.tfm summary{background:var(--night)!important;color:#fff}.xl.add,.rx{display:none!important}}
 .drop.bulk{margin-bottom:10px;white-space:normal}.drop.bulk span{white-space:normal}.drop.bulk b{color:var(--ink)}
 @media print{.drop.bulk{display:none!important}}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--cream);padding:5px;border-radius:14px}.seg button{padding:10px 4px;border-radius:10px;font-weight:700;text-align:center;color:var(--mute)}
+.seg [data-att=excused].on{background:var(--warn);color:#fff}.seg [data-att=absent].on{background:var(--bad);color:#fff}.seg [data-att=present].on{background:var(--ok);color:#fff}
+.mgrid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}.mgrid2 small,.mgrid2 b{display:block}

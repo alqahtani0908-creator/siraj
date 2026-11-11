@@ -110,10 +110,13 @@ const COMPS = {
 const TYPES = {
   tadabbur: { name: "ورقة التدبر", hint: "المعنى والوقفة والعمل من جلسة الأسبوع", icon: I.quran, review: true },
   fiqh: { name: "الملخص الفقهي", hint: "صفحة تجمع مسائل مقاطع الأسبوع وأدلتها المختصرة", icon: I.scale, review: true },
+  rasd: { name: "الرصد الأسبوعي", hint: "حضور الحلقة الأسبوعي، والتسميع من – إلى", icon: I.people, review: false },
   read: { name: "قراءة المقرر", hint: "ربع مقرر الشهر", icon: I.book, review: false },
   source: { name: "ملخص مصدر اللقاء", hint: "ملخص القراءة وشاهد تطبيق الجدارة", icon: I.file, review: true },
   report: { name: "التقرير الشهري", hint: "ما أُنجز وما تأخر، وخطة الشهر القادم", icon: I.flag, review: true },
 };
+const ATT = { present: "حاضر", excused: "غائب بعذر", absent: "غائب" };
+const rasdText = (x) => `${ATT[x.attendance]}${x.from || x.to ? ` · التسميع من ${x.from || "—"} إلى ${x.to || "—"}` : ""}`;
 const ST = {
   approved: { label: "معتمد", icon: I.check }, done: { label: "تمّ", icon: I.check },
   submitted: { label: "بانتظار التقييم", icon: I.clock }, revise: { label: "يحتاج استكمال", icon: I.alert },
@@ -158,6 +161,7 @@ function buildReqs() {
     const m = monthOfWeek(w), wi = (w - 1) % 4, base = { week: w, month: m, open: weekStart(w), due: weekEnd(w) };
     REQS.push({ id: `tadabbur-w${w}`, type: "tadabbur", comp: "quran", title: `ورقة التدبر — الأسبوع ${w}`, sub: `آيات من ${MONTHS[m].tafsir}`, ...base });
     REQS.push({ id: `fiqh-w${w}`, type: "fiqh", comp: "sharia", title: `الملخص الفقهي — الأسبوع ${w}`, sub: MONTHS[m].fiqh, ...base });
+    REQS.push({ id: `rasd-w${w}`, type: "rasd", comp: "quran", title: `الرصد الأسبوعي — الأسبوع ${w}`, sub: "حضور الحلقة · التسميع من – إلى", ...base });
     REQS.push({ id: `read-w${w}`, type: "read", comp: m === 6 ? "lead" : "edu", title: `قراءة: ${MONTHS[m].book}`, sub: MONTHS[m].read[wi], ...base });
   }
   for (let m = 1; m <= 6; m++) {
@@ -169,7 +173,7 @@ function buildReqs() {
 }
 function statusOf(r) {
   const t = today();
-  if (r.type === "read") return S.checks[r.id] ? "done" : t > r.due ? "late" : t >= r.open ? "due" : "upcoming";
+  if (r.type === "read" || r.type === "rasd") return (r.type === "read" ? S.checks[r.id] : S.rasd[r.week]) ? "done" : t > r.due ? "late" : t >= r.open ? "due" : "upcoming";
   const s = S.subs[r.id];
   if (s) return s.status;
   return t > r.due ? "late" : t >= r.open ? "due" : "upcoming";
@@ -200,7 +204,7 @@ function stats() {
   const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
   const cnt = (f) => REQS.filter(f).length, dn = (f) => REQS.filter((r) => f(r) && isDone(r)).length;
   const byComp = {
-    quran: (tafsirDone / 7 + dn((r) => r.type === "tadabbur")) / (WEEKS * 2),
+    quran: (tafsirDone / 7 + dn((r) => r.type === "tadabbur" || r.type === "rasd")) / (WEEKS * 3),
     sharia: dn((r) => r.type === "fiqh") / WEEKS,
     edu: dn((r) => r.comp === "edu") / cnt((r) => r.comp === "edu"),
     lead: dn((r) => r.comp === "lead") / cnt((r) => r.comp === "lead"),
