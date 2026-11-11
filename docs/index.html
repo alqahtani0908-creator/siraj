@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>سراج — منصة المتابعة</title>
+<meta name="description" content="منصة متابعة مشروع سراج التأهيلي">
+<meta name="theme-color" content="#11131D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="سراج">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:"Thmanyah Serif Text";src:url("fonts/thmanyahseriftext-Light.otf") format("opentype");font-weight:300;font-display:swap}
+@font-face{font-family:"Thmanyah Serif Text";src:url("fonts/thmanyahseriftext-Regular.otf") format("opentype");font-weight:400;font-display:swap}
+@font-face{font-family:"Thmanyah Serif Text";src:url("fonts/thmanyahseriftext-Medium.otf") format("opentype");font-weight:500;font-display:swap}
+@font-face{font-family:"Thmanyah Serif Text";src:url("fonts/thmanyahseriftext-Bold.otf") format("opentype");font-weight:700;font-display:swap}
+@font-face{font-family:"Thmanyah Serif Text";src:url("fonts/thmanyahseriftext-Black.otf") format("opentype");font-weight:900;font-display:swap}
+:root{
+  --night:#11131D;--night2:#1B1E2D;--night3:#262A3D;--cream:#F5F2EA;--paper:#FFFDF8;--ink:#14161F;--mute:#6E6B63;--line:#E7E0D0;
+  --gold:#C8963E;--gold-deep:#8F611A;--amber:#F0B354;--glow:#FFE9A8;
+  --ok:#2F7D5C;--ok-bg:#E4F1EA;--warn:#A9690F;--warn-bg:#FBEFD6;--bad:#B4432F;--bad-bg:#F9E3DD;--info-bg:#ECE9F3;--navy:#2B3158;
+  --c-quran:#2F7D5C;--c-edu:#8F611A;--c-sharia:#2B5F8F;--c-lead:#7A3E6E;--c-skill:#B4532F;
+  --r:18px;--sh:0 1px 2px rgba(20,22,31,.05),0 8px 24px -12px rgba(20,22,31,.18);
+  --font:"Thmanyah Brand","Thmanyah Serif Text","Noto Naskh Arabic","Geeza Pro",serif;
+}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--cream);color:var(--ink);font-size:15.5px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body.lock{overflow:hidden}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;text-align:inherit}
+a{color:var(--gold-deep);text-decoration:none}
+svg{width:1.25em;height:1.25em;flex:none;vertical-align:-.22em}
+h1,h2,h3{font-weight:700;line-height:1.35}
+small{font-size:.82em;color:var(--mute)}
+em{font-style:normal}
+.grow{flex:1;min-width:0}.row{display:flex;align-items:center}.gap{gap:10px;margin-top:14px;flex-wrap:wrap}.mute{color:var(--mute)}.center{text-align:center}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* ── المصباح ── */
+.lantern{width:auto;height:auto;overflow:visible}
+.lantern .flame{transform-origin:60px 108px;animation:flick 2.4s ease-in-out infinite}
+.lantern .lglow{animation:breath 3.6s ease-in-out infinite;transform-origin:60px 94px}
+@keyframes flick{0%,100%{transform:scale(1,1) rotate(-1.5deg)}35%{transform:scale(.94,1.07) rotate(2deg)}70%{transform:scale(1.05,.95) rotate(-1deg)}}
+@keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.lantern.mini{width:30px;height:42px}.lantern.big{width:150px;height:212px}.lantern.inring{width:46px;height:64px}
+@media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* ── الهيكل ── */
+.app{display:flex;min-height:100dvh}
+.side{display:none}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:6px;padding:8px 16px;padding-top:max(8px,env(safe-area-inset-top));background:rgba(17,19,29,.94);backdrop-filter:blur(10px);color:#fff}
+.logo{display:flex;align-items:center;gap:8px}.logo b{font-size:1.5rem;font-weight:900;color:#fff;line-height:1}.logo small{color:#B9B4A6;display:block}
+.ib{position:relative;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:inherit}
+.ib:hover{background:rgba(255,255,255,.1)}.card .ib{background:var(--cream)}.card .ib:hover{background:var(--line)}
+.ib svg{width:22px;height:22px}
+.dot{position:absolute;top:3px;inset-inline-end:2px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--bad);color:#fff;font-size:11px;font-weight:700;line-height:18px;text-align:center;font-style:normal;box-shadow:0 0 0 2px var(--night)}
+.av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--amber),var(--gold-deep));color:var(--night);font-weight:900;display:grid;place-items:center;flex:none;line-height:1}
+.av.xl{width:58px;height:58px;font-size:1.6rem}
+#view{flex:1;padding:14px 16px calc(96px + env(safe-area-inset-bottom))}
+.page{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.page.anim{animation:pagein .3s ease}
+@keyframes pagein{from{transform:translateY(8px)}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}}
+.bnav{position:fixed;bottom:0;inset-inline:0;z-index:30;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(255,253,248,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+.bl{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px;border-radius:14px;color:var(--mute);font-size:.74rem;font-weight:500}
+.bl svg{width:23px;height:23px}.bl.on{color:var(--night);background:linear-gradient(180deg,rgba(240,179,84,.28),rgba(240,179,84,.08));font-weight:700}.bl.on svg{color:var(--gold-deep)}
+@media (min-width:900px){
+  .side{display:flex;flex-direction:column;gap:22px;width:250px;flex:none;position:sticky;top:0;height:100dvh;padding:26px 18px;background:var(--night);color:#fff;background-image:radial-gradient(420px 320px at 80% 0,rgba(240,179,84,.16),transparent 70%)}
+  .side nav{display:flex;flex-direction:column;gap:4px;flex:1}
+  .sl{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;color:#C9C4B6;font-weight:500}
+  .sl:hover{background:rgba(255,255,255,.06)}.sl.on{background:rgba(240,179,84,.16);color:var(--glow);font-weight:700}
+  .who{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;background:rgba(255,255,255,.06);color:#fff}.who b{display:block;font-size:.92rem;line-height:1.3}.who small{color:#B9B4A6}
+  .top{background:transparent;backdrop-filter:none;color:var(--ink);padding:14px 28px 0;position:static}.top .logo,.top .avb{display:none}.top .ib{background:var(--paper);box-shadow:var(--sh)}.top .dot{box-shadow:0 0 0 2px var(--cream)}
+  .bnav{display:none}#view{padding:10px 28px 40px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+}
+.cols{display:flex;flex-direction:column;gap:14px}
+@media (min-width:900px){.cols{display:grid}}
+
+/* ── البطاقات ── */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--sh)}
+.ch{display:flex;align-items:center;gap:8px;margin-bottom:10px}.ch h3{font-size:1.06rem;flex:1;display:flex;align-items:center;gap:7px}.ch h3 svg{color:var(--gold-deep)}.ch a{font-size:.85rem;font-weight:500}
+.count{background:var(--night);color:var(--glow);border-radius:20px;padding:0 9px;font-size:.8rem;font-weight:700}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:.74rem;font-weight:700;white-space:nowrap;flex:none}
+.chip svg{width:13px;height:13px}
+.chip.approved,.chip.done{background:var(--ok-bg);color:var(--ok)}.chip.submitted{background:var(--info-bg);color:var(--navy)}.chip.revise{background:var(--warn-bg);color:var(--warn)}
+.chip.late{background:var(--bad-bg);color:var(--bad)}.chip.due{background:#F6E7C6;color:var(--gold-deep)}.chip.upcoming{background:#EFECE4;color:var(--mute)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:8px 18px;border-radius:14px;font-weight:700;transition:transform .12s,box-shadow .2s,background .2s;white-space:nowrap}
+.btn:active{transform:scale(.97)}.btn[disabled]{opacity:.5}
+.btn.gold{background:linear-gradient(135deg,#F3BE63,#C8963E);color:var(--night);box-shadow:0 6px 18px -8px rgba(200,150,62,.9)}
+.btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}.btn.ghost:hover{background:var(--cream)}.btn.danger{color:var(--bad)}
+.btn.ok{background:var(--ok);color:#fff}.btn.okf{background:var(--ok-bg);color:var(--ok)}.btn.warn{background:var(--warn-bg);color:var(--warn)}
+.btn.sm{min-height:34px;padding:4px 12px;border-radius:10px;font-size:.82rem}.btn.wide{width:100%;margin-top:14px}
+.empty{display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 10px;color:var(--mute);text-align:center}.empty svg{width:34px;height:34px;opacity:.5}.empty.sm{padding:12px;flex-direction:row;justify-content:center}.empty.sm svg{width:20px;height:20px;color:var(--ok);opacity:1}
+
+/* ── البطل ── */
+.hero,.mhead{position:relative;overflow:hidden;border-radius:24px;background:var(--night);color:#fff;padding:20px 18px 16px;isolation:isolate}
+.h-rays,.g-rays{position:absolute;inset:0;z-index:-1;background:radial-gradient(360px 300px at 12% 28%,rgba(240,179,84,.34),transparent 70%),radial-gradient(500px 320px at 100% 110%,rgba(143,97,26,.35),transparent 70%)}
+.hero small,.mhead small{color:#BDB8AA}
+.h-top{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.hero h1{font-size:1.75rem;font-weight:900;margin:2px 0}.hero p{color:#DDD8CA;font-size:.92rem}
+.pace{display:inline-block;margin-top:8px;padding:2px 12px;border-radius:20px;font-size:.78rem;font-weight:700}.pace.good{background:rgba(111,207,151,.16);color:#8FE0B4}.pace.slow{background:rgba(240,179,84,.18);color:var(--amber)}
+.ring{position:relative;width:128px;height:128px;flex:none}.ring>svg{width:100%;height:100%;transform:rotate(-90deg)}
+.rt{fill:none;stroke:rgba(255,255,255,.1);stroke-width:7}.rv{fill:none;stroke:var(--amber);stroke-width:7;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(240,179,84,.7));transition:stroke-dasharray 1s ease}
+.rin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}.rin b{font-size:1.25rem;font-weight:900;line-height:1;color:var(--glow);margin-top:-4px}.rin b i{font-size:.7em;font-style:normal}
+.h-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1)}
+.h-stats div{text-align:center}.h-stats b{display:block;font-size:1.35rem;font-weight:900;line-height:1.2;color:#fff}.h-stats b i{font-size:.6em;font-style:normal;color:var(--amber)}.h-stats small{font-size:.72rem;display:flex;gap:2px;justify-content:center;align-items:center}.h-stats svg{width:13px;height:13px;color:var(--amber)}
+@media (min-width:900px){.hero{padding:30px 34px 22px}.hero h1{font-size:2.3rem}.ring{width:160px;height:160px}.lantern.inring{width:58px;height:80px}.rin b{font-size:1.5rem}}
+
+/* ── التنبيهات ── */
+.al{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;margin-top:8px;border-inline-start:4px solid var(--c,var(--line));background:var(--b,var(--cream));cursor:pointer}
+.al:not([data-req]):not([data-go]):not([data-readn]):not([data-tafsir-today]){cursor:default}
+.al b{display:block;font-size:.93rem;line-height:1.45}.al small{display:block;line-height:1.5}.al em{font-size:.72rem;color:var(--mute);white-space:nowrap}
+.aic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--c);flex:none}.aic svg{width:18px;height:18px}
+.k-bad{--c:var(--bad);--b:var(--bad-bg)}.k-warn{--c:var(--warn);--b:var(--warn-bg)}.k-gold{--c:var(--gold);--b:#FAF0D9}.k-ok{--c:var(--ok);--b:var(--ok-bg)}.k-info{--c:var(--navy);--b:var(--info-bg)}
+.k-navy{--c:var(--amber);--b:var(--night);color:#fff}.k-navy small{color:#C9C4B6}.k-navy .aic{background:rgba(240,179,84,.18);color:var(--amber)}
+
+/* ── المتطلبات ── */
+.reqs{display:flex;flex-direction:column}
+.req{display:flex;align-items:center;gap:11px;width:100%;padding:11px 4px;border-top:1px solid var(--line);border-radius:10px;transition:background .15s}
+.reqs .req:first-child{border-top:0}.req:hover{background:var(--cream)}
+.rmain{flex:1;min-width:0;display:flex;flex-direction:column}.rmain b{font-size:.95rem;line-height:1.45}.rmain small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rmain .due{color:var(--gold-deep);font-weight:500}
+.st-late .due{color:var(--bad)}.st-upcoming{opacity:.72}
+.ric{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;flex:none;color:var(--k);background:color-mix(in srgb,var(--k) 13%,#fff)}.ric svg{width:21px;height:21px}.ric.big{width:50px;height:50px;border-radius:16px}.ric.big svg{width:26px;height:26px}
+.c-quran{--k:var(--c-quran)}.c-edu{--k:var(--c-edu)}.c-sharia{--k:var(--c-sharia)}.c-lead{--k:var(--c-lead)}.c-skill{--k:var(--c-skill)}
+.stars{display:inline-flex;gap:1px;color:#D9D3C3}.stars i{display:grid}.stars svg{width:15px;height:15px}.stars .on{color:var(--amber)}.stars.sm svg{width:13px;height:13px}
+.wird{display:flex;align-items:center;gap:12px;background:linear-gradient(120deg,#FFF7E4,var(--paper) 60%);border-color:#EBD9AE}
+.wird b{display:block;font-size:1.05rem}.wird small{display:block}.wird.done{background:linear-gradient(120deg,var(--ok-bg),var(--paper) 60%);border-color:#C5E0D2}
+.comps{display:flex;flex-direction:column;gap:12px}.comp{display:flex;gap:11px;align-items:center}.comp em{font-weight:700;font-size:.9rem}
+.bar{height:7px;border-radius:7px;background:#EFEAE0;overflow:hidden;margin:3px 0 2px}.bar i{display:block;height:100%;border-radius:7px;background:var(--k);transition:width .8s ease}
+
+/* ── مسار المصابيح ── */
+.lamps{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.lm{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 2px 6px;border-radius:14px;background:var(--night);color:#fff}.lm small{color:#BDB8AA;font-size:.7rem}.lm.cur{box-shadow:0 0 0 2px var(--amber)}
+.lm div{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.lamp{display:inline-block;width:13px;height:13px;border-radius:50%;background:#3A3F58;flex:none}
+.lamp.full{background:var(--glow);box-shadow:0 0 10px 3px rgba(240,179,84,.85)}.lamp.part{background:linear-gradient(90deg,#3A3F58 50%,var(--amber) 50%)}.lamp.late{background:#3A3F58;box-shadow:inset 0 0 0 2px var(--bad)}
+.lamp.now{background:var(--amber);animation:pulse 1.8s ease-in-out infinite}@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(240,179,84,.25)}}
+@media (min-width:600px){.lm div{grid-template-columns:repeat(4,1fr)}.lamp{width:15px;height:15px}}
+
+/* ── المسار ── */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none;margin-inline:-16px;padding-inline:16px}.tabs::-webkit-scrollbar{display:none}
+.tabs>*{flex:none;padding:7px 15px;border-radius:22px;background:var(--paper);border:1px solid var(--line);color:var(--ink);font-weight:500;font-size:.88rem;white-space:nowrap}
+.tabs .on{background:var(--night);color:var(--glow);border-color:var(--night);font-weight:700}.tabs .cur:not(.on){border-color:var(--gold)}.tabs i{font-style:normal;opacity:.6;font-size:.85em}
+.mhead h1{font-size:1.5rem;font-weight:900;margin:2px 0 14px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1)}.mgrid small{display:block}.mgrid b{font-weight:500;font-size:.92rem;line-height:1.5;display:block;color:var(--glow)}
+@media (min-width:900px){.mgrid{grid-template-columns:repeat(4,1fr)}.mhead{padding:28px 34px}.mhead h1{font-size:2rem}.tabs{margin:0;padding-inline:0}}
+.week.now{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),var(--sh)}.week .ch h3 .lamp{box-shadow:none}
+.week .ch h3 .lamp:not(.full):not(.now):not(.part){background:#D9D3C3}.week .ch h3 .lamp.full{background:var(--amber)}
+.tafsir{background:var(--cream);border-radius:14px;padding:10px 12px;margin-bottom:6px}.tafsir small svg{color:var(--c-quran)}
+.tds{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:8px}
+.td{aspect-ratio:1;max-height:44px;border-radius:12px;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;font-weight:700;color:var(--mute);font-size:.85rem;justify-self:stretch}
+.td i{font-style:normal;display:grid}.td.on{background:var(--c-quran);border-color:var(--c-quran);color:#fff}.td.miss{border-color:#E6B8AD;color:var(--bad);background:var(--bad-bg)}.td.fut{opacity:.55}.td.today{box-shadow:0 0 0 2px var(--amber)}
+
+/* ── التقويم ── */
+.calh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;text-align:center}.calh h2{font-size:1.2rem}
+.wd,.grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.wd span{text-align:center;font-size:.68rem;color:var(--mute);font-weight:500;padding-bottom:4px;overflow:hidden}
+.dc{position:relative;min-height:54px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:4px 0 9px;background:transparent;line-height:1.2}
+.dc b{font-size:1rem;font-weight:700}.dc small{font-size:.62rem}.dc.out b{color:#B5AFA0;font-weight:400}.dc.in{background:var(--cream)}
+.dc.tf{background:var(--ok-bg)}.dc.tf b{color:var(--ok)}.dc.tm{background:var(--bad-bg)}
+.dc.today{box-shadow:inset 0 0 0 2px var(--amber)}.dc.sel{background:var(--night)!important}.dc.sel b{color:var(--glow)}.dc.sel small{color:#BDB8AA}
+.dots{position:absolute;bottom:4px;display:flex;gap:3px}.d{display:inline-block;width:6px;height:6px;border-radius:50%}
+.d.navy{background:var(--navy)}.dc.sel .d.navy{background:#fff}.d.gold{background:var(--gold)}.d.ok{background:var(--ok)}.d.bad{background:var(--bad)}.d.ev{background:var(--c-lead)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:.75rem;color:var(--mute)}.legend span{display:flex;align-items:center;gap:5px}.sq{width:12px;height:12px;border-radius:4px;background:var(--ok-bg);border:1px solid #BFDccd}
+@media (min-width:900px){.p-cal{display:grid;grid-template-columns:1.25fr 1fr;align-items:start}.dc{min-height:70px}}
+
+/* ── النوافذ ── */
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(17,19,29,.55);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.sheet{position:relative;width:100%;max-width:560px;max-height:92dvh;overflow:auto;background:var(--paper);border-radius:26px 26px 0 0;padding:26px 18px calc(22px + env(safe-area-inset-bottom));animation:up .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@media (min-width:700px){.scrim{align-items:center}.sheet{border-radius:26px;padding:30px 28px}}
+.sx{position:absolute;top:12px;inset-inline-end:12px;width:38px;height:38px;border-radius:50%;background:var(--cream);display:grid;place-items:center}
+.sheet h2{font-size:1.3rem;padding-inline-end:40px}.sheet h3{font-size:1rem;margin:18px 0 8px;color:var(--gold-deep)}
+.sheet label{display:block;font-size:.85rem;font-weight:500;color:var(--mute);margin-top:10px}
+input,textarea{width:100%;margin-top:4px;padding:11px 13px;border-radius:13px;border:1.5px solid var(--line);background:#fff;font-size:16px;color:var(--ink);line-height:1.7}
+input:focus,textarea:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,150,62,.18)}textarea{resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.rs-head{display:flex;gap:12px;align-items:center;padding-inline-end:40px}.rs-head h2{padding:0}
+.rs-meta{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:12px 0 6px;font-size:.85rem}.rs-meta svg{width:15px;height:15px}
+.hint{font-size:.9rem;color:var(--mute);background:var(--cream);border-radius:12px;padding:9px 12px}
+.subm,.eval{border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:12px}.sm-h{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.sm-h em{font-size:.78rem;color:var(--mute)}
+.body{white-space:pre-wrap;margin-top:6px;font-size:.95rem}
+.fileb{display:flex;align-items:center;gap:8px;width:100%;margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--cream);font-weight:500}.fileb span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fileb em{font-size:.75rem;color:var(--mute)}.fileb svg{color:var(--gold-deep)}
+.eval.approved{background:var(--ok-bg);border-color:#C5E0D2}.eval.revise{background:var(--warn-bg);border-color:#EBD9AE}.eval p{margin-top:4px;font-size:.93rem}
+.drop{display:flex!important;align-items:center;gap:10px;padding:14px;border:1.5px dashed #D3C8AE;border-radius:14px;cursor:pointer;color:var(--ink)!important;background:#FFFBF0}.drop svg{color:var(--gold-deep);width:22px;height:22px}.drop span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rate{display:flex;gap:6px;justify-content:center;direction:ltr;flex-direction:row-reverse}.rate button{color:#DDD6C4;padding:4px;transition:transform .12s}.rate button svg{width:38px;height:38px}.rate button.on{color:var(--amber)}.rate button:active{transform:scale(1.2)}
+.acc{display:flex;gap:14px;align-items:center}
+.nlist{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.nitem{display:flex;gap:10px;align-items:flex-start;width:100%;padding:10px;border-radius:14px;background:var(--cream)}.nitem.unread{background:#FAF0D9;box-shadow:inset 3px 0 0 var(--gold)}
+[dir=rtl] .nitem.unread{box-shadow:inset -3px 0 0 var(--gold)}
+.nitem b{display:block;font-size:.93rem}.nitem small{display:block;line-height:1.5}.nitem em{font-size:.72rem;color:var(--mute)}
+.nic{width:34px;height:34px;border-radius:50%;background:#fff;display:grid;place-items:center;color:var(--gold-deep);flex:none}.nic svg{width:17px;height:17px}.k-approved .nic{color:var(--ok)}.k-revise .nic{color:var(--warn)}
+
+/* ── الترحيب والدخول ── */
+.greet,.login{position:fixed;inset:0;z-index:100;background:var(--night);color:#fff;display:grid;place-items:center;padding:24px;text-align:center;overflow:auto;isolation:isolate}
+.login{position:relative;min-height:100dvh}
+.greet{cursor:pointer;animation:fade .5s}.greet.bye{opacity:0;transform:scale(1.04);transition:.5s}
+.greet .g-rays,.login .g-rays{background:radial-gradient(60vmax 60vmax at 50% 34%,rgba(240,179,84,.38),transparent 62%),radial-gradient(40vmax 40vmax at 50% 34%,rgba(255,233,168,.16),transparent 60%);animation:breathe 5s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.72}}
+.g-in,.l-in{max-width:620px;width:100%;display:flex;flex-direction:column;align-items:center}
+.g-hi{font-size:clamp(1.5rem,5vw,2.2rem);color:var(--amber);font-weight:500;margin-top:10px;animation:rise .7s .2s both}
+.g-msg{font-size:clamp(2rem,8.4vw,3.9rem);font-weight:900;line-height:1.45;margin:6px 0 14px;text-wrap:balance}
+.g-msg span{display:inline-block;opacity:0;animation:word .7s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(.55s + var(--i)*.14s)}
+@keyframes word{from{opacity:0;transform:translateY(18px);filter:blur(6px)}to{opacity:1}}
+.g-sub{color:#CFCABC;font-size:1.05rem;animation:rise .7s 1.9s both}
+.g-go{margin-top:26px;min-width:170px;font-size:1.05rem;animation:rise .7s 2.2s both}
+.login h1{font-size:4.2rem;font-weight:900;line-height:1.2;margin-top:4px}.l-tag{color:#CFCABC;margin-bottom:26px}
+.l-cards{display:flex;flex-direction:column;gap:12px;width:100%;max-width:400px}
+.l-card{text-align:start;display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;transition:.2s}
+.l-card:hover{background:rgba(240,179,84,.16);border-color:var(--amber);transform:translateY(-2px)}
+.l-card span:nth-child(2){flex:1}.l-card b{display:block;font-size:1.08rem}.l-card small{color:#BDB8AA}.l-card .av{width:44px;height:44px;font-size:1.2rem}.l-card svg{color:var(--amber)}
+.l-form{width:100%;max-width:380px;text-align:start}.l-form label{display:block;font-size:.85rem;color:#CFCABC;margin-top:10px}
+.l-form input{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16);color:#fff;text-align:left}.l-form input:focus{border-color:var(--amber)}
+.l-switch{display:block;width:100%;text-align:center;margin-top:16px;color:var(--amber);font-size:.9rem;padding:8px}
+[data-mode=in] .only-act,[data-mode=act] .only-in{display:none!important}
+.codebox{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--night);color:var(--glow);border-radius:14px;padding:12px 16px;margin-top:8px}.codebox b{font-family:ui-monospace,monospace;font-size:1.25rem;letter-spacing:.12em;direction:ltr}.codebox small{color:#BDB8AA}
+.l-note{margin-top:22px;font-size:.78rem;color:#8E8A7E}
+
+#toasts{position:fixed;z-index:120;bottom:calc(84px + env(safe-area-inset-bottom));inset-inline:0;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 16px}
+.toast{background:var(--night);color:#fff;padding:10px 18px;border-radius:14px;font-size:.9rem;font-weight:500;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);animation:up .25s;max-width:480px;transition:.3s}
+.toast.ok{background:var(--ok)}.toast.err{background:var(--bad)}.toast.notif{border:1px solid var(--amber);color:var(--glow)}.toast.bye{opacity:0;transform:translateY(8px)}
+@media (min-width:900px){#toasts{bottom:28px}}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toasts" aria-live="polite"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+// ───────────────────────── أدوات عامة ─────────────────────────
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const DAY = 864e5;
+const pad = (n) => String(n).padStart(2, "0");
+const d2s = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const s2d = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d, 12); };
+const addDays = (s, n) => { const d = s2d(s); d.setDate(d.getDate() + n); return d2s(d); };
+const diffDays = (a, b) => Math.round((s2d(a) - s2d(b)) / DAY);
+const QS = new URLSearchParams(location.search);
+// ‎?today=2026-12-20 لمعاينة المنصة في تاريخ آخر
+const today = () => (/^\d{4}-\d\d-\d\d$/.test(QS.get("today") || "") ? QS.get("today") : d2s(new Date()));
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+
+const F_G = new Intl.DateTimeFormat("ar-u-ca-gregory-nu-latn", { weekday: "long", day: "numeric", month: "long" });
+const F_GS = new Intl.DateTimeFormat("ar-u-ca-gregory-nu-latn", { day: "numeric", month: "short" });
+const F_GM = new Intl.DateTimeFormat("ar-u-ca-gregory-nu-latn", { month: "long", year: "numeric" });
+const F_H = new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn", { day: "numeric", month: "long", year: "numeric" });
+const F_HD = new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn", { day: "numeric" });
+const F_HM = new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn", { month: "long", year: "numeric" });
+const F_HS = new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn", { day: "numeric", month: "long" });
+const fmtHijriShort = (s) => F_HS.format(s2d(s));
+const fmtDay = (s) => F_G.format(s2d(s));
+const fmtShort = (s) => F_GS.format(s2d(s));
+const fmtHijri = (s) => F_H.format(s2d(s)).replace(/\s*هـ/, "") + " هـ";
+const daysWord = (n) => (n === 1 ? "يوم" : n === 2 ? "يومين" : n <= 10 ? `${n} أيام` : `${n} يوماً`);
+function ago(iso) {
+  const m = Math.floor((Date.now() - new Date(iso)) / 6e4);
+  if (m < 1) return "الآن";
+  if (m < 60) return `قبل ${m} د`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `قبل ${h} س`;
+  return `قبل ${daysWord(Math.floor(h / 24))}`;
+}
+const ORD = ["", "الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس"];
+const firstName = (n) => String(n || "").trim().split(/\s+/)[0] || "";
+
+// ───────────────────────── أيقونات ─────────────────────────
+const svg = (p, w = 1.8) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const I = {
+  home: svg('<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>'),
+  path: svg('<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h6a4 4 0 000-8h-4a4 4 0 010-8"/>'.replace("a4 4 0 010-8", "")),
+  cal: svg('<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
+  folder: svg('<path d="M3 7a2 2 0 012-2h4l2 3h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>'),
+  bell: svg('<path d="M6 9a6 6 0 1112 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 004 0"/>'),
+  check: svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 2.4),
+  clock: svg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+  alert: svg('<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.5v.1"/>'),
+  upload: svg('<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/>'),
+  file: svg('<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 13h6M9 17h6"/>'),
+  x: svg('<path d="M6 6l12 12M18 6L6 18"/>', 2),
+  chevL: svg('<path d="M15 5l-7 7 7 7"/>', 2),
+  chevR: svg('<path d="M9 5l7 7-7 7"/>', 2),
+  book: svg('<path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 21V5M8 7h7"/>'),
+  quran: svg('<path d="M12 6c-2-2-5-2-8-1v13c3-1 6-1 8 1 2-2 5-2 8-1V5c-3-1-6-1-8 1z"/><path d="M12 6v13"/>'),
+  scale: svg('<path d="M12 4v16M6 20h12M5 8h14"/><path d="M5 8l-3 6a3 3 0 006 0zM19 8l-3 6a3 3 0 006 0z"/>'),
+  flag: svg('<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>'),
+  spark: svg('<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>'),
+  people: svg('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><path d="M16 4.6a3.5 3.5 0 010 6.8M18 14.5a6.5 6.5 0 013.5 5.5"/>'),
+  user: svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/>'),
+  out: svg('<path d="M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/><path d="M10 8l-4 4 4 4M6 12h10"/>'),
+  plus: svg('<path d="M12 5v14M5 12h14"/>', 2),
+  send: svg('<path d="M20 4L3 11l7 3 3 7z"/><path d="M10 14l4-4"/>'),
+  gear: svg('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>'),
+  fire: svg('<path d="M12 3c1 4 5 5 5 10a5 5 0 01-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/>'),
+  star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.5 6.1 20.6l1.2-6.5L2.5 9.5l6.6-.9z"/></svg>',
+};
+I.path = svg('<circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 000-7H9a3.5 3.5 0 010-7h7"/>');
+
+function lantern(cls = "") {
+  return `<svg viewBox="0 0 120 170" class="lantern ${cls}" aria-hidden="true">
+  <defs><radialGradient id="lg"><stop offset="0" stop-color="#FFF3C4"/><stop offset=".45" stop-color="#F6B94A" stop-opacity=".75"/><stop offset="1" stop-color="#F6B94A" stop-opacity="0"/></radialGradient></defs>
+  <circle cx="60" cy="94" r="60" fill="url(#lg)" class="lglow"/>
+  <path d="M42 30Q60 2 78 30" fill="none" stroke="#C8963E" stroke-width="3" stroke-linecap="round"/>
+  <rect x="51" y="27" width="18" height="8" rx="2" fill="#C8963E"/>
+  <path d="M37 50h46l-8-15H45z" fill="#9A6A1E"/>
+  <path d="M40 52h40l6 74H34z" fill="rgba(255,236,180,.14)" stroke="#C8963E" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M60 52v74M47 52l-4 74M73 52l4 74" stroke="#C8963E" stroke-width="1" opacity=".45"/>
+  <path d="M60 72c11 15 9 32 0 37-9-5-11-22 0-37z" fill="#FFE9A8" class="flame"/>
+  <path d="M30 126h60l-6 14H36z" fill="#9A6A1E"/>
+  <rect x="43" y="140" width="34" height="6" rx="2" fill="#C8963E"/>
+</svg>`;
+}
+
+// ───────────────────────── خطة المشروع (من وثيقة سراج) ─────────────────────────
+const MONTHS = [null,
+  { tafsir: "يس – الزمر", fiqh: "الفقه الأكبر والمدخل", meet: "غاية التربية الإسلامية وهدفها", source: "أصول التربية الإسلامية، عبدالرحمن النحلاوي: الفصل الرابع", comp: "الغاية التربوية · التعلم الذاتي", book: "أصول التربية الإسلامية", read: ["ص 88 – 92", "ص 93 – 97", "ص 98 – 102", "ص 103 – 107"] },
+  { tafsir: "غافر – الزخرف", fiqh: "فقه العبادات", meet: "تربية العقل الناقد", source: "المذهّبات، فايز الزهراني: تربية العقل الناقد", comp: "التفكير الناقد", book: "المذهّبات", read: ["ص 55 – 59", "ص 60 – 63", "ص 64 – 68", "ص 69 – 72"] },
+  { tafsir: "الدخان – الذاريات", fiqh: "فقه العبادات", meet: "المربون في العصر الجديد", source: "التربية من جديد، فايز الزهراني: المبحث السابع", comp: "المراحل العمرية · تقديم البرامج", book: "التربية من جديد", read: ["ص 215 – 219", "ص 220 – 224", "ص 225 – 229", "ص 230 – 234"] },
+  { tafsir: "الطور – الممتحنة", fiqh: "فقه العبادات", meet: "المعايشة التربوية", source: "المعايشة التربوية، سالم البطاطي: الكتاب كاملاً", comp: "القيادة والقرار التربوي", book: "المعايشة التربوية", read: ["ص 3 – 14", "ص 15 – 28", "ص 29 – 38", "ص 39 – 50"] },
+  { tafsir: "الصف – المرسلات", fiqh: "فقه العبادات", meet: "المربي… البناء والتكوين", source: "معيار المربي، فايز الزهراني: شخصية المربي والمهارات التربوية", comp: "مهارات المربي", book: "معيار المربي", read: ["ص 75 – 89", "ص 90 – 102", "ص 118 – 128", "ص 129 – 139"] },
+  { tafsir: "جزء عمّ", fiqh: "فقه العبادات", meet: "القيادة الخادمة", source: "مقالة «القيادة الخدمية»، د. محمد العامري", comp: "القيادة الخادمة", book: "مقالة «القيادة الخدمية»", read: ["مفهوم القيادة", "القيادة الخدمية", "الأنماط والنظريات", "قيادة التغيير"] },
+];
+const TOTAL_DAYS = 168, WEEKS = 24;
+const COMPS = {
+  quran: { name: "القرآنية", desc: "التفسير اليومي وورقة التدبر", icon: I.quran },
+  edu: { name: "التربوية", desc: "قراءة مصادر اللقاءات وملخصاتها", icon: I.book },
+  sharia: { name: "الشرعية", desc: "الملخص الفقهي الأسبوعي", icon: I.scale },
+  lead: { name: "القيادية", desc: "القيادة الخادمة", icon: I.flag },
+  skill: { name: "المهارية", desc: "التقرير الشهري وشواهد التطبيق", icon: I.spark },
+};
+const TYPES = {
+  tadabbur: { name: "ورقة التدبر", hint: "المعنى والوقفة والعمل من جلسة الأسبوع", icon: I.quran, review: true },
+  fiqh: { name: "الملخص الفقهي", hint: "صفحة تجمع مسائل مقاطع الأسبوع وأدلتها المختصرة", icon: I.scale, review: true },
+  read: { name: "قراءة المقرر", hint: "ربع مقرر الشهر", icon: I.book, review: false },
+  source: { name: "ملخص مصدر اللقاء", hint: "ملخص القراءة وشاهد تطبيق الجدارة", icon: I.file, review: true },
+  report: { name: "التقرير الشهري", hint: "ما أُنجز وما تأخر، وخطة الشهر القادم", icon: I.flag, review: true },
+};
+const ST = {
+  approved: { label: "معتمد", icon: I.check }, done: { label: "تمّ", icon: I.check },
+  submitted: { label: "بانتظار التقييم", icon: I.clock }, revise: { label: "يحتاج استكمال", icon: I.alert },
+  late: { label: "متأخر", icon: I.alert }, due: { label: "مطلوب", icon: I.clock }, upcoming: { label: "قادم", icon: I.clock },
+};
+
+// ───── الجدول الزمني ─────
+const startDate = () => S.settings.start;
+const weekStart = (w) => addDays(startDate(), (w - 1) * 7);
+const weekEnd = (w) => addDays(startDate(), w * 7 - 1);
+const monthOfWeek = (w) => Math.ceil(w / 4);
+const meetingDate = (m) => (S.settings.meetings || [])[m - 1] || weekEnd(m * 4);
+const endDate = () => addDays(startDate(), TOTAL_DAYS - 1);
+// موضع اليوم: di فهرس اليوم (0..167)، سالب قبل الانطلاق
+function nowPos() {
+  const di = diffDays(today(), startDate());
+  const c = Math.max(0, Math.min(TOTAL_DAYS - 1, di));
+  const week = Math.floor(c / 7) + 1;
+  return { di, phase: di < 0 ? "before" : di >= TOTAL_DAYS ? "after" : "during", day: c + 1, week, month: monthOfWeek(week) };
+}
+const tafsirPage = (di) => Math.min(604, 440 + di); // وجه كل يوم ابتداءً من سورة يس (ص 440)
+
+let REQS = [], REQ = {};
+function buildReqs() {
+  REQS = [];
+  for (let w = 1; w <= WEEKS; w++) {
+    const m = monthOfWeek(w), wi = (w - 1) % 4, base = { week: w, month: m, open: weekStart(w), due: weekEnd(w) };
+    REQS.push({ id: `tadabbur-w${w}`, type: "tadabbur", comp: "quran", title: `ورقة التدبر — الأسبوع ${w}`, sub: `آيات من ${MONTHS[m].tafsir}`, ...base });
+    REQS.push({ id: `fiqh-w${w}`, type: "fiqh", comp: "sharia", title: `الملخص الفقهي — الأسبوع ${w}`, sub: MONTHS[m].fiqh, ...base });
+    REQS.push({ id: `read-w${w}`, type: "read", comp: m === 6 ? "lead" : "edu", title: `قراءة: ${MONTHS[m].book}`, sub: MONTHS[m].read[wi], ...base });
+  }
+  for (let m = 1; m <= 6; m++) {
+    const base = { month: m, week: m * 4, open: weekStart(m * 4 - 3), due: meetingDate(m), monthly: true };
+    REQS.push({ id: `source-m${m}`, type: "source", comp: m === 6 ? "lead" : "edu", title: `ملخص مصدر اللقاء ${ORD[m]}`, sub: MONTHS[m].source, ...base });
+    REQS.push({ id: `report-m${m}`, type: "report", comp: "skill", title: `التقرير الشهري — الشهر ${ORD[m]}`, sub: "ما أُنجز وما تأخر، وخطة الشهر القادم", ...base });
+  }
+  REQ = Object.fromEntries(REQS.map((r) => [r.id, r]));
+}
+function statusOf(r) {
+  const t = today();
+  if (r.type === "read") return S.checks[r.id] ? "done" : t > r.due ? "late" : t >= r.open ? "due" : "upcoming";
+  const s = S.subs[r.id];
+  if (s) return s.status;
+  return t > r.due ? "late" : t >= r.open ? "due" : "upcoming";
+}
+const isDone = (r) => ["approved", "submitted", "done"].includes(statusOf(r));
+function dueText(r) {
+  const n = diffDays(r.due, today());
+  if (n === 0) return "يُسلَّم اليوم";
+  if (n === 1) return "يُسلَّم غداً";
+  if (n > 1) return `بعد ${daysWord(n)} · ${fmtShort(r.due)}`;
+  return `منذ ${daysWord(-n)} · ${fmtShort(r.due)}`;
+}
+
+// ───── الإحصاءات ─────
+function stats() {
+  const p = nowPos(), t = today();
+  const tafsirDone = Object.keys(S.tafsir).filter((d) => S.tafsir[d]).length;
+  const passed = p.phase === "before" ? 0 : Math.min(TOTAL_DAYS, p.di + 1);
+  const doneReqs = REQS.filter(isDone);
+  const totalUnits = WEEKS + REQS.length;
+  const overall = (tafsirDone / 7 + doneReqs.length) / totalUnits;
+  const dueSoFar = REQS.filter((r) => r.due < t);
+  const expected = (passed / 7 + dueSoFar.length) / totalUnits;
+  const committed = passed + dueSoFar.length ? (Math.min(tafsirDone, passed) + dueSoFar.filter(isDone).length) / (passed + dueSoFar.length) : 1;
+  let streak = 0, d = S.tafsir[t] ? t : addDays(t, -1);
+  while (S.tafsir[d]) { streak++; d = addDays(d, -1); }
+  const scores = Object.values(S.subs).filter((s) => s.score).map((s) => s.score);
+  const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+  const cnt = (f) => REQS.filter(f).length, dn = (f) => REQS.filter((r) => f(r) && isDone(r)).length;
+  const byComp = {
+    quran: (tafsirDone / 7 + dn((r) => r.type === "tadabbur")) / (WEEKS * 2),
+    sharia: dn((r) => r.type === "fiqh") / WEEKS,
+    edu: dn((r) => r.comp === "edu") / cnt((r) => r.comp === "edu"),
+    lead: dn((r) => r.comp === "lead") / cnt((r) => r.comp === "lead"),
+    skill: dn((r) => r.comp === "skill") / cnt((r) => r.comp === "skill"),
+  };
+  let missed = 0;
+  for (let i = 0; i < passed - 1; i++) if (!S.tafsir[addDays(startDate(), i)]) missed++;
+  return { tafsirDone, passed, overall, expected, committed, streak, avg, scored: scores.length, byComp, missed,
+    late: REQS.filter((r) => statusOf(r) === "late"), revise: REQS.filter((r) => statusOf(r) === "revise"), pending: REQS.filter((r) => statusOf(r) === "submitted") };
+}
+// حالة الأسبوع لمسار المصابيح: full | part | late | now | off
+function weekState(w) {
+  const p = nowPos(), rs = REQS.filter((r) => r.week === w && !r.monthly);
+  let t = 0;
+  for (let i = 0; i < 7; i++) if (S.tafsir[addDays(weekStart(w), i)]) t++;
+  const done = rs.filter(isDone).length, frac = (t / 7 + done) / (1 + rs.length);
+  if (frac >= 0.999) return "full";
+  if (p.phase === "during" && w === p.week) return "now";
+  if (p.phase !== "before" && (w < p.week || p.phase === "after")) return frac > 0 ? "part" : "late";
+  return frac > 0 ? "part" : "off";
+}
+
+// ───── الرسائل التحفيزية ─────
+const QUOTES = {
+  member: ["العمرُ يحتاج سرعةً للوصول إلى الإنجاز", "وجهٌ تقرؤه اليوم خيرٌ من عشرةٍ تؤجّلها إلى الغد", "السراجُ لا يضيء إلا بزيتٍ يُصبّ فيه كل يوم", "قليلٌ دائم خيرٌ من كثيرٍ منقطع", "من سار على الدرب وصل، فلا تتوقف", "ما تبنيه اليوم في نفسك يستضيء به غداً مَن حولك",
+    "الإنجازُ قرارٌ يتجدد كل صباح", "الأيامُ تمضي، فاجعل لكل يومٍ أثراً", "همّتك اليوم هي حصادك في اللقاء القادم", "ابدأ الآن، فأفضل وقتٍ للإنجاز هو هذه اللحظة", "المربي يُصنع على مهل، لكنه لا يتوقف عن السير", "كل ملخصٍ ترفعه اليوم لبنةٌ في بنائك غداً"],
+  reviewer: ["متابعتُك اليوم وقودٌ لهمّة من تتابعه", "كلمةُ تقييمٍ صادقة تختصر على المتربي شهوراً", "المربي يُصنع بالمتابعة قبل التوجيه", "تقييمُك السريع يُبقي السراجَ مشتعلاً", "من تابع أتقن، ومن أهمل ضيّع", "الثناءُ في موضعه يصنع إنجازاً جديداً"],
+};
+function pickQuote(role) {
+  const list = QUOTES[role] || QUOTES.member, k = "siraj.q." + role;
+  let i = (+(localStorage.getItem(k) ?? -1) + 1) % list.length;
+  localStorage.setItem(k, i);
+  return list[i];
+}
+
+// ───────────────────────── طبقة البيانات ─────────────────────────
+// الوضع المحلي: الحالة في localStorage والملفات في IndexedDB (للمعاينة قبل ربط قاعدة البيانات).
+// كل الواجهة تمر عبر api.* حتى يُستبدل هذا الملف بمحوّل Supabase دون تغيير الواجهات.
+const DEMO = QS.has("demo");
+const KEY = DEMO ? "siraj.demo" : "siraj.v1";
+const blank = () => ({ settings: { start: "2026-11-21", meetings: [], names: { reviewer: "المتابع", member: "المستفيد" } }, subs: {}, checks: {}, tafsir: {}, events: [], notifs: [] });
+let S = blank();
+let ME = null; // {role:'reviewer'|'member', name}
+
+const idb = () => new Promise((res, rej) => { const r = indexedDB.open("siraj-files", 1); r.onupgradeneeded = () => r.result.createObjectStore("f"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+const idbDo = async (mode, fn) => { const db = await idb(); return new Promise((res, rej) => { const t = db.transaction("f", mode), q = fn(t.objectStore("f")); t.oncomplete = () => res(q.result); t.onerror = () => rej(t.error); }); };
+
+const api = {
+  mode: "local",
+  read() {
+    try { const j = JSON.parse(localStorage.getItem(KEY) || "null"); S = j ? { ...blank(), ...j, settings: { ...blank().settings, ...j.settings } } : blank(); } catch { S = blank(); }
+    buildReqs();
+  },
+  async load() {
+    this.read();
+    if (DEMO && !localStorage.getItem(KEY)) seedDemo();
+    const r = localStorage.getItem("siraj.me");
+    ME = r === "reviewer" || r === "member" ? { role: r, name: S.settings.names[r] } : null;
+  },
+  save() { localStorage.setItem(KEY, JSON.stringify(S)); buildReqs(); if (ME) ME.name = S.settings.names[ME.role]; },
+  async signIn(role) { localStorage.setItem("siraj.me", role); ME = { role, name: S.settings.names[role] }; },
+  async signOut() { localStorage.removeItem("siraj.me"); ME = null; },
+
+  notify(to, kind, title, body, req) { S.notifs.unshift({ id: uid(), to, kind, title, body: body || "", req: req || null, at: new Date().toISOString(), read: false }); S.notifs = S.notifs.slice(0, 300); },
+  async markRead(ids) { S.notifs.forEach((n) => { if (ids.includes(n.id)) n.read = true; }); this.save(); },
+
+  async submit(reqId, { title, body, file }) {
+    const r = REQ[reqId], prev = S.subs[reqId];
+    let f = prev?.file || null;
+    if (file) { f = { id: uid(), name: file.name, type: file.type, size: file.size }; await idbDo("readwrite", (s) => s.put(file, f.id)); }
+    const history = prev?.reviewedAt ? [...(prev.history || []), { status: prev.status, score: prev.score, note: prev.note, at: prev.reviewedAt }] : prev?.history || [];
+    S.subs[reqId] = { reqId, title, body, file: f, at: new Date().toISOString(), status: "submitted", score: null, note: "", reviewedAt: null, history };
+    this.notify("reviewer", "submit", prev ? "أُعيد رفع متطلب" : "رُفع متطلب جديد", `${r.title} — بانتظار تقييمك`, reqId);
+    this.save();
+  },
+  async review(reqId, { status, score, note }) {
+    const s = S.subs[reqId]; if (!s) return;
+    Object.assign(s, { status, score, note, reviewedAt: new Date().toISOString() });
+    const r = REQ[reqId];
+    this.notify("member", status === "approved" ? "approved" : "revise", status === "approved" ? "اعتُمد متطلبك" : "متطلب يحتاج استكمالاً", `${r.title}${score ? ` · التقييم ${score}/5` : ""}${note ? ` — ${note}` : ""}`, reqId);
+    this.save();
+  },
+  async toggleCheck(reqId) { if (S.checks[reqId]) delete S.checks[reqId]; else S.checks[reqId] = new Date().toISOString(); this.save(); },
+  async setTafsir(date, on) { if (on) S.tafsir[date] = true; else delete S.tafsir[date]; this.save(); },
+  async nudge(reqId) { const r = REQ[reqId]; this.notify("member", "nudge", "تذكير من المتابع", `${r.title} — ${ST[statusOf(r)].label}، ${dueText(r)}`, reqId); this.save(); },
+  async message(text) { this.notify(ME.role === "reviewer" ? "member" : "reviewer", "msg", `رسالة من ${firstName(ME.name)}`, text); this.save(); },
+  async addEvent(ev) { S.events.push({ id: uid(), ...ev }); this.notify("member", "event", "موعد جديد في التقويم", `${ev.title} — ${fmtDay(ev.date)}`); this.save(); },
+  async delEvent(id) { S.events = S.events.filter((e) => e.id !== id); this.save(); },
+  async saveSettings(st) {
+    const moved = st.meetings.map((d, i) => d && d !== meetingDate(i + 1) ? i + 1 : 0).filter(Boolean);
+    S.settings = { ...S.settings, ...st };
+    buildReqs();
+    moved.forEach((m) => this.notify("member", "event", "تغيّر موعد اللقاء", `اللقاء ${ORD[m]} — ${fmtDay(meetingDate(m))}`));
+    this.save();
+  },
+  async fileUrl(f) { const b = await idbDo("readonly", (s) => s.get(f.id)); return b ? URL.createObjectURL(b) : null; },
+};
+
+// بيانات معاينة فقط (‎?demo) — تُحفظ في مفتاح منفصل ولا تمس البيانات الحقيقية
+function seedDemo() {
+  const p = nowPos(); if (p.phase === "before") return api.save();
+  let x = 11; const rnd = () => (x = (x * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i <= p.di && i < TOTAL_DAYS; i++) if (i === p.di ? false : rnd() > 0.12 || i > p.di - 4) S.tafsir[addDays(startDate(), i)] = true;
+  const notes = ["ملخص متقن ووقفات عميقة، بارك الله فيك", "جيد، ويحسن ربط الوقفة بتطبيق عملي في الحلقة", "أحسنت، استمر على هذا المستوى", "اختصار مفيد، أضف الأدلة في المرة القادمة"];
+  REQS.filter((r) => r.open <= today()).forEach((r) => {
+    const past = r.due < today(), last = r.week === p.week - 1;
+    if (r.type === "read") { if (past ? rnd() > 0.1 : rnd() > 0.6) S.checks[r.id] = new Date().toISOString(); return; }
+    if (!past || (r.monthly && r.due >= today())) return;
+    if (rnd() < 0.1) return;
+    const st = last ? (r.type === "fiqh" ? "revise" : "submitted") : "approved";
+    S.subs[r.id] = { reqId: r.id, title: r.title, body: r.type === "tadabbur" ? "المعنى: تأمل في دلائل القدرة وإحياء الأرض الميتة.\nالوقفة: كل آية كونية رسالة لمن يعتبر.\nالعمل: تخصيص عشر دقائق بعد الفجر للتدبر مع الطلاب." : "خلاصة مسائل الأسبوع مع أدلتها المختصرة، مرتبة بحسب المقاطع.", file: null, at: new Date(s2d(r.due) - DAY).toISOString(), status: st,
+      score: st === "approved" ? 4 + Math.round(rnd()) : st === "revise" ? 3 : null, note: st === "approved" ? notes[Math.floor(rnd() * notes.length)] : st === "revise" ? "ينقصه ذكر الأدلة لمسائل المقطع الثاني" : "", reviewedAt: st === "submitted" ? null : new Date(s2d(r.due)).toISOString(), history: [] };
+  });
+  const w = Math.max(1, p.week - 1);
+  api.notify("member", "approved", "اعتُمد متطلبك", `ورقة التدبر — الأسبوع ${Math.max(1, w - 1)} · التقييم 5/5 — أحسنت، استمر على هذا المستوى`, `tadabbur-w${Math.max(1, w - 1)}`);
+  api.notify("member", "revise", "متطلب يحتاج استكمالاً", `الملخص الفقهي — الأسبوع ${w} — ينقصه ذكر الأدلة لمسائل المقطع الثاني`, `fiqh-w${w}`);
+  api.notify("reviewer", "submit", "رُفع متطلب جديد", `ورقة التدبر — الأسبوع ${w} — بانتظار تقييمك`, `tadabbur-w${w}`);
+  api.save();
+}
+
+// ───────────────────────── محوّل Supabase ─────────────────────────
+// يُفعَّل عند وجود docs/config.js؛ يستبدل دوال api المحلية بنداءات قاعدة البيانات.
+const CFG = window.SIRAJ_CONFIG;
+let sb = null, chan = null;
+const FONT_KEYS = { light: 300, regular: 400, medium: 500, bold: 700, black: 900 };
+async function addFont(key, buf) { try { document.fonts.add(await new FontFace("Thmanyah Brand", buf, { weight: String(FONT_KEYS[key]) }).load()); } catch (e) { console.warn("font", key, e); } }
+async function cachedFonts() { await Promise.all(Object.keys(FONT_KEYS).map(async (k) => { try { const b = await idbDo("readonly", (s) => s.get("font:" + k)); if (b) await addFont(k, await b.arrayBuffer()); } catch {} })); }
+if (CFG && window.supabase && !DEMO) {
+  sb = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey);
+  const must = (r) => { if (r.error) throw new Error(r.error.message); return r.data; };
+  Object.assign(api, {
+    mode: "remote", fontsVer: null,
+    async load() {
+      S = blank(); ME = null; buildReqs();
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) return;
+      this.uid = session.user.id;
+      await this.refresh();
+      if (!ME) { await sb.auth.signOut(); return; }
+      this.subscribe(); this.loadFonts();
+    },
+    async refresh() {
+      const [pr, st, su, ch, tf, ev, nf] = (await Promise.all([
+        sb.from("profiles").select("role,name,user_id"), sb.from("settings").select("*").eq("id", 1).maybeSingle(), sb.from("submissions").select("*"),
+        sb.from("checks").select("*"), sb.from("tafsir").select("*"), sb.from("events").select("*").order("date"), sb.from("notifs").select("*").order("at", { ascending: false }).limit(300),
+      ])).map(must);
+      const names = Object.fromEntries(pr.map((p) => [p.role, p.name]));
+      const n = blank();
+      n.settings = { start: st?.start || n.settings.start, meetings: st?.meetings || [], names: { ...n.settings.names, ...names }, fontFiles: st?.font_files || {} };
+      su.forEach((s) => (n.subs[s.req_id] = { reqId: s.req_id, title: s.title, body: s.body, file: s.file, at: s.at, status: s.status, score: s.score, note: s.note, reviewedAt: s.reviewed_at, history: s.history || [] }));
+      ch.forEach((c) => (n.checks[c.req_id] = c.at));
+      tf.forEach((t) => (n.tafsir[t.day] = true));
+      n.events = ev;
+      n.notifs = nf.map((x) => ({ id: x.id, to: x.to_role, kind: x.kind, title: x.title, body: x.body, req: x.req, at: x.at, read: x.read }));
+      S = n; buildReqs();
+      const me = pr.find((p) => p.user_id === this.uid);
+      ME = me ? { role: me.role, name: me.name } : null;
+    },
+    subscribe() {
+      if (chan) return;
+      let t;
+      const pull = () => { clearTimeout(t); t = setTimeout(async () => {
+        if (!ME) return;
+        const before = unreadMine().length;
+        try { await api.refresh(); } catch { return; }
+        if (!ME) return render();
+        const now = unreadMine();
+        if (now.length > before) toast(now[0].title + (now[0].body ? " — " + now[0].body : ""), "notif");
+        if (!sheetEl) rerender(); else paintBell();
+        api.loadFonts();
+      }, 350); };
+      chan = sb.channel("siraj").on("postgres_changes", { event: "*", schema: "public" }, pull).subscribe();
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) pull(); });
+    },
+    save() { buildReqs(); },
+    notify() {},
+    async signIn(email, password) { must(await sb.auth.signInWithPassword({ email: email.trim(), password })); await this.load(); if (!ME) throw new Error("هذا الحساب غير مرتبط بالمنصة"); },
+    async activate(email, code, password) { must(await sb.rpc("activate_account", { p_email: email, p_code: code, p_password: password })); await this.signIn(email, password); },
+    async signOut() { if (chan) { sb.removeChannel(chan); chan = null; } await sb.auth.signOut(); ME = null; S = blank(); buildReqs(); },
+    async markRead(ids) { if (!ids.length) return; must(await sb.from("notifs").update({ read: true }).in("id", ids)); S.notifs.forEach((n) => { if (ids.includes(n.id)) n.read = true; }); },
+    async submit(reqId, { title, body, file }) {
+      const prev = S.subs[reqId]; let f = prev?.file || null;
+      if (file) {
+        const ext = (file.name.match(/\.([A-Za-z0-9]{1,8})$/) || [, "bin"])[1].toLowerCase(), path = `${reqId}/${uid()}.${ext}`;
+        must(await sb.storage.from("files").upload(path, file, { contentType: file.type || undefined }));
+        f = { path, name: file.name, type: file.type, size: file.size };
+      }
+      must(prev ? await sb.from("submissions").update({ title, body, file: f }).eq("req_id", reqId) : await sb.from("submissions").insert({ req_id: reqId, title, body, file: f }));
+      await this.refresh();
+    },
+    async review(reqId, { status, score, note }) { must(await sb.from("submissions").update({ status, score, note }).eq("req_id", reqId)); await this.refresh(); },
+    async toggleCheck(reqId) { must(S.checks[reqId] ? await sb.from("checks").delete().eq("req_id", reqId) : await sb.from("checks").insert({ req_id: reqId })); await this.refresh(); },
+    async setTafsir(day, on) { must(on ? await sb.from("tafsir").upsert({ day }, { ignoreDuplicates: true }) : await sb.from("tafsir").delete().eq("day", day)); if (on) S.tafsir[day] = true; else delete S.tafsir[day]; },
+    note(kind, title, body, req) { return sb.rpc("send_note", { p_kind: kind, p_title: title, p_body: body || "", p_req: req || null }).then(must); },
+    async nudge(reqId) { const r = REQ[reqId]; await this.note("nudge", "تذكير من المتابع", `${r.title} — ${ST[statusOf(r)].label}، ${dueText(r)}`, reqId); },
+    async message(text) { await this.note("msg", `رسالة من ${firstName(ME.name)}`, text); },
+    async addEvent(ev) { must(await sb.from("events").insert(ev)); await this.note("event", "موعد جديد في التقويم", `${ev.title} — ${fmtDay(ev.date)}`); await this.refresh(); },
+    async delEvent(id) { must(await sb.from("events").delete().eq("id", id)); await this.refresh(); },
+    async saveSettings(st) {
+      const moved = st.meetings.map((d, i) => (d && d !== meetingDate(i + 1) ? i + 1 : 0)).filter(Boolean);
+      must(await sb.from("settings").update({ start: st.start, meetings: st.meetings }).eq("id", 1));
+      for (const role of ["reviewer", "member"]) if (st.names[role] !== S.settings.names[role]) must(await sb.from("profiles").update({ name: st.names[role] }).eq("role", role));
+      await this.refresh();
+      for (const m of moved) await this.note("event", "تغيّر موعد اللقاء", `اللقاء ${ORD[m]} — ${fmtDay(meetingDate(m))}`);
+    },
+    async fileUrl(f) { if (!f?.path) return null; const r = await sb.storage.from("files").createSignedUrl(f.path, 3600); return r.data?.signedUrl || null; },
+    async memberInvite() { const r = await sb.rpc("member_invite"); return r.data || null; },
+    async uploadFonts(files) {
+      const ff = { ...(S.settings.fontFiles || {}) }; let n = 0;
+      for (const file of files) {
+        const key = Object.keys(FONT_KEYS).find((k) => file.name.toLowerCase().includes(k)); if (!key) continue;
+        const path = `fonts/${key}.otf`;
+        must(await sb.storage.from("brand").upload(path, file, { upsert: true, contentType: "font/otf" }));
+        ff[key] = { path, v: Date.now() }; n++;
+      }
+      if (n) { must(await sb.from("settings").update({ font_files: ff }).eq("id", 1)); await this.refresh(); this.fontsVer = null; await this.loadFonts(); }
+      return n;
+    },
+    // خطوط الهوية محفوظة في مخزن خاص (لا تُنشر علناً) وتُخزَّن في المتصفح بعد أول دخول
+    async loadFonts() {
+      const ff = S.settings.fontFiles || {}, ver = JSON.stringify(ff);
+      if (ver === this.fontsVer) return; this.fontsVer = ver;
+      for (const [k, f] of Object.entries(ff)) {
+        if (!FONT_KEYS[k] || localStorage.getItem("siraj.font." + k) === String(f.v)) continue;
+        const r = await sb.storage.from("brand").download(f.path); if (r.error) continue;
+        try { await idbDo("readwrite", (s) => s.put(r.data, "font:" + k)); localStorage.setItem("siraj.font." + k, String(f.v)); } catch {}
+        await addFont(k, await r.data.arrayBuffer());
+      }
+    },
+  });
+}
+
+// ───────────────────────── عناصر الواجهة العامة ─────────────────────────
+function toast(msg, kind = "") {
+  const t = document.createElement("div");
+  t.className = "toast " + kind; t.textContent = msg;
+  $("#toasts").appendChild(t);
+  setTimeout(() => { t.classList.add("bye"); setTimeout(() => t.remove(), 300); }, 3200);
+}
+let sheetEl = null;
+function openSheet(html, mount) {
+  closeSheet();
+  sheetEl = document.createElement("div");
+  sheetEl.className = "scrim";
+  sheetEl.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><button class="sx" data-close aria-label="إغلاق">${I.x}</button>${html}</div>`;
+  sheetEl.addEventListener("click", (e) => { if (e.target === sheetEl || e.target.closest("[data-close]")) closeSheet(); });
+  document.body.appendChild(sheetEl);
+  document.body.classList.add("lock");
+  mount && mount($(".sheet", sheetEl));
+}
+function closeSheet() { sheetEl?.remove(); sheetEl = null; document.body.classList.remove("lock"); }
+const stars = (n, cls = "") => `<span class="stars ${cls}" aria-label="${n} من 5">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= n ? "on" : ""}">${I.star}</i>`).join("")}</span>`;
+const chip = (st) => `<span class="chip ${st}">${ST[st].icon}${ST[st].label}</span>`;
+const pct = (v) => Math.round(v * 100);
+const isMember = () => ME?.role === "member";
+const memberFirst = () => firstName(S.settings.names.member);
+
+// ───── الرسالة التحفيزية بملء الشاشة عند الدخول ─────
+function showGreeting(force) {
+  if (!ME || (!force && showGreeting.done)) return;
+  showGreeting.done = true;
+  const st = stats(), p = nowPos(), q = pickQuote(ME.role);
+  let sub = "";
+  if (isMember()) {
+    if (p.phase === "before") sub = `ينطلق المشروع بعد ${daysWord(-p.di)}، فهيّئ نفسك`;
+    else if (st.revise.length + st.late.length) sub = `بانتظارك ${st.revise.length + st.late.length} من المتطلبات، تداركها اليوم`;
+    else if (p.phase === "during" && !S.tafsir[today()]) sub = "وجهُ اليوم بانتظارك";
+    else sub = `أنجزت ${pct(st.overall)}٪ من الطريق`;
+  } else sub = st.pending.length ? `${st.pending.length} من المتطلبات بانتظار تقييمك` : `إنجاز ${memberFirst()} حتى الآن ${pct(st.overall)}٪`;
+  const g = document.createElement("div");
+  g.className = "greet";
+  g.innerHTML = `<div class="g-rays"></div><div class="g-in">${lantern("big")}
+    <p class="g-hi">يا ${esc(firstName(ME.name))}،</p>
+    <h1 class="g-msg">${q.split(" ").map((w, i) => `<span style="--i:${i}">${esc(w)}</span>`).join(" ")}</h1>
+    <p class="g-sub">${esc(sub)}</p>
+    <button class="btn gold g-go">لنبدأ</button></div>`;
+  const bye = () => { g.classList.add("bye"); setTimeout(() => g.remove(), 500); };
+  g.addEventListener("click", bye);
+  document.body.appendChild(g);
+}
+
+// ───── الهيكل ─────
+const NAV = [["home", "الرئيسية", I.home], ["path", "المسار", I.path], ["cal", "التقويم", I.cal], ["file", "ملف الإنجاز", I.folder]];
+const unreadMine = () => S.notifs.filter((n) => n.to === ME.role && !n.read);
+function shell(route) {
+  const un = unreadMine().length;
+  const links = (cls) => NAV.map(([r, t, ic]) => `<a href="#/${r}" class="${cls} ${route === r ? "on" : ""}">${ic}<span>${t}</span></a>`).join("");
+  return `<div class="app">
+  <aside class="side"><div class="logo">${lantern("mini")}<div><b>سراج</b><small>منصة المتابعة</small></div></div>
+    <nav>${links("sl")}</nav>
+    <button class="who" data-act="account"><span class="av">${esc(firstName(ME.name)[0] || "")}</span><span><b>${esc(ME.name)}</b><small>${isMember() ? "المستفيد" : "المتابع والمقيّم"}</small></span></button></aside>
+  <div class="main">
+    <header class="top"><div class="logo sm">${lantern("mini")}<b>سراج</b></div>
+      <span class="grow"></span>
+      <button class="ib" data-act="notifs" aria-label="التنبيهات">${I.bell}${un ? `<i class="dot">${un}</i>` : ""}</button>
+      <button class="ib avb" data-act="account" aria-label="الحساب"><span class="av">${esc(firstName(ME.name)[0] || "")}</span></button></header>
+    <main id="view"></main>
+  </div>
+  <nav class="bnav">${links("bl")}</nav></div>`;
+}
+
+// ───── شاشة الدخول ─────
+function loginView() {
+  if (api.mode === "remote") return `<div class="login"><div class="g-rays"></div><div class="l-in">${lantern("big")}
+    <h1>سراج</h1><p class="l-tag">نورٌ يُوقَد في المربي، ليضيء به مَن حوله</p>
+    <form class="l-form" id="authf" data-mode="in" novalidate>
+      <label>البريد الإلكتروني<input name="email" type="email" autocomplete="email" dir="ltr" required></label>
+      <label class="only-act">رمز التفعيل<input name="code" autocomplete="off" dir="ltr" autocapitalize="characters"></label>
+      <label><span class="only-in">كلمة المرور</span><span class="only-act">اختر كلمة مرور (8 أحرف على الأقل)</span><input name="password" type="password" autocomplete="current-password" dir="ltr" required></label>
+      <button class="btn gold wide" type="submit"><span class="only-in">دخول</span><span class="only-act">تفعيل الحساب والدخول</span></button>
+      <button class="l-switch" type="button" data-authmode><span class="only-in">أول مرة؟ فعّل حسابك برمز التفعيل</span><span class="only-act">لديّ حساب مفعّل — تسجيل الدخول</span></button>
+    </form></div></div>`;
+  return `<div class="login"><div class="g-rays"></div><div class="l-in">${lantern("big")}
+    <h1>سراج</h1><p class="l-tag">نورٌ يُوقَد في المربي، ليضيء به مَن حوله</p>
+    <div class="l-cards">
+      <button class="l-card" data-login="member"><span class="av">${esc(memberFirst()[0])}</span><span><b>${esc(S.settings.names.member)}</b><small>المستفيد · يرفع الإنجاز والملخصات</small></span>${I.chevL}</button>
+      <button class="l-card" data-login="reviewer"><span class="av">${esc(firstName(S.settings.names.reviewer)[0])}</span><span><b>${esc(S.settings.names.reviewer)}</b><small>المتابع والمقيّم · يراجع ويقيّم</small></span>${I.chevL}</button>
+    </div>
+    <p class="l-note">نسخة معاينة محلية — البيانات تُحفظ في هذا المتصفح فقط</p></div></div>`;
+}
+
+// ───── التنبيهات ─────
+const N_IC = { submit: I.upload, approved: I.check, revise: I.alert, nudge: I.bell, msg: I.send, event: I.cal };
+function notifSheet() {
+  const list = S.notifs.filter((n) => n.to === ME.role).slice(0, 60);
+  openSheet(`<h2>التنبيهات</h2>
+    <div class="nlist">${list.length ? list.map((n) => `<button class="nitem ${n.read ? "" : "unread"} k-${n.kind}" data-n="${n.id}"><span class="nic">${N_IC[n.kind] || I.bell}</span><span><b>${esc(n.title)}</b><small>${esc(n.body)}</small><em>${ago(n.at)}</em></span></button>`).join("") : `<div class="empty">${I.bell}<p>لا توجد تنبيهات بعد</p></div>`}</div>
+    <div class="row gap"><button class="btn ghost" data-msg>${I.send} رسالة إلى ${esc(firstName(S.settings.names[isMember() ? "reviewer" : "member"]))}</button></div>`, (el) => {
+    el.addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-n]");
+      if (b) { const n = S.notifs.find((x) => x.id === b.dataset.n); await api.markRead([n.id]); closeSheet(); render(); if (n.req) reqSheet(n.req); return; }
+      if (e.target.closest("[data-msg]")) messageSheet();
+    });
+  });
+  const ids = list.filter((n) => !n.read && !n.req).map((n) => n.id);
+  if (ids.length) api.markRead(ids).then(() => paintBell());
+}
+function paintBell() { const b = $('[data-act="notifs"]'); if (!b) return; const n = unreadMine().length; $(".dot", b)?.remove(); if (n) b.insertAdjacentHTML("beforeend", `<i class="dot">${n}</i>`); }
+function messageSheet() {
+  openSheet(`<h2>رسالة قصيرة</h2><p class="mute">تصل تنبيهاً في الصفحة الرئيسية للطرف الآخر.</p>
+    <textarea id="mtext" rows="4" placeholder="اكتب رسالتك…"></textarea>
+    <button class="btn gold wide" data-send>${I.send} إرسال</button>`, (el) => {
+    $("[data-send]", el).onclick = async () => { const v = $("#mtext", el).value.trim(); if (!v) return; await api.message(v); closeSheet(); toast("أُرسلت الرسالة", "ok"); };
+  });
+}
+
+// ───── الحساب والإعدادات ─────
+function accountSheet() {
+  const rev = !isMember(), st = S.settings;
+  openSheet(`<div class="acc"><span class="av xl">${esc(firstName(ME.name)[0] || "")}</span><div><h2>${esc(ME.name)}</h2><p class="mute">${rev ? "المتابع والمقيّم" : "المستفيد"}</p></div></div>
+    ${rev ? `<h3>إعدادات المشروع</h3>
+    <label>اسم المتابع<input id="s-rn" value="${esc(st.names.reviewer)}"></label>
+    <label>اسم المستفيد<input id="s-mn" value="${esc(st.names.member)}"></label>
+    <label>تاريخ انطلاق المشروع<input id="s-start" type="date" value="${st.start}"><small>${fmtHijri(st.start)}</small></label>
+    <h3>مواعيد اللقاءات الشهرية</h3>
+    <div class="grid2">${[1, 2, 3, 4, 5, 6].map((m) => `<label>اللقاء ${ORD[m]}<input type="date" data-meet="${m}" value="${meetingDate(m)}"></label>`).join("")}</div>
+    <button class="btn gold wide" data-save>حفظ الإعدادات</button>
+    ${api.mode === "remote" ? `<div id="invite"></div><h3>خط المنصة (ثمانية)</h3><label class="drop">${I.upload}<span id="fn-name">${Object.keys(st.fontFiles || {}).length ? `مرفوع: ${Object.keys(st.fontFiles).length} أوزان — اضغط للاستبدال` : "ارفع ملفات الخط الخمسة (otf) مرة واحدة"}</span><input id="fn-file" type="file" accept=".otf,.ttf" multiple hidden></label>` : ""}` : ""}
+    <div class="row gap"><button class="btn ghost" data-greet>${I.spark} رسالة اليوم</button><button class="btn ghost danger" data-out>${I.out} تسجيل الخروج</button></div>`, (el) => {
+    $("[data-out]", el).onclick = async () => { await api.signOut(); closeSheet(); render(); };
+    $("[data-greet]", el).onclick = () => { closeSheet(); showGreeting(true); };
+    if (rev && api.mode === "remote") {
+      api.memberInvite().then((c) => { const b = $("#invite", el); if (c && b) b.innerHTML = `<h3>تفعيل حساب المستفيد</h3><div class="codebox"><span><small>رمز التفعيل — أرسله له مع رابط المنصة</small><br><b>${esc(c)}</b></span></div>`; });
+      $("#fn-file", el).onchange = async (e) => { const fs = [...e.target.files]; if (!fs.length) return; $("#fn-name", el).textContent = "جارٍ الرفع…"; try { const n = await api.uploadFonts(fs); $("#fn-name", el).textContent = n ? `رُفع ${n} من الأوزان` : "لم أتعرف على أسماء الملفات (Light / Regular / Medium / Bold / Black)"; if (n) toast("فُعّل خط ثمانية", "ok"); } catch (err) { $("#fn-name", el).textContent = "تعذّر الرفع"; toast(err.message, "err"); } };
+    }
+    const sv = $("[data-save]", el);
+    if (sv) sv.onclick = async () => {
+      const start = $("#s-start", el).value || st.start, changed = start !== st.start;
+      const meetings = changed ? [] : $$("[data-meet]", el).map((i) => i.value || "");
+      await api.saveSettings({ start, meetings, names: { reviewer: $("#s-rn", el).value.trim() || st.names.reviewer, member: $("#s-mn", el).value.trim() || st.names.member } });
+      closeSheet(); render(); toast(changed ? "حُفظت الإعدادات وأُعيد ضبط مواعيد اللقاءات" : "حُفظت الإعدادات", "ok");
+    };
+  });
+}
+
+// ───── نافذة المتطلب: رفع / تقييم ─────
+function reqSheet(id) {
+  const r = REQ[id]; if (!r) return;
+  const T = TYPES[r.type], st = statusOf(r), s = S.subs[id], mem = isMember();
+  const head = `<div class="rs-head"><span class="ric big c-${r.comp}">${T.icon}</span><div><small>${r.monthly ? `الشهر ${ORD[r.month]}` : `الأسبوع ${r.week} · الشهر ${ORD[r.month]}`} · الجدارة ${COMPS[r.comp].name}</small><h2>${esc(r.title)}</h2></div></div>
+    <div class="rs-meta">${chip(st)}<span class="mute">${I.cal} ${fmtDay(r.due)} · ${dueText(r)}</span></div>
+    <p class="hint">${esc(r.sub)}${r.type !== "read" ? ` — ${esc(T.hint)}` : ""}</p>`;
+  if (r.type === "read") {
+    return openSheet(head + (mem ? `<button class="btn ${S.checks[id] ? "ghost" : "gold"} wide" data-chk>${I.check} ${S.checks[id] ? "إلغاء علامة الإتمام" : "أتممتُ قراءة هذا المقرر"}</button>` : `<p class="mute">${S.checks[id] ? "أتمّ المستفيد القراءة." : "لم تُسجَّل القراءة بعد."}</p>${!S.checks[id] && st !== "upcoming" ? `<button class="btn ghost wide" data-nudge>${I.bell} أرسل تذكيراً</button>` : ""}`), (el) => {
+      $("[data-chk]", el)?.addEventListener("click", async () => { await api.toggleCheck(id); closeSheet(); render(); });
+      $("[data-nudge]", el)?.addEventListener("click", async () => { await api.nudge(id); closeSheet(); toast("أُرسل التذكير", "ok"); });
+    });
+  }
+  const subBlock = s ? `<div class="subm"><div class="sm-h"><b>${esc(s.title || r.title)}</b><em>رُفع ${fmtShort(d2s(new Date(s.at)))}</em></div>
+      ${s.body ? `<p class="body">${esc(s.body)}</p>` : ""}
+      ${s.file ? `<button class="fileb" data-file>${I.file}<span>${esc(s.file.name)}</span><em>${(s.file.size / 1024 / 1024).toFixed(1)} م.ب</em></button>` : ""}</div>` : "";
+  const evalBlock = s?.reviewedAt ? `<div class="eval ${s.status}"><div class="sm-h"><b>${s.status === "approved" ? "تقييم المتابع: معتمد" : "تقييم المتابع: يحتاج استكمالاً"}</b>${s.score ? stars(s.score) : ""}</div>${s.note ? `<p>${esc(s.note)}</p>` : ""}</div>` : "";
+  let form = "";
+  if (mem && (!s || s.status === "revise")) form = `<h3>${s ? "إعادة الرفع بعد الاستكمال" : "رفع المتطلب"}</h3>
+      <label>العنوان<input id="f-title" value="${esc(s?.title || r.title)}"></label>
+      <label>الملخص<textarea id="f-body" rows="6" placeholder="${r.type === "tadabbur" ? "المعنى:\nالوقفة:\nالعمل:" : "اكتب الملخص هنا، أو أرفق ملفاً"}">${esc(s?.body || "")}</textarea></label>
+      <label class="drop">${I.upload}<span id="f-name">${s?.file ? esc(s.file.name) : "إرفاق ملف (PDF أو صورة أو Word)"}</span><input id="f-file" type="file" accept=".pdf,.doc,.docx,image/*" hidden></label>
+      <button class="btn gold wide" data-submit>${I.upload} ${s ? "إعادة الرفع" : "رفع"}</button>`;
+  else if (mem && s?.status === "submitted") form = `<p class="mute center">رُفع المتطلب وهو بانتظار تقييم المتابع.</p>`;
+  else if (!mem && s) form = `<h3>${s.reviewedAt ? "تعديل التقييم" : "التقييم"}</h3>
+      <div class="rate" id="rate">${[1, 2, 3, 4, 5].map((i) => `<button type="button" data-star="${i}" class="${i <= (s.score || 0) ? "on" : ""}" aria-label="${i}">${I.star}</button>`).join("")}</div>
+      <label>ملاحظات المقيّم<textarea id="r-note" rows="3" placeholder="ملاحظة أو توجيه للمستفيد…">${esc(s.note || "")}</textarea></label>
+      <div class="row gap"><button class="btn ok grow" data-rev="approved">${I.check} اعتماد</button><button class="btn warn grow" data-rev="revise">${I.alert} يحتاج استكمالاً</button></div>`;
+  else if (!mem) form = `<p class="mute center">لم يُرفع هذا المتطلب بعد.</p>${st !== "upcoming" ? `<button class="btn ghost wide" data-nudge>${I.bell} أرسل تذكيراً للمستفيد</button>` : ""}`;
+  openSheet(head + subBlock + evalBlock + form, (el) => {
+    let score = s?.score || 0, file = null;
+    $("[data-file]", el)?.addEventListener("click", async () => { const w = window.open("", "_blank"), u = await api.fileUrl(s.file); if (u && w) w.location = u; else { w?.close(); toast("تعذّر فتح الملف", "err"); } });
+    $("#f-file", el)?.addEventListener("change", (e) => { file = e.target.files[0] || null; if (file && file.size > 20 * 1024 * 1024) { file = null; e.target.value = ""; return toast("الحد الأقصى للملف 20 م.ب", "err"); } if (file) $("#f-name", el).textContent = file.name; });
+    $("[data-submit]", el)?.addEventListener("click", async (e) => {
+      const body = $("#f-body", el).value.trim();
+      if (!body && !file && !s?.file) return toast("اكتب الملخص أو أرفق ملفاً", "err");
+      e.currentTarget.disabled = true;
+      try { await api.submit(id, { title: $("#f-title", el).value.trim() || r.title, body, file }); closeSheet(); render(); toast("رُفع المتطلب، وأُرسل تنبيه للمتابع", "ok"); }
+      catch (err) { e.currentTarget.disabled = false; toast("تعذّر الرفع: " + (err?.message || err), "err"); }
+    });
+    $("#rate", el)?.addEventListener("click", (e) => { const b = e.target.closest("[data-star]"); if (!b) return; score = +b.dataset.star; $$("[data-star]", el).forEach((x) => x.classList.toggle("on", +x.dataset.star <= score)); });
+    $$("[data-rev]", el).forEach((b) => b.addEventListener("click", async () => {
+      const note = $("#r-note", el).value.trim();
+      if (b.dataset.rev === "revise" && !note) return toast("اكتب ما يحتاج استكماله", "err");
+      if (b.dataset.rev === "approved" && !score) return toast("اختر التقييم بالنجوم", "err");
+      await api.review(id, { status: b.dataset.rev, score: score || null, note }); closeSheet(); render(); toast("حُفظ التقييم، وأُرسل تنبيه للمستفيد", "ok");
+    }));
+    $("[data-nudge]", el)?.addEventListener("click", async () => { await api.nudge(id); closeSheet(); toast("أُرسل التذكير", "ok"); });
+  });
+}
+
+// ───────────────────────── الصفحات ─────────────────────────
+const reqRow = (r, extra = "") => { const st = statusOf(r), s = S.subs[r.id]; return `<button class="req st-${st}" data-req="${r.id}"><span class="ric c-${r.comp}">${TYPES[r.type].icon}</span><span class="rmain"><b>${esc(r.title)}</b><small>${esc(r.sub)}</small><small class="due">${st === "approved" && s?.score ? stars(s.score, "sm") : dueText(r)}</small></span>${chip(st)}${extra}</button>`; };
+const ring = (v, inner) => `<div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="rt"/><circle cx="60" cy="60" r="52" class="rv" stroke-dasharray="${(v * 326.7).toFixed(1)} 326.7"/></svg><div class="rin">${inner}</div></div>`;
+
+function trail() {
+  const p = nowPos();
+  return `<section class="card trail"><div class="ch"><h3>مسار المصابيح</h3><small>24 أسبوعاً · يضيء المصباح بإتمام أسبوعه</small></div>
+    <div class="lamps">${[1, 2, 3, 4, 5, 6].map((m) => `<a class="lm ${p.phase === "during" && p.month === m ? "cur" : ""}" href="#/path/${m}"><div>${[0, 1, 2, 3].map((i) => { const w = (m - 1) * 4 + i + 1; return `<i class="lamp ${weekState(w)}" title="الأسبوع ${w}"></i>`; }).join("")}</div><small>الشهر ${m}</small></a>`).join("")}</div></section>`;
+}
+function compsCard(st) {
+  return `<section class="card"><div class="ch"><h3>الجدارات الخمس</h3></div><div class="comps">${Object.entries(COMPS).map(([k, c]) => `<div class="comp"><span class="ric c-${k}">${c.icon}</span><div class="grow"><div class="row"><b>${c.name}</b><span class="grow"></span><em>${pct(st.byComp[k])}٪</em></div><div class="bar"><i class="c-${k}" style="width:${pct(st.byComp[k])}%"></i></div><small>${c.desc}</small></div></div>`).join("")}</div></section>`;
+}
+function nextMeeting() {
+  const t = today();
+  for (let m = 1; m <= 6; m++) if (meetingDate(m) >= t) return { m, date: meetingDate(m), n: diffDays(meetingDate(m), t) };
+  return null;
+}
+
+// تنبيهات الصفحة الرئيسية: محسوبة من المتطلبات + التنبيهات غير المقروءة
+function alerts(st) {
+  const p = nowPos(), t = today(), mem = isMember(), a = [];
+  unreadMine().slice(0, 4).forEach((n) => a.push({ k: n.kind === "revise" ? "warn" : n.kind === "approved" ? "ok" : "info", ic: N_IC[n.kind] || I.bell, title: n.title, body: n.body, n: n.id, req: n.req, at: ago(n.at) }));
+  if (p.phase === "before") a.push({ k: "info", ic: I.spark, title: `ينطلق المشروع بعد ${daysWord(-p.di)}`, body: `${fmtDay(startDate())} · ${fmtHijri(startDate())}` });
+  if (!mem && st.pending.length) a.push({ k: "gold", ic: I.clock, title: `${st.pending.length} من المتطلبات بانتظار تقييمك`, body: st.pending.slice(0, 3).map((r) => r.title).join("، "), req: st.pending[0].id });
+  if (mem) st.revise.forEach((r) => { if (!a.some((x) => x.req === r.id)) a.push({ k: "warn", ic: I.alert, title: `يحتاج استكمالاً: ${r.title}`, body: S.subs[r.id]?.note || "", req: r.id }); });
+  st.late.slice(0, 3).forEach((r) => a.push({ k: "bad", ic: I.alert, title: `متأخر: ${r.title}`, body: dueText(r), req: r.id, nudge: !mem }));
+  if (st.late.length > 3) a.push({ k: "bad", ic: I.alert, title: `و${st.late.length - 3} متطلبات متأخرة أخرى`, body: "راجعها في صفحة المسار", go: "#/path" });
+  if (st.missed) a.push({ k: "warn", ic: I.quran, title: mem ? `فاتك تسجيل ${st.missed} من أوجه التفسير` : `${st.missed} من أوجه التفسير لم تُسجَّل`, body: mem ? "سجّلها من التقويم أو المسار" : "", go: "#/cal" });
+  if (mem) REQS.filter((r) => statusOf(r) === "due" && diffDays(r.due, t) <= 2).forEach((r) => a.push({ k: "gold", ic: I.clock, title: `${r.title}`, body: dueText(r), req: r.id }));
+  const nm = nextMeeting();
+  if (nm && nm.n <= 10 && p.phase !== "before") a.push({ k: "navy", ic: I.people, title: `اللقاء ${ORD[nm.m]} ${nm.n === 0 ? "اليوم" : nm.n === 1 ? "غداً" : "بعد " + daysWord(nm.n)}`, body: `«${MONTHS[nm.m].meet}» · ${fmtDay(nm.date)}`, go: "#/cal" });
+  return a;
+}
+const alertRow = (x) => `<div class="al k-${x.k}" ${x.req ? `data-req="${x.req}"` : ""} ${x.n ? `data-readn="${x.n}"` : ""} ${x.go ? `data-go="${x.go}"` : ""} ${x.tafsir ? "data-tafsir-today" : ""} role="button" tabindex="0"><span class="aic">${x.ic}</span><span class="grow"><b>${esc(x.title)}</b>${x.body ? `<small>${esc(x.body)}</small>` : ""}</span>${x.at ? `<em>${x.at}</em>` : ""}${x.nudge ? `<button class="btn sm ghost" data-nudge="${x.req}">${I.bell} ذكّره</button>` : ""}</div>`;
+
+function homeView() {
+  const st = stats(), p = nowPos(), mem = isMember(), t = today(), al = alerts(st);
+  const week = REQS.filter((r) => (r.week === p.week && !r.monthly) || (r.monthly && r.month === p.month && p.week % 4 === 0));
+  const diff = st.overall - st.expected;
+  const good = diff >= -0.01 && !st.late.length;
+  const pace = p.phase === "before" ? "لم يبدأ بعد" : good ? "على المسار" : st.late.length ? `${st.late.length} متطلبات متأخرة` : `متأخر ${Math.max(1, pct(-diff))}٪ عن المخطط`;
+  const hero = `<section class="hero"><div class="h-rays"></div>
+    <div class="h-top"><div><small>${fmtDay(t)} · ${fmtHijriShort(t)}</small>
+      <h1>${mem ? `أهلاً يا ${esc(firstName(ME.name))}` : `إنجاز ${esc(memberFirst())}`}</h1>
+      <p>${p.phase === "before" ? `الانطلاق ${fmtDay(startDate())}` : p.phase === "after" ? "اكتملت الأشهر الستة" : `اليوم ${p.day} من ${TOTAL_DAYS} · الأسبوع ${p.week} · الشهر ${ORD[p.month]}`}</p>
+      <span class="pace ${good || p.phase === "before" ? "good" : "slow"}">${pace}</span></div>
+      ${ring(st.overall, `${lantern("inring")}<b>${pct(st.overall)}<i>٪</i></b>`)}</div>
+    <div class="h-stats"><div><b>${p.phase === "before" ? "—" : pct(st.committed) + "<i>٪</i>"}</b><small>الالتزام</small></div><div><b>${st.streak}</b><small>${I.fire} أيام متتالية</small></div><div><b>${st.avg ? st.avg.toFixed(1) : "—"}</b><small>متوسط التقييم</small></div><div><b>${st.tafsirDone}</b><small>وجهاً مفسَّراً</small></div></div>
+    <style>.hero .lglow{opacity:${(0.25 + st.overall * 0.75).toFixed(2)}}</style></section>`;
+  const wird = p.phase === "during" ? `<section class="card wird ${S.tafsir[t] ? "done" : ""}"><span class="ric c-quran big">${I.quran}</span><div class="grow"><small>وِرد اليوم · التفسير الميسر</small><b>الوجه ${p.day} — صفحة ${tafsirPage(p.di)}</b><small>${MONTHS[p.month].tafsir}</small></div>
+      ${mem ? `<button class="btn ${S.tafsir[t] ? "okf" : "gold"}" data-tafsir-today>${I.check} ${S.tafsir[t] ? "أُنجز" : "أتممتُه"}</button>` : `<span class="chip ${S.tafsir[t] ? "approved" : "due"}">${S.tafsir[t] ? "أُنجز اليوم" : "لم يُسجَّل"}</span>`}</section>` : "";
+  return `${hero}
+    ${wird}
+    <section class="card alerts"><div class="ch"><h3>${I.bell} التنبيهات</h3>${al.length ? `<span class="count">${al.length}</span>` : ""}</div>${al.length ? al.map(alertRow).join("") : `<div class="empty sm">${I.check}<p>لا تنبيهات — كل شيء على ما يرام</p></div>`}</section>
+    <div class="cols"><section class="card"><div class="ch"><h3>${p.phase === "before" ? "متطلبات الأسبوع الأول" : mem ? "مطلوب هذا الأسبوع" : "متطلبات هذا الأسبوع"}</h3><a href="#/path/${p.month}">كل المسار</a></div><div class="reqs">${week.map((r) => reqRow(r)).join("")}</div></section>
+    ${compsCard(st)}</div>
+    ${trail()}`;
+}
+
+// ───── المسار ─────
+const WD = ["س", "ح", "ن", "ث", "ر", "خ", "ج"];
+function pathView(arg) {
+  const p = nowPos(), m = Math.min(6, Math.max(1, +arg || p.month)), M = MONTHS[m], t = today(), mem = isMember();
+  const weeks = [1, 2, 3, 4].map((i) => {
+    const w = (m - 1) * 4 + i, ws = weekStart(w), state = weekState(w);
+    const days = WD.map((l, d) => { const ds = addDays(ws, d), on = S.tafsir[ds], fut = ds > t; return `<button class="td ${on ? "on" : fut ? "fut" : "miss"} ${ds === t ? "today" : ""}" ${mem && !fut ? `data-tafsir="${ds}"` : "disabled"} title="${fmtDay(ds)} · صفحة ${tafsirPage(diffDays(ds, startDate()))}"><i>${on ? I.check : l}</i></button>`; }).join("");
+    return `<section class="card week ${state}"><div class="ch"><h3><i class="lamp ${state}"></i> الأسبوع ${w}</h3><small>${fmtShort(ws)} – ${fmtShort(weekEnd(w))}</small></div>
+      <div class="tafsir"><small>${I.quran} التفسير: وجهٌ كل يوم (ص ${tafsirPage((w - 1) * 7)}–${tafsirPage(w * 7 - 1)})</small><div class="tds">${days}</div></div>
+      <div class="reqs">${REQS.filter((r) => r.week === w && !r.monthly).map((r) => reqRow(r)).join("")}</div></section>`;
+  }).join("");
+  return `<div class="tabs">${[1, 2, 3, 4, 5, 6].map((i) => `<a href="#/path/${i}" class="${i === m ? "on" : ""} ${p.phase === "during" && p.month === i ? "cur" : ""}">الشهر ${ORD[i]}</a>`).join("")}</div>
+    <section class="mhead"><div class="h-rays"></div><small>الشهر ${ORD[m]} · ${fmtShort(weekStart(m * 4 - 3))} – ${fmtShort(weekEnd(m * 4))}</small><h1>${esc(M.meet)}</h1>
+      <div class="mgrid"><div><small>التفسير الميسر</small><b>${M.tafsir}</b></div><div><small>التأهيل الشرعي</small><b>${M.fiqh}</b></div><div><small>مصدر اللقاء</small><b>${esc(M.source)}</b></div><div><small>اللقاء ${ORD[m]}</small><b>${fmtDay(meetingDate(m))}</b></div></div></section>
+    <div class="cols">${weeks}</div>
+    <section class="card"><div class="ch"><h3>${I.people} قبل اللقاء ${ORD[m]}</h3><small>${esc(M.comp)}</small></div><div class="reqs">${REQS.filter((r) => r.monthly && r.month === m).map((r) => reqRow(r)).join("")}</div></section>`;
+}
+
+// ───── التقويم ─────
+let calYM = null, calSel = null;
+function dayInfo(ds) {
+  const di = diffDays(ds, startDate());
+  return { inProj: di >= 0 && di < TOTAL_DAYS, di, due: REQS.filter((r) => r.due === ds), meet: [1, 2, 3, 4, 5, 6].find((m) => meetingDate(m) === ds), events: S.events.filter((e) => e.date === ds), start: ds === startDate() };
+}
+function calView() {
+  const t = today(), mem = isMember();
+  if (!calYM) { const b = t < startDate() ? startDate() : t; calYM = b.slice(0, 7); }
+  if (!calSel) calSel = t;
+  const [y, mo] = calYM.split("-").map(Number), first = new Date(y, mo - 1, 1, 12), lead = (first.getDay() + 1) % 7, n = new Date(y, mo, 0).getDate();
+  let cells = "";
+  for (let i = 0; i < lead; i++) cells += `<span class="dc blank"></span>`;
+  for (let d = 1; d <= n; d++) {
+    const ds = `${y}-${pad(mo)}-${pad(d)}`, inf = dayInfo(ds);
+    const late = inf.due.some((r) => statusOf(r) === "late") || (inf.inProj && ds < t && !S.tafsir[ds]);
+    const dots = [inf.meet || inf.start ? `<i class="d navy"></i>` : "", inf.due.length ? `<i class="d ${inf.due.every(isDone) ? "ok" : late ? "bad" : "gold"}"></i>` : "", inf.events.length ? `<i class="d ev"></i>` : ""].join("");
+    cells += `<button class="dc ${ds === t ? "today" : ""} ${ds === calSel ? "sel" : ""} ${inf.inProj ? "in" : "out"} ${S.tafsir[ds] ? "tf" : inf.inProj && ds < t ? "tm" : ""}" data-day="${ds}"><b>${d}</b><small>${F_HD.format(s2d(ds))}</small><span class="dots">${dots}</span></button>`;
+  }
+  const inf = dayInfo(calSel), items = [];
+  if (inf.start) items.push(`<div class="al k-navy"><span class="aic">${I.spark}</span><span class="grow"><b>انطلاق مشروع سراج</b></span></div>`);
+  if (inf.meet) items.push(`<div class="al k-navy"><span class="aic">${I.people}</span><span class="grow"><b>اللقاء ${ORD[inf.meet]}: ${esc(MONTHS[inf.meet].meet)}</b><small>${esc(MONTHS[inf.meet].source)}</small></span></div>`);
+  inf.events.forEach((e) => items.push(`<div class="al k-info"><span class="aic">${I.cal}</span><span class="grow"><b>${esc(e.title)}</b>${e.note ? `<small>${esc(e.note)}</small>` : ""}</span>${mem ? "" : `<button class="btn sm ghost" data-delev="${e.id}">حذف</button>`}</div>`));
+  if (inf.inProj) { const on = S.tafsir[calSel], fut = calSel > t; items.push(`<div class="al k-${on ? "ok" : fut ? "info" : "warn"}"><span class="aic">${I.quran}</span><span class="grow"><b>التفسير: الوجه ${inf.di + 1} — صفحة ${tafsirPage(inf.di)}</b><small>${on ? "أُنجز" : fut ? "قادم" : "لم يُسجَّل"}</small></span>${mem && !fut ? `<button class="btn sm ${on ? "ghost" : "gold"}" data-tafsir="${calSel}">${on ? "إلغاء" : "أتممتُه"}</button>` : ""}</div>`); }
+  return `<section class="card cal"><div class="calh"><button class="ib" data-cal="-1" aria-label="الشهر السابق">${I.chevR}</button><div><h2>${F_GM.format(first)}</h2><small>${F_HM.format(first)} – ${F_HM.format(new Date(y, mo - 1, n, 12))}</small></div><button class="ib" data-cal="1" aria-label="الشهر التالي">${I.chevL}</button></div>
+    <div class="wd">${["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"].map((d) => `<span>${d}</span>`).join("")}</div>
+    <div class="grid7">${cells}</div>
+    <div class="legend"><span><i class="d navy"></i>لقاء</span><span><i class="d gold"></i>متطلب</span><span><i class="d ok"></i>مُنجز</span><span><i class="d bad"></i>متأخر</span><span><i class="sq tf"></i>وجه مُسجَّل</span></div></section>
+    <section class="card"><div class="ch"><h3>${fmtDay(calSel)}</h3><small>${fmtHijri(calSel)}</small></div>
+      ${items.join("")}${inf.due.length ? `<div class="reqs">${inf.due.map((r) => reqRow(r)).join("")}</div>` : ""}
+      ${!items.length && !inf.due.length ? `<div class="empty sm">${I.cal}<p>لا شيء في هذا اليوم</p></div>` : ""}
+      ${mem ? "" : `<button class="btn ghost wide" data-addev>${I.plus} إضافة موعد في هذا اليوم</button>`}</section>`;
+}
+function eventSheet() {
+  openSheet(`<h2>موعد جديد</h2><p class="mute">${fmtDay(calSel)} — يصل تنبيه للمستفيد.</p><label>العنوان<input id="e-t" placeholder="مثال: جلسة مراجعة قصيرة"></label><label>ملاحظة<input id="e-n"></label><button class="btn gold wide" data-ok>إضافة</button>`, (el) => {
+    $("[data-ok]", el).onclick = async () => { const title = $("#e-t", el).value.trim(); if (!title) return toast("اكتب عنوان الموعد", "err"); await api.addEvent({ date: calSel, title, note: $("#e-n", el).value.trim() }); closeSheet(); render(); };
+  });
+}
+
+// ───── ملف الإنجاز ─────
+let fileFilter = "all";
+function fileView() {
+  const st = stats(), subs = Object.values(S.subs).sort((a, b) => (a.at < b.at ? 1 : -1));
+  const list = subs.filter((s) => fileFilter === "all" || REQ[s.reqId]?.type === fileFilter);
+  const cnt = (ty) => subs.filter((s) => REQ[s.reqId]?.type === ty).length;
+  return `<section class="mhead"><div class="h-rays"></div><small>ملف الإنجاز</small><h1>كل إنجازٍ يُرفع، وكل ملخصٍ يُحفظ</h1>
+      <div class="mgrid"><div><small>ملفات مرفوعة</small><b>${subs.length}</b></div><div><small>معتمدة</small><b>${subs.filter((s) => s.status === "approved").length}</b></div><div><small>متوسط التقييم</small><b>${st.avg ? st.avg.toFixed(1) + " / 5" : "—"}</b></div><div><small>أوجه التفسير</small><b>${st.tafsirDone} / ${TOTAL_DAYS}</b></div></div></section>
+    <div class="tabs">${[["all", "الكل", subs.length], ...["tadabbur", "fiqh", "source", "report"].map((k) => [k, TYPES[k].name, cnt(k)])].map(([k, n, c]) => `<button data-ff="${k}" class="${fileFilter === k ? "on" : ""}">${n} <i>${c}</i></button>`).join("")}</div>
+    <section class="card"><div class="reqs">${list.length ? list.map((s) => reqRow(REQ[s.reqId])).join("") : `<div class="empty">${I.folder}<p>${isMember() ? "لم تُرفع ملفات بعد — ابدأ من صفحة المسار" : "لم يرفع المستفيد شيئاً بعد"}</p></div>`}</div></section>`;
+}
+
+// ───────────────────────── التشغيل والتوجيه ─────────────────────────
+function route() { const [r, a] = (location.hash.replace(/^#\/?/, "") || "home").split("/"); return { r: ["home", "path", "cal", "file"].includes(r) ? r : "home", a }; }
+function render() {
+  const app = $("#app");
+  if (!ME) { app.innerHTML = loginView(); return; }
+  const { r, a } = route(), y = window.scrollY;
+  app.innerHTML = shell(r);
+  $("#view").innerHTML = `<div class="page p-${r} ${render.keep ? "" : "anim"}">${{ home: homeView, path: () => pathView(a), cal: calView, file: fileView }[r]()}</div>`;
+  window.scrollTo(0, render.keep ? y : 0); render.keep = false;
+}
+const rerender = () => { render.keep = true; render(); };
+
+document.addEventListener("click", async (e) => {
+  const q = (s) => e.target.closest(s);
+  let b;
+  if ((b = q("[data-authmode]"))) { const f = $("#authf"); f.dataset.mode = f.dataset.mode === "in" ? "act" : "in"; $("[name=password]", f).autocomplete = f.dataset.mode === "in" ? "current-password" : "new-password"; return; }
+  if ((b = q("[data-login]"))) { await api.signIn(b.dataset.login); location.hash = "#/home"; render(); showGreeting(); return; }
+  if ((b = q("[data-act]"))) return { notifs: notifSheet, account: accountSheet }[b.dataset.act]?.();
+  if (sheetEl?.contains(e.target)) return;
+  if ((b = q("[data-nudge]"))) { e.stopPropagation(); await api.nudge(b.dataset.nudge); return toast("أُرسل التذكير للمستفيد", "ok"); }
+  if ((b = q("[data-tafsir-today]"))) { if (!isMember()) return; const t = today(); await api.setTafsir(t, !S.tafsir[t]); if (S.tafsir[t]) toast("بارك الله فيك — سُجّل وجه اليوم", "ok"); return rerender(); }
+  if ((b = q("[data-tafsir]"))) { const d = b.dataset.tafsir; await api.setTafsir(d, !S.tafsir[d]); return rerender(); }
+  if ((b = q("[data-delev]"))) { await api.delEvent(b.dataset.delev); return rerender(); }
+  if ((b = q("[data-addev]"))) return eventSheet();
+  if ((b = q("[data-readn]"))) { await api.markRead([b.dataset.readn]); if (!b.dataset.req) return rerender(); }
+  if ((b = q("[data-req]"))) return reqSheet(b.dataset.req);
+  if ((b = q("[data-go]"))) return (location.hash = b.dataset.go);
+  if ((b = q("[data-day]"))) { calSel = b.dataset.day; return rerender(); }
+  if ((b = q("[data-cal]"))) { const [y, m] = calYM.split("-").map(Number), d = new Date(y, m - 1 + +b.dataset.cal, 1, 12); calYM = d2s(d).slice(0, 7); return rerender(); }
+  if ((b = q("[data-ff]"))) { fileFilter = b.dataset.ff; return rerender(); }
+});
+document.addEventListener("submit", async (e) => {
+  const f = e.target.closest("#authf"); if (!f) return;
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(f)), btn = $("button[type=submit]", f);
+  if (!d.email || !d.password) return toast("أدخل البريد وكلمة المرور", "err");
+  btn.disabled = true;
+  try {
+    if (f.dataset.mode === "act") await api.activate(d.email, d.code || "", d.password); else await api.signIn(d.email, d.password);
+    location.hash = "#/home"; render(); showGreeting();
+  } catch (err) { btn.disabled = false; toast(/Invalid login/i.test(err.message) ? "البريد أو كلمة المرور غير صحيحة" : err.message, "err"); }
+});
+window.addEventListener("unhandledrejection", (e) => { toast("تعذّر تنفيذ العملية: " + (e.reason?.message || e.reason), "err"); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); if (e.key === "Enter" && e.target.matches?.(".al[role=button]")) e.target.click(); });
+window.addEventListener("hashchange", () => { closeSheet(); render(); });
+// مزامنة فورية بين نافذتين في المتصفح نفسه (حساب المتابع وحساب المستفيد)
+window.addEventListener("storage", (e) => {
+  if (api.mode !== "local" || e.key !== KEY || !ME) return;
+  const before = unreadMine().length; api.read();
+  const now = unreadMine();
+  if (now.length > before) toast(now[0].title + (now[0].body ? " — " + now[0].body : ""), "notif");
+  if (!sheetEl) rerender();
+});
+
+(async function boot() {
+  if (api.mode === "remote") await cachedFonts();
+  try { await api.load(); } catch (err) { console.error(err); toast("تعذّر الاتصال بقاعدة البيانات", "err"); }
+  try { await Promise.race([document.fonts.load('700 20px "Thmanyah Serif Text"'), new Promise((r) => setTimeout(r, 1500))]); } catch {}
+  render();
+  showGreeting();
+})();
+
+</script>
+</body>
+</html>
