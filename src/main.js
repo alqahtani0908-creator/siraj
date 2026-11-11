@@ -35,6 +35,7 @@ document.addEventListener("click", async (e) => {
   if ((b = q("[data-gsec]"))) return $("#g-" + b.dataset.gsec)?.scrollIntoView({ behavior: "smooth", block: "start" });
   if ((b = q("[data-ff]"))) { fileFilter = b.dataset.ff; return rerender(); }
 });
+document.addEventListener("change", async (e) => { if (e.target.id !== "bulk-refs") return; const fs = [...e.target.files]; if (fs.length) try { await bulkRefs(fs); } catch (err) { toast("تعذّر الرفع: " + err.message, "err"); rerender(); } });
 document.addEventListener("submit", async (e) => {
   const f = e.target.closest("#authf"); if (!f) return;
   e.preventDefault();

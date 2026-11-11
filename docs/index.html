@@ -292,6 +292,8 @@ input:focus,textarea:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3
 .tfm{border:1px solid var(--line);border-radius:14px;margin-top:8px;overflow:hidden}.tfm summary{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;padding:11px 14px;cursor:pointer;background:var(--cream);list-style:none}.tfm summary::-webkit-details-marker{display:none}.tfm summary span{color:var(--gold-deep);font-weight:700}.tfm[open] summary{background:var(--night);color:#fff}.tfm[open] summary span{color:var(--amber)}.tfm[open] summary small{color:#BDB8AA}
 .tb.tft{min-width:0;font-size:.86rem}.tb.tft .wk td{background:#F6E7C6;color:var(--gold-deep);font-weight:700;font-size:.78rem;padding:4px 10px}.tb.tft tr.now th,.tb.tft tr.now td{background:#FFF3D2;font-weight:700}.tb.tft th{width:44px}
 @media print{.tfm summary{background:var(--night)!important;color:#fff}.xl.add,.rx{display:none!important}}
+.drop.bulk{margin-bottom:10px;white-space:normal}.drop.bulk span{white-space:normal}.drop.bulk b{color:var(--ink)}
+@media print{.drop.bulk{display:none!important}}
 
 </style>
 </head>
@@ -1101,9 +1103,22 @@ const REFS = [
   { id: "b5", comp: "edu", title: "معيار المربي", by: "فايز الزهراني", part: "قسما شخصية المربي والمهارات التربوية · ص 75 – 139 (50 صفحة)", when: "الشهر الخامس · اللقاء الخامس" },
   { id: "b6", comp: "lead", title: "مقالة «القيادة الخدمية»", by: "د. محمد العامري", part: "مفهوم القيادة · القيادة الخدمية · الأنماط والنظريات · قيادة التغيير", when: "الشهر السادس · اللقاء السادس", url: LINKS.article, urlText: "قراءة المقالة" },
 ];
+const REF_MATCH = [["tafsir", /تفسير/], ["b1", /أصول التربية|اصول التربية|النحلاوي/], ["b2", /المذهبات|المذهّبات/], ["b3", /التربية من جديد/], ["b4", /المعايشة/], ["b5", /معيار المربي/], ["b6", /القيادة الخدمية/]];
+async function bulkRefs(files) {
+  let n = 0; const miss = [];
+  for (const f of files) {
+    if (f.size > 50 * 1024 * 1024) { miss.push(f.name + " (أكبر من 50 م.ب)"); continue; }
+    const m = REF_MATCH.find(([, re]) => re.test(f.name.normalize("NFC")));
+    if (!m) { miss.push(f.name); continue; }
+    toast(`جارٍ رفع: ${f.name}`);
+    await api.addRef(m[0], { label: REFS.find((r) => r.id === m[0]).title + " (PDF)", file: f }); n++;
+  }
+  rerender();
+  toast(n ? `رُفع ${n} من الكتب${miss.length ? ` · لم أتعرف على: ${miss.join("، ")}` : ""}` : `لم أتعرف على الملفات: ${miss.join("، ")}`, n ? "ok" : "err");
+}
 function refsBlock() {
   const rev = ME && !isMember(), R = S.settings.refs || {};
-  return `<div class="reflist">${REFS.map((r) => `<div class="ref"><span class="ric c-${r.comp}">${COMPS[r.comp].icon}</span><div class="grow"><small>${r.when}</small><b>${r.title}</b><small>${r.by}</small><small>${r.part}</small>
+  return `${rev ? `<label class="drop bulk">${I.upload}<span><b>رفع كتب المراجع دفعة واحدة</b><br><small>اختر ملفات الكتب معاً، وتُربط كل واحدة بمرجعها تلقائياً من اسم الملف</small></span><input id="bulk-refs" type="file" accept=".pdf" multiple hidden></label>` : ""}<div class="reflist">${REFS.map((r) => `<div class="ref"><span class="ric c-${r.comp}">${COMPS[r.comp].icon}</span><div class="grow"><small>${r.when}</small><b>${r.title}</b><small>${r.by}</small><small>${r.part}</small>
     <div class="ratt">${r.url ? ext(r.url, r.urlText) : ""}${(R[r.id] || []).map((x) => `<span class="xl att"><button data-refopen="${r.id}:${x.id}">${x.url ? I.out : I.file}${esc(x.label)}</button>${rev ? `<button class="rx" data-refdel="${r.id}:${x.id}" aria-label="حذف">${I.x}</button>` : ""}</span>`).join("")}${rev ? `<button class="xl add" data-refadd="${r.id}">${I.plus} إضافة رابط أو ملف</button>` : ""}</div></div></div>`).join("")}</div>
     <p class="hint">${rev ? "أرفق لكل مرجع رابطه أو ملفه (PDF) ليفتحه المستفيد من المنصة مباشرة. الملفات تُحفظ في مخزن خاص بالحسابين." : "المراجع التي أرفق المتابع روابطها أو ملفاتها تُفتح من هنا مباشرة."}</p>`;
 }
@@ -1255,6 +1270,7 @@ document.addEventListener("click", async (e) => {
   if ((b = q("[data-gsec]"))) return $("#g-" + b.dataset.gsec)?.scrollIntoView({ behavior: "smooth", block: "start" });
   if ((b = q("[data-ff]"))) { fileFilter = b.dataset.ff; return rerender(); }
 });
+document.addEventListener("change", async (e) => { if (e.target.id !== "bulk-refs") return; const fs = [...e.target.files]; if (fs.length) try { await bulkRefs(fs); } catch (err) { toast("تعذّر الرفع: " + err.message, "err"); rerender(); } });
 document.addEventListener("submit", async (e) => {
   const f = e.target.closest("#authf"); if (!f) return;
   e.preventDefault();

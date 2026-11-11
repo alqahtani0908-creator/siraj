@@ -18,9 +18,22 @@ const REFS = [
   { id: "b5", comp: "edu", title: "معيار المربي", by: "فايز الزهراني", part: "قسما شخصية المربي والمهارات التربوية · ص 75 – 139 (50 صفحة)", when: "الشهر الخامس · اللقاء الخامس" },
   { id: "b6", comp: "lead", title: "مقالة «القيادة الخدمية»", by: "د. محمد العامري", part: "مفهوم القيادة · القيادة الخدمية · الأنماط والنظريات · قيادة التغيير", when: "الشهر السادس · اللقاء السادس", url: LINKS.article, urlText: "قراءة المقالة" },
 ];
+const REF_MATCH = [["tafsir", /تفسير/], ["b1", /أصول التربية|اصول التربية|النحلاوي/], ["b2", /المذهبات|المذهّبات/], ["b3", /التربية من جديد/], ["b4", /المعايشة/], ["b5", /معيار المربي/], ["b6", /القيادة الخدمية/]];
+async function bulkRefs(files) {
+  let n = 0; const miss = [];
+  for (const f of files) {
+    if (f.size > 50 * 1024 * 1024) { miss.push(f.name + " (أكبر من 50 م.ب)"); continue; }
+    const m = REF_MATCH.find(([, re]) => re.test(f.name.normalize("NFC")));
+    if (!m) { miss.push(f.name); continue; }
+    toast(`جارٍ رفع: ${f.name}`);
+    await api.addRef(m[0], { label: REFS.find((r) => r.id === m[0]).title + " (PDF)", file: f }); n++;
+  }
+  rerender();
+  toast(n ? `رُفع ${n} من الكتب${miss.length ? ` · لم أتعرف على: ${miss.join("، ")}` : ""}` : `لم أتعرف على الملفات: ${miss.join("، ")}`, n ? "ok" : "err");
+}
 function refsBlock() {
   const rev = ME && !isMember(), R = S.settings.refs || {};
-  return `<div class="reflist">${REFS.map((r) => `<div class="ref"><span class="ric c-${r.comp}">${COMPS[r.comp].icon}</span><div class="grow"><small>${r.when}</small><b>${r.title}</b><small>${r.by}</small><small>${r.part}</small>
+  return `${rev ? `<label class="drop bulk">${I.upload}<span><b>رفع كتب المراجع دفعة واحدة</b><br><small>اختر ملفات الكتب معاً، وتُربط كل واحدة بمرجعها تلقائياً من اسم الملف</small></span><input id="bulk-refs" type="file" accept=".pdf" multiple hidden></label>` : ""}<div class="reflist">${REFS.map((r) => `<div class="ref"><span class="ric c-${r.comp}">${COMPS[r.comp].icon}</span><div class="grow"><small>${r.when}</small><b>${r.title}</b><small>${r.by}</small><small>${r.part}</small>
     <div class="ratt">${r.url ? ext(r.url, r.urlText) : ""}${(R[r.id] || []).map((x) => `<span class="xl att"><button data-refopen="${r.id}:${x.id}">${x.url ? I.out : I.file}${esc(x.label)}</button>${rev ? `<button class="rx" data-refdel="${r.id}:${x.id}" aria-label="حذف">${I.x}</button>` : ""}</span>`).join("")}${rev ? `<button class="xl add" data-refadd="${r.id}">${I.plus} إضافة رابط أو ملف</button>` : ""}</div></div></div>`).join("")}</div>
     <p class="hint">${rev ? "أرفق لكل مرجع رابطه أو ملفه (PDF) ليفتحه المستفيد من المنصة مباشرة. الملفات تُحفظ في مخزن خاص بالحسابين." : "المراجع التي أرفق المتابع روابطها أو ملفاتها تُفتح من هنا مباشرة."}</p>`;
 }
