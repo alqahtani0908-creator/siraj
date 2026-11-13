@@ -154,9 +154,16 @@ function surahsOf(a, b) { // السور التي تبدأ في الصفحات، 
 const tafsirPage = (di) => { const r = tafsirRange(di); return !r ? "مراجعة" : r[0] === r[1] ? String(r[0]) : `${r[0]}–${r[1]}`; };
 const tafsirLabel = (di) => { const r = tafsirRange(di); return r ? `صفحة ${tafsirPage(di)} · ${surahsOf(r[0], r[1])}` : "مراجعة جزء عمّ وختامه"; };
 
+const rasdStart = () => (S.settings.rasdStart && S.settings.rasdStart < startDate() ? S.settings.rasdStart : startDate());
+const preWeeks = () => Math.min(12, Math.ceil(diffDays(startDate(), rasdStart()) / 7));
+const weekName = (w) => (w >= 1 ? `الأسبوع ${w}` : preWeeks() > 1 ? `الأسبوع التمهيدي ${preWeeks() + w}` : "الأسبوع التمهيدي");
 let REQS = [], REQ = {};
 function buildReqs() {
   REQS = [];
+  for (let k = preWeeks(); k >= 1; k--) {
+    const w = 1 - k;
+    REQS.push({ id: `rasd-w${w}`, type: "rasd", comp: "quran", pre: true, week: w, month: 1, open: weekStart(w), due: weekEnd(w), title: `الرصد الأسبوعي — ${weekName(w)}`, sub: "حضور الحلقة · التسميع من – إلى (قبل انطلاق المشروع)" });
+  }
   for (let w = 1; w <= WEEKS; w++) {
     const m = monthOfWeek(w), wi = (w - 1) % 4, base = { week: w, month: m, open: weekStart(w), due: weekEnd(w) };
     REQS.push({ id: `tadabbur-w${w}`, type: "tadabbur", comp: "quran", title: `ورقة التدبر — الأسبوع ${w}`, sub: `آيات من ${MONTHS[m].tafsir}`, ...base });
@@ -204,7 +211,7 @@ function stats() {
   const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
   const cnt = (f) => REQS.filter(f).length, dn = (f) => REQS.filter((r) => f(r) && isDone(r)).length;
   const byComp = {
-    quran: (tafsirDone / 7 + dn((r) => r.type === "tadabbur" || r.type === "rasd")) / (WEEKS * 3),
+    quran: (tafsirDone / 7 + dn((r) => r.type === "tadabbur" || r.type === "rasd")) / (WEEKS + cnt((r) => r.type === "tadabbur" || r.type === "rasd")),
     sharia: dn((r) => r.type === "fiqh") / WEEKS,
     edu: dn((r) => r.comp === "edu") / cnt((r) => r.comp === "edu"),
     lead: dn((r) => r.comp === "lead") / cnt((r) => r.comp === "lead"),

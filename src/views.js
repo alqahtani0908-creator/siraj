@@ -35,7 +35,8 @@ const alertRow = (x) => `<div class="al k-${x.k}" ${x.req ? `data-req="${x.req}"
 
 function homeView() {
   const st = stats(), p = nowPos(), mem = isMember(), t = today(), al = alerts(st);
-  const week = REQS.filter((r) => (r.week === p.week && !r.monthly) || (r.monthly && r.month === p.month && p.week % 4 === 0));
+  const preNow = REQS.filter((r) => r.pre && r.open <= t && t <= r.due);
+  const week = p.phase === "before" && preNow.length ? preNow : REQS.filter((r) => (r.week === p.week && !r.monthly) || (r.monthly && r.month === p.month && p.week % 4 === 0));
   const diff = st.overall - st.expected;
   const good = diff >= -0.01 && !st.late.length;
   const pace = p.phase === "before" ? "لم يبدأ بعد" : good ? "على المسار" : st.late.length ? `${st.late.length} متطلبات متأخرة` : `متأخر ${Math.max(1, pct(-diff))}٪ عن المخطط`;
@@ -52,7 +53,7 @@ function homeView() {
   return `${hero}
     ${wird}
     <section class="card alerts"><div class="ch"><h3>${I.bell} التنبيهات</h3>${al.length ? `<span class="count">${al.length}</span>` : ""}</div>${al.length ? al.map(alertRow).join("") : `<div class="empty sm">${I.check}<p>لا تنبيهات — كل شيء على ما يرام</p></div>`}</section>
-    <div class="cols"><section class="card"><div class="ch"><h3>${p.phase === "before" ? "متطلبات الأسبوع الأول" : mem ? "مطلوب هذا الأسبوع" : "متطلبات هذا الأسبوع"}</h3><a href="#/path/${p.month}">كل المسار</a></div><div class="reqs">${week.map((r) => reqRow(r)).join("")}</div></section>
+    <div class="cols"><section class="card"><div class="ch"><h3>${p.phase === "before" ? (preNow.length ? "مطلوب هذا الأسبوع (تمهيدي)" : "متطلبات الأسبوع الأول") : mem ? "مطلوب هذا الأسبوع" : "متطلبات هذا الأسبوع"}</h3><a href="#/path/${p.month}">كل المسار</a></div><div class="reqs">${week.map((r) => reqRow(r)).join("")}</div></section>
     ${compsCard(st)}</div>
     ${trail()}`;
 }
@@ -71,6 +72,7 @@ function pathView(arg) {
   return `<div class="tabs">${[1, 2, 3, 4, 5, 6].map((i) => `<a href="#/path/${i}" class="${i === m ? "on" : ""} ${p.phase === "during" && p.month === i ? "cur" : ""}">الشهر ${ORD[i]}</a>`).join("")}</div>
     <section class="mhead"><div class="h-rays"></div><small>الشهر ${ORD[m]} · ${fmtShort(weekStart(m * 4 - 3))} – ${fmtShort(weekEnd(m * 4))}</small><h1>${esc(M.meet)}</h1>
       <div class="mgrid"><div><small>التفسير الميسر</small><b>${M.tafsir}</b></div><div><small>التأهيل الشرعي</small><b>${M.fiqh}</b></div><div><small>مصدر اللقاء</small><b>${esc(M.source)}</b></div><div><small>اللقاء ${ORD[m]}</small><b>${fmtDay(meetingDate(m))}</b></div></div></section>
+    ${m === 1 && REQS.some((r) => r.pre) ? `<section class="card"><div class="ch"><h3>${I.people} قبل الانطلاق — الرصد التمهيدي</h3><small>${fmtShort(rasdStart())} – ${fmtShort(addDays(startDate(), -1))}</small></div><div class="reqs">${REQS.filter((r) => r.pre).map((r) => reqRow(r)).join("")}</div></section>` : ""}
     <div class="cols">${weeks}</div>
     <section class="card"><div class="ch"><h3>${I.people} قبل اللقاء ${ORD[m]}</h3><small>${esc(M.comp)}</small></div><div class="reqs">${REQS.filter((r) => r.monthly && r.month === m).map((r) => reqRow(r)).join("")}</div></section>`;
 }

@@ -120,6 +120,7 @@ function accountSheet() {
     <label>اسم المتابع<input id="s-rn" value="${esc(st.names.reviewer)}"></label>
     <label>اسم المستفيد<input id="s-mn" value="${esc(st.names.member)}"></label>
     <label>تاريخ انطلاق المشروع<input id="s-start" type="date" value="${st.start}"><small>${fmtHijri(st.start)}</small></label>
+    <label>بداية الرصد الأسبوعي<input id="s-rasd" type="date" value="${rasdStart()}"><small>يمكن أن يسبق انطلاق المشروع بأسابيع تمهيدية</small></label>
     <h3>مواعيد اللقاءات الشهرية</h3>
     <div class="grid2">${[1, 2, 3, 4, 5, 6].map((m) => `<label>اللقاء ${ORD[m]}<input type="date" data-meet="${m}" value="${meetingDate(m)}"></label>`).join("")}</div>
     <button class="btn gold wide" data-save>حفظ الإعدادات</button>
@@ -136,7 +137,7 @@ function accountSheet() {
     if (sv) sv.onclick = async () => {
       const start = $("#s-start", el).value || st.start, changed = start !== st.start;
       const meetings = changed ? [] : $$("[data-meet]", el).map((i) => i.value || "");
-      await api.saveSettings({ start, meetings, names: { reviewer: $("#s-rn", el).value.trim() || st.names.reviewer, member: $("#s-mn", el).value.trim() || st.names.member } });
+      await api.saveSettings({ start, meetings, rasdStart: $("#s-rasd", el).value || null, names: { reviewer: $("#s-rn", el).value.trim() || st.names.reviewer, member: $("#s-mn", el).value.trim() || st.names.member } });
       closeSheet(); render(); toast(changed ? "حُفظت الإعدادات وأُعيد ضبط مواعيد اللقاءات" : "حُفظت الإعدادات", "ok");
     };
   });
@@ -146,7 +147,7 @@ function accountSheet() {
 function reqSheet(id) {
   const r = REQ[id]; if (!r) return;
   const T = TYPES[r.type], st = statusOf(r), s = S.subs[id], mem = isMember();
-  const head = `<div class="rs-head"><span class="ric big c-${r.comp}">${T.icon}</span><div><small>${r.monthly ? `الشهر ${ORD[r.month]}` : `الأسبوع ${r.week} · الشهر ${ORD[r.month]}`} · الجدارة ${COMPS[r.comp].name}</small><h2>${esc(r.title)}</h2></div></div>
+  const head = `<div class="rs-head"><span class="ric big c-${r.comp}">${T.icon}</span><div><small>${r.monthly ? `الشهر ${ORD[r.month]}` : `${r.pre ? weekName(r.week) + " · قبل الانطلاق" : `الأسبوع ${r.week} · الشهر ${ORD[r.month]}`}`} · الجدارة ${COMPS[r.comp].name}</small><h2>${esc(r.title)}</h2></div></div>
     <div class="rs-meta">${chip(st)}<span class="mute">${I.cal} ${fmtDay(r.due)} · ${dueText(r)}</span></div>
     <p class="hint">${esc(r.sub)}${T.review ? ` — ${esc(T.hint)}` : ""}</p>`;
   if (r.type === "rasd") {

@@ -48,7 +48,7 @@ const api = {
   },
   async saveRasd(week, d) {
     const was = S.rasd[week]; S.rasd[week] = { week, ...d, at: new Date().toISOString() };
-    this.notify("reviewer", "submit", was ? "عُدّل الرصد الأسبوعي" : "رُفع الرصد الأسبوعي", `الأسبوع ${week} — ${rasdText(S.rasd[week])}`, `rasd-w${week}`); this.save();
+    this.notify("reviewer", "submit", was ? "عُدّل الرصد الأسبوعي" : "رُفع الرصد الأسبوعي", `${weekName(week)} — ${rasdText(S.rasd[week])}`, `rasd-w${week}`); this.save();
   },
   async toggleCheck(reqId) { if (S.checks[reqId]) delete S.checks[reqId]; else S.checks[reqId] = new Date().toISOString(); this.save(); },
   async setTafsir(date, on) { if (on) S.tafsir[date] = true; else delete S.tafsir[date]; this.save(); },

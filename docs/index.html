@@ -463,9 +463,16 @@ function surahsOf(a, b) { // السور التي تبدأ في الصفحات، 
 const tafsirPage = (di) => { const r = tafsirRange(di); return !r ? "مراجعة" : r[0] === r[1] ? String(r[0]) : `${r[0]}–${r[1]}`; };
 const tafsirLabel = (di) => { const r = tafsirRange(di); return r ? `صفحة ${tafsirPage(di)} · ${surahsOf(r[0], r[1])}` : "مراجعة جزء عمّ وختامه"; };
 
+const rasdStart = () => (S.settings.rasdStart && S.settings.rasdStart < startDate() ? S.settings.rasdStart : startDate());
+const preWeeks = () => Math.min(12, Math.ceil(diffDays(startDate(), rasdStart()) / 7));
+const weekName = (w) => (w >= 1 ? `الأسبوع ${w}` : preWeeks() > 1 ? `الأسبوع التمهيدي ${preWeeks() + w}` : "الأسبوع التمهيدي");
 let REQS = [], REQ = {};
 function buildReqs() {
   REQS = [];
+  for (let k = preWeeks(); k >= 1; k--) {
+    const w = 1 - k;
+    REQS.push({ id: `rasd-w${w}`, type: "rasd", comp: "quran", pre: true, week: w, month: 1, open: weekStart(w), due: weekEnd(w), title: `الرصد الأسبوعي — ${weekName(w)}`, sub: "حضور الحلقة · التسميع من – إلى (قبل انطلاق المشروع)" });
+  }
   for (let w = 1; w <= WEEKS; w++) {
     const m = monthOfWeek(w), wi = (w - 1) % 4, base = { week: w, month: m, open: weekStart(w), due: weekEnd(w) };
     REQS.push({ id: `tadabbur-w${w}`, type: "tadabbur", comp: "quran", title: `ورقة التدبر — الأسبوع ${w}`, sub: `آيات من ${MONTHS[m].tafsir}`, ...base });
@@ -513,7 +520,7 @@ function stats() {
   const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
   const cnt = (f) => REQS.filter(f).length, dn = (f) => REQS.filter((r) => f(r) && isDone(r)).length;
   const byComp = {
-    quran: (tafsirDone / 7 + dn((r) => r.type === "tadabbur" || r.type === "rasd")) / (WEEKS * 3),
+    quran: (tafsirDone / 7 + dn((r) => r.type === "tadabbur" || r.type === "rasd")) / (WEEKS + cnt((r) => r.type === "tadabbur" || r.type === "rasd")),
     sharia: dn((r) => r.type === "fiqh") / WEEKS,
     edu: dn((r) => r.comp === "edu") / cnt((r) => r.comp === "edu"),
     lead: dn((r) => r.comp === "lead") / cnt((r) => r.comp === "lead"),
@@ -599,7 +606,7 @@ const api = {
   },
   async saveRasd(week, d) {
     const was = S.rasd[week]; S.rasd[week] = { week, ...d, at: new Date().toISOString() };
-    this.notify("reviewer", "submit", was ? "عُدّل الرصد الأسبوعي" : "رُفع الرصد الأسبوعي", `الأسبوع ${week} — ${rasdText(S.rasd[week])}`, `rasd-w${week}`); this.save();
+    this.notify("reviewer", "submit", was ? "عُدّل الرصد الأسبوعي" : "رُفع الرصد الأسبوعي", `${weekName(week)} — ${rasdText(S.rasd[week])}`, `rasd-w${week}`); this.save();
   },
   async toggleCheck(reqId) { if (S.checks[reqId]) delete S.checks[reqId]; else S.checks[reqId] = new Date().toISOString(); this.save(); },
   async setTafsir(date, on) { if (on) S.tafsir[date] = true; else delete S.tafsir[date]; this.save(); },
@@ -676,7 +683,7 @@ if (CFG && window.supabase && !DEMO) {
       ])).map(must);
       const names = Object.fromEntries(pr.map((p) => [p.role, p.name]));
       const n = blank();
-      n.settings = { start: st?.start || n.settings.start, meetings: st?.meetings || [], names: { ...n.settings.names, ...names }, fontFiles: st?.font_files || {}, refs: st?.refs || {} };
+      n.settings = { start: st?.start || n.settings.start, meetings: st?.meetings || [], names: { ...n.settings.names, ...names }, fontFiles: st?.font_files || {}, refs: st?.refs || {}, rasdStart: st?.rasd_start || null };
       su.forEach((s) => (n.subs[s.req_id] = { reqId: s.req_id, title: s.title, body: s.body, file: s.file, at: s.at, status: s.status, score: s.score, note: s.note, reviewedAt: s.reviewed_at, history: s.history || [] }));
       ch.forEach((c) => (n.checks[c.req_id] = c.at));
       rs.forEach((x) => (n.rasd[x.week] = { week: x.week, attendance: x.attendance, from: x.from_text, to: x.to_text, note: x.note, at: x.at }));
@@ -730,7 +737,7 @@ if (CFG && window.supabase && !DEMO) {
     async delEvent(id) { must(await sb.from("events").delete().eq("id", id)); await this.refresh(); },
     async saveSettings(st) {
       const moved = st.meetings.map((d, i) => (d && d !== meetingDate(i + 1) ? i + 1 : 0)).filter(Boolean);
-      must(await sb.from("settings").update({ start: st.start, meetings: st.meetings }).eq("id", 1));
+      must(await sb.from("settings").update({ start: st.start, meetings: st.meetings, rasd_start: st.rasdStart || null }).eq("id", 1));
       for (const role of ["reviewer", "member"]) if (st.names[role] !== S.settings.names[role]) must(await sb.from("profiles").update({ name: st.names[role] }).eq("role", role));
       await this.refresh();
       for (const m of moved) await this.note("event", "تغيّر موعد اللقاء", `اللقاء ${ORD[m]} — ${fmtDay(meetingDate(m))}`);
@@ -896,6 +903,7 @@ function accountSheet() {
     <label>اسم المتابع<input id="s-rn" value="${esc(st.names.reviewer)}"></label>
     <label>اسم المستفيد<input id="s-mn" value="${esc(st.names.member)}"></label>
     <label>تاريخ انطلاق المشروع<input id="s-start" type="date" value="${st.start}"><small>${fmtHijri(st.start)}</small></label>
+    <label>بداية الرصد الأسبوعي<input id="s-rasd" type="date" value="${rasdStart()}"><small>يمكن أن يسبق انطلاق المشروع بأسابيع تمهيدية</small></label>
     <h3>مواعيد اللقاءات الشهرية</h3>
     <div class="grid2">${[1, 2, 3, 4, 5, 6].map((m) => `<label>اللقاء ${ORD[m]}<input type="date" data-meet="${m}" value="${meetingDate(m)}"></label>`).join("")}</div>
     <button class="btn gold wide" data-save>حفظ الإعدادات</button>
@@ -912,7 +920,7 @@ function accountSheet() {
     if (sv) sv.onclick = async () => {
       const start = $("#s-start", el).value || st.start, changed = start !== st.start;
       const meetings = changed ? [] : $$("[data-meet]", el).map((i) => i.value || "");
-      await api.saveSettings({ start, meetings, names: { reviewer: $("#s-rn", el).value.trim() || st.names.reviewer, member: $("#s-mn", el).value.trim() || st.names.member } });
+      await api.saveSettings({ start, meetings, rasdStart: $("#s-rasd", el).value || null, names: { reviewer: $("#s-rn", el).value.trim() || st.names.reviewer, member: $("#s-mn", el).value.trim() || st.names.member } });
       closeSheet(); render(); toast(changed ? "حُفظت الإعدادات وأُعيد ضبط مواعيد اللقاءات" : "حُفظت الإعدادات", "ok");
     };
   });
@@ -922,7 +930,7 @@ function accountSheet() {
 function reqSheet(id) {
   const r = REQ[id]; if (!r) return;
   const T = TYPES[r.type], st = statusOf(r), s = S.subs[id], mem = isMember();
-  const head = `<div class="rs-head"><span class="ric big c-${r.comp}">${T.icon}</span><div><small>${r.monthly ? `الشهر ${ORD[r.month]}` : `الأسبوع ${r.week} · الشهر ${ORD[r.month]}`} · الجدارة ${COMPS[r.comp].name}</small><h2>${esc(r.title)}</h2></div></div>
+  const head = `<div class="rs-head"><span class="ric big c-${r.comp}">${T.icon}</span><div><small>${r.monthly ? `الشهر ${ORD[r.month]}` : `${r.pre ? weekName(r.week) + " · قبل الانطلاق" : `الأسبوع ${r.week} · الشهر ${ORD[r.month]}`}`} · الجدارة ${COMPS[r.comp].name}</small><h2>${esc(r.title)}</h2></div></div>
     <div class="rs-meta">${chip(st)}<span class="mute">${I.cal} ${fmtDay(r.due)} · ${dueText(r)}</span></div>
     <p class="hint">${esc(r.sub)}${T.review ? ` — ${esc(T.hint)}` : ""}</p>`;
   if (r.type === "rasd") {
@@ -1024,7 +1032,8 @@ const alertRow = (x) => `<div class="al k-${x.k}" ${x.req ? `data-req="${x.req}"
 
 function homeView() {
   const st = stats(), p = nowPos(), mem = isMember(), t = today(), al = alerts(st);
-  const week = REQS.filter((r) => (r.week === p.week && !r.monthly) || (r.monthly && r.month === p.month && p.week % 4 === 0));
+  const preNow = REQS.filter((r) => r.pre && r.open <= t && t <= r.due);
+  const week = p.phase === "before" && preNow.length ? preNow : REQS.filter((r) => (r.week === p.week && !r.monthly) || (r.monthly && r.month === p.month && p.week % 4 === 0));
   const diff = st.overall - st.expected;
   const good = diff >= -0.01 && !st.late.length;
   const pace = p.phase === "before" ? "لم يبدأ بعد" : good ? "على المسار" : st.late.length ? `${st.late.length} متطلبات متأخرة` : `متأخر ${Math.max(1, pct(-diff))}٪ عن المخطط`;
@@ -1041,7 +1050,7 @@ function homeView() {
   return `${hero}
     ${wird}
     <section class="card alerts"><div class="ch"><h3>${I.bell} التنبيهات</h3>${al.length ? `<span class="count">${al.length}</span>` : ""}</div>${al.length ? al.map(alertRow).join("") : `<div class="empty sm">${I.check}<p>لا تنبيهات — كل شيء على ما يرام</p></div>`}</section>
-    <div class="cols"><section class="card"><div class="ch"><h3>${p.phase === "before" ? "متطلبات الأسبوع الأول" : mem ? "مطلوب هذا الأسبوع" : "متطلبات هذا الأسبوع"}</h3><a href="#/path/${p.month}">كل المسار</a></div><div class="reqs">${week.map((r) => reqRow(r)).join("")}</div></section>
+    <div class="cols"><section class="card"><div class="ch"><h3>${p.phase === "before" ? (preNow.length ? "مطلوب هذا الأسبوع (تمهيدي)" : "متطلبات الأسبوع الأول") : mem ? "مطلوب هذا الأسبوع" : "متطلبات هذا الأسبوع"}</h3><a href="#/path/${p.month}">كل المسار</a></div><div class="reqs">${week.map((r) => reqRow(r)).join("")}</div></section>
     ${compsCard(st)}</div>
     ${trail()}`;
 }
@@ -1060,6 +1069,7 @@ function pathView(arg) {
   return `<div class="tabs">${[1, 2, 3, 4, 5, 6].map((i) => `<a href="#/path/${i}" class="${i === m ? "on" : ""} ${p.phase === "during" && p.month === i ? "cur" : ""}">الشهر ${ORD[i]}</a>`).join("")}</div>
     <section class="mhead"><div class="h-rays"></div><small>الشهر ${ORD[m]} · ${fmtShort(weekStart(m * 4 - 3))} – ${fmtShort(weekEnd(m * 4))}</small><h1>${esc(M.meet)}</h1>
       <div class="mgrid"><div><small>التفسير الميسر</small><b>${M.tafsir}</b></div><div><small>التأهيل الشرعي</small><b>${M.fiqh}</b></div><div><small>مصدر اللقاء</small><b>${esc(M.source)}</b></div><div><small>اللقاء ${ORD[m]}</small><b>${fmtDay(meetingDate(m))}</b></div></div></section>
+    ${m === 1 && REQS.some((r) => r.pre) ? `<section class="card"><div class="ch"><h3>${I.people} قبل الانطلاق — الرصد التمهيدي</h3><small>${fmtShort(rasdStart())} – ${fmtShort(addDays(startDate(), -1))}</small></div><div class="reqs">${REQS.filter((r) => r.pre).map((r) => reqRow(r)).join("")}</div></section>` : ""}
     <div class="cols">${weeks}</div>
     <section class="card"><div class="ch"><h3>${I.people} قبل اللقاء ${ORD[m]}</h3><small>${esc(M.comp)}</small></div><div class="reqs">${REQS.filter((r) => r.monthly && r.month === m).map((r) => reqRow(r)).join("")}</div></section>`;
 }
@@ -1258,7 +1268,7 @@ function reportView() {
       <div class="heat">${heat}</div><div class="legend"><span><i class="sq on"></i>مُنجز</span><span><i class="sq miss"></i>فائت</span><span><i class="sq"></i>قادم</span><span>الأعمدة: أسابيع المشروع (1–24) · الصفوف: السبت إلى الجمعة</span></div></section>
     <section class="rp-box"><h3>الإنجاز الشهري</h3>${tbl(["الشهر", "التفسير", "التدبر", "الفقه", "القراءة", "الرصد", "ملخص المصدر", "التقرير الشهري", "متوسط التقييم"], mrows, "rpt")}</section>
     ${(() => { const rs = Object.values(S.rasd).sort((a, b) => a.week - b.week); if (!rs.length) return ""; const pr = rs.filter((x) => x.attendance === "present").length;
-      return `<section class="rp-box"><h3>الرصد الأسبوعي: حضور الحلقة والتسميع <small>(حضر ${pr} من ${rs.length} أسبوعاً مرصوداً · نسبة الحضور ${pct(pr / rs.length)}٪)</small></h3>${tbl(["الأسبوع", "الفترة", "الحضور", "التسميع من", "إلى", "ملاحظات"], rs.map((x) => [x.week, `${fmtShort(weekStart(x.week))} – ${fmtShort(weekEnd(x.week))}`, `<span class="rc ${x.attendance === "present" ? "approved" : x.attendance === "excused" ? "revise" : "late"}">${ATT[x.attendance]}</span>`, esc(x.from || "—"), esc(x.to || "—"), esc(x.note || "—")]), "rpt")}</section>`; })()}
+      return `<section class="rp-box"><h3>الرصد الأسبوعي: حضور الحلقة والتسميع <small>(حضر ${pr} من ${rs.length} أسبوعاً مرصوداً · نسبة الحضور ${pct(pr / rs.length)}٪)</small></h3>${tbl(["الأسبوع", "الفترة", "الحضور", "التسميع من", "إلى", "ملاحظات"], rs.map((x) => [x.week >= 1 ? x.week : "تمهيدي", `${fmtShort(weekStart(x.week))} – ${fmtShort(weekEnd(x.week))}`, `<span class="rc ${x.attendance === "present" ? "approved" : x.attendance === "excused" ? "revise" : "late"}">${ATT[x.attendance]}</span>`, esc(x.from || "—"), esc(x.to || "—"), esc(x.note || "—")]), "rpt")}</section>`; })()}
     <section class="rp-box"><h3>سجل المتطلبات المرفوعة وتقييمها <small>(${subs.length} من ${dueR.length} حلّ موعدها)</small></h3>
       ${subs.length ? tbl(["المتطلب", "تاريخ الرفع", "الحالة", "التقييم", "ملاحظة المقيّم"], subs.map((s) => [esc(REQ[s.reqId].title), fmtShort(d2s(new Date(s.at))), `<span class="rc ${s.status}">${stName[s.status]}</span>`, s.score ? stars(s.score, "sm") : "—", esc(s.note || "—")]), "rpt log") : `<p class="mute">لم تُرفع متطلبات بعد.</p>`}</section>
     ${open.length ? `<section class="rp-box"><h3>متطلبات تحتاج متابعة</h3>${tbl(["المتطلب", "الحالة", "الموعد"], open.map((r) => [esc(r.title), `<span class="rc ${statusOf(r)}">${stName[statusOf(r)]}</span>`, dueText(r)]), "rpt")}</section>` : ""}

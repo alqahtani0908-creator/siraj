@@ -26,7 +26,7 @@ if (CFG && window.supabase && !DEMO) {
       ])).map(must);
       const names = Object.fromEntries(pr.map((p) => [p.role, p.name]));
       const n = blank();
-      n.settings = { start: st?.start || n.settings.start, meetings: st?.meetings || [], names: { ...n.settings.names, ...names }, fontFiles: st?.font_files || {}, refs: st?.refs || {} };
+      n.settings = { start: st?.start || n.settings.start, meetings: st?.meetings || [], names: { ...n.settings.names, ...names }, fontFiles: st?.font_files || {}, refs: st?.refs || {}, rasdStart: st?.rasd_start || null };
       su.forEach((s) => (n.subs[s.req_id] = { reqId: s.req_id, title: s.title, body: s.body, file: s.file, at: s.at, status: s.status, score: s.score, note: s.note, reviewedAt: s.reviewed_at, history: s.history || [] }));
       ch.forEach((c) => (n.checks[c.req_id] = c.at));
       rs.forEach((x) => (n.rasd[x.week] = { week: x.week, attendance: x.attendance, from: x.from_text, to: x.to_text, note: x.note, at: x.at }));
@@ -80,7 +80,7 @@ if (CFG && window.supabase && !DEMO) {
     async delEvent(id) { must(await sb.from("events").delete().eq("id", id)); await this.refresh(); },
     async saveSettings(st) {
       const moved = st.meetings.map((d, i) => (d && d !== meetingDate(i + 1) ? i + 1 : 0)).filter(Boolean);
-      must(await sb.from("settings").update({ start: st.start, meetings: st.meetings }).eq("id", 1));
+      must(await sb.from("settings").update({ start: st.start, meetings: st.meetings, rasd_start: st.rasdStart || null }).eq("id", 1));
       for (const role of ["reviewer", "member"]) if (st.names[role] !== S.settings.names[role]) must(await sb.from("profiles").update({ name: st.names[role] }).eq("role", role));
       await this.refresh();
       for (const m of moved) await this.note("event", "تغيّر موعد اللقاء", `اللقاء ${ORD[m]} — ${fmtDay(meetingDate(m))}`);
