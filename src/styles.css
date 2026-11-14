@@ -287,3 +287,4 @@ input:focus,textarea:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3
 .dayv{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.dayv span{padding:2px 10px;border-radius:12px;font-size:.78rem;background:#EFECE4;color:#B5AFA0}.dayv span.on{background:var(--ok-bg);color:var(--ok);font-weight:700}
 .tb.rpt td small{display:block;margin-top:2px}
 @media (min-width:480px){.dayp{grid-template-columns:repeat(7,1fr)}}
+.pushrow{display:flex;align-items:center;gap:10px;margin-top:16px;padding:10px 12px;border-radius:14px;background:#FAF0D9;font-size:.9rem;line-height:1.55}.pushrow.on{background:var(--ok-bg)}.pushrow .aic{color:var(--gold-deep)}.pushrow.on .aic{color:var(--ok)}

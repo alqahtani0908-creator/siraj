@@ -57,7 +57,7 @@ if (CFG && window.supabase && !DEMO) {
     notify() {},
     async signIn(email, password) { must(await sb.auth.signInWithPassword({ email: email.trim(), password })); await this.load(); if (!ME) throw new Error("هذا الحساب غير مرتبط بالمنصة"); },
     async activate(email, code, password) { must(await sb.rpc("activate_account", { p_email: email, p_code: code, p_password: password })); await this.signIn(email, password); },
-    async signOut() { if (chan) { sb.removeChannel(chan); chan = null; } await sb.auth.signOut(); ME = null; S = blank(); buildReqs(); },
+    async signOut() { await unsubscribePush(); if (chan) { sb.removeChannel(chan); chan = null; } await sb.auth.signOut(); ME = null; S = blank(); buildReqs(); },
     async markRead(ids) { if (!ids.length) return; must(await sb.from("notifs").update({ read: true }).in("id", ids)); S.notifs.forEach((n) => { if (ids.includes(n.id)) n.read = true; }); },
     async submit(reqId, { title, body, file }) {
       const prev = S.subs[reqId]; let f = prev?.file || null;
@@ -97,6 +97,8 @@ if (CFG && window.supabase && !DEMO) {
     },
     async delRef(refId, id) { const refs = { ...(S.settings.refs || {}) }; refs[refId] = (refs[refId] || []).filter((x) => x.id !== id); must(await sb.from("settings").update({ refs }).eq("id", 1)); await this.refresh(); },
     async refUrl(it) { if (it.url) return it.url; const r = await sb.storage.from("brand").createSignedUrl(it.path, 3600); return r.data?.signedUrl || null; },
+    async savePush(endpoint, p256dh, auth) { must(await sb.rpc("save_push", { p_endpoint: endpoint, p_p256dh: p256dh, p_auth: auth })); },
+    async dropPush(endpoint) { await sb.rpc("drop_push", { p_endpoint: endpoint }); },
     async fileUrl(f) { if (!f?.path) return null; const r = await sb.storage.from("files").createSignedUrl(f.path, 3600); return r.data?.signedUrl || null; },
     async memberInvite() { const r = await sb.rpc("member_invite"); return r.data || null; },
     async uploadFonts(files) {

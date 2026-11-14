@@ -20,6 +20,8 @@ function nextMeeting() {
 function alerts(st) {
   const p = nowPos(), t = today(), mem = isMember(), a = [];
   unreadMine().slice(0, 4).forEach((n) => a.push({ k: n.kind === "revise" ? "warn" : n.kind === "approved" ? "ok" : "info", ic: N_IC[n.kind] || I.bell, title: n.title, body: n.body, n: n.id, req: n.req, at: ago(n.at) }));
+  const ps = pushState();
+  if (ps === "off" || ps === "ios-install") a.push({ k: "gold", ic: I.bell, title: ps === "off" ? "فعّل إشعارات الجوال" : "إشعارات الآيفون", body: PUSH_TXT[ps][0], push: ps === "off" });
   if (p.phase === "before") a.push({ k: "info", ic: I.spark, title: `ينطلق المشروع بعد ${daysWord(-p.di)}`, body: `${fmtDay(startDate())} · ${fmtHijri(startDate())}` });
   if (!mem && st.pending.length) a.push({ k: "gold", ic: I.clock, title: `${st.pending.length} من المتطلبات بانتظار تقييمك`, body: st.pending.slice(0, 3).map((r) => r.title).join("، "), req: st.pending[0].id });
   if (mem) st.revise.forEach((r) => { if (!a.some((x) => x.req === r.id)) a.push({ k: "warn", ic: I.alert, title: `يحتاج استكمالاً: ${r.title}`, body: S.subs[r.id]?.note || "", req: r.id }); });
@@ -31,7 +33,7 @@ function alerts(st) {
   if (nm && nm.n <= 10 && p.phase !== "before") a.push({ k: "navy", ic: I.people, title: `اللقاء ${ORD[nm.m]} ${nm.n === 0 ? "اليوم" : nm.n === 1 ? "غداً" : "بعد " + daysWord(nm.n)}`, body: `«${MONTHS[nm.m].meet}» · ${fmtDay(nm.date)}`, go: "#/cal" });
   return a;
 }
-const alertRow = (x) => `<div class="al k-${x.k}" ${x.req ? `data-req="${x.req}"` : ""} ${x.n ? `data-readn="${x.n}"` : ""} ${x.go ? `data-go="${x.go}"` : ""} ${x.tafsir ? "data-tafsir-today" : ""} role="button" tabindex="0"><span class="aic">${x.ic}</span><span class="grow"><b>${esc(x.title)}</b>${x.body ? `<small>${esc(x.body)}</small>` : ""}</span>${x.at ? `<em>${x.at}</em>` : ""}${x.nudge ? `<button class="btn sm ghost" data-nudge="${x.req}">${I.bell} ذكّره</button>` : ""}</div>`;
+const alertRow = (x) => `<div class="al k-${x.k}" ${x.req ? `data-req="${x.req}"` : ""} ${x.n ? `data-readn="${x.n}"` : ""} ${x.go ? `data-go="${x.go}"` : ""} ${x.tafsir ? "data-tafsir-today" : ""} role="button" tabindex="0"><span class="aic">${x.ic}</span><span class="grow"><b>${esc(x.title)}</b>${x.body ? `<small>${esc(x.body)}</small>` : ""}</span>${x.at ? `<em>${x.at}</em>` : ""}${x.push ? `<button class="btn sm gold" data-push>تفعيل</button>` : ""}${x.nudge ? `<button class="btn sm ghost" data-nudge="${x.req}">${I.bell} ذكّره</button>` : ""}</div>`;
 
 function homeView() {
   const st = stats(), p = nowPos(), mem = isMember(), t = today(), al = alerts(st);

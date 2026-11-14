@@ -125,6 +125,7 @@ function accountSheet() {
     <div class="grid2">${[1, 2, 3, 4, 5, 6].map((m) => `<label>اللقاء ${ORD[m]}<input type="date" data-meet="${m}" value="${meetingDate(m)}"></label>`).join("")}</div>
     <button class="btn gold wide" data-save>حفظ الإعدادات</button>
     ${api.mode === "remote" ? `<div id="invite"></div><h3>خط المنصة (ثمانية)</h3><label class="drop">${I.upload}<span id="fn-name">${Object.keys(st.fontFiles || {}).length ? `مرفوع: ${Object.keys(st.fontFiles).length} أوزان — اضغط للاستبدال` : "ارفع ملفات الخط الخمسة (otf) مرة واحدة"}</span><input id="fn-file" type="file" accept=".otf,.ttf" multiple hidden></label>` : ""}` : ""}
+    ${pushState() !== "none" ? `<div class="pushrow ${pushState()}"><span class="aic">${I.bell}</span><span class="grow">${PUSH_TXT[pushState()][0]}</span>${PUSH_TXT[pushState()][1] ? `<button class="btn sm ${pushState() === "on" ? "ghost" : "gold"}" data-push>${PUSH_TXT[pushState()][1]}</button>` : ""}</div>` : ""}
     <div class="row gap"><a class="btn ghost" href="#/report">${I.print} تقرير المستفيد</a><a class="btn ghost" href="guide/" target="_blank">${I.book} شرح المنصة</a></div>
     <div class="row gap"><button class="btn ghost" data-greet>${I.spark} رسالة اليوم</button><button class="btn ghost danger" data-out>${I.out} تسجيل الخروج</button></div>`, (el) => {
     $("[data-out]", el).onclick = async () => { await api.signOut(); closeSheet(); render(); };

@@ -4,7 +4,7 @@ import pathlib
 root = pathlib.Path(__file__).parent
 src = root / "src"
 read = lambda p: (src / p).read_text(encoding="utf-8")
-js = "\n".join(read(f) for f in ["core.js", "store.js", "remote.js", "ui.js", "views.js", "extra.js", "main.js"])
+js = "\n".join(read(f) for f in ["core.js", "store.js", "remote.js", "ui.js", "views.js", "extra.js", "push.js", "main.js"])
 html = f"""<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -29,7 +29,7 @@ html = f"""<!doctype html>
 <div id="app"></div>
 <div id="toasts" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js"></script>
+<script src="config.js?v=3"></script>
 <script>
 {js}
 </script>

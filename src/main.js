@@ -16,6 +16,7 @@ document.addEventListener("click", async (e) => {
   let b;
   if ((b = q("[data-authmode]"))) { const f = $("#authf"); f.dataset.mode = f.dataset.mode === "in" ? "act" : "in"; $("[name=password]", f).autocomplete = f.dataset.mode === "in" ? "current-password" : "new-password"; return; }
   if ((b = q("[data-login]"))) { await api.signIn(b.dataset.login); location.hash = "#/home"; render(); showGreeting(); return; }
+  if ((b = q("[data-push]"))) { e.stopPropagation(); return togglePush(); }
   if ((b = q("[data-act]"))) return { notifs: notifSheet, account: accountSheet }[b.dataset.act]?.();
   if (sheetEl?.contains(e.target)) return;
   if ((b = q("[data-nudge]"))) { e.stopPropagation(); await api.nudge(b.dataset.nudge); return toast("أُرسل التذكير للمستفيد", "ok"); }
@@ -64,6 +65,7 @@ window.addEventListener("storage", (e) => {
   try { await api.load(); } catch (err) { console.error(err); toast("تعذّر الاتصال بقاعدة البيانات", "err"); }
   try { await Promise.race([document.fonts.load('700 20px "Thmanyah Serif Text"'), new Promise((r) => setTimeout(r, 1500))]); } catch {}
   render();
+  initPush();
   showGreeting();
   if (DEMO && QS.get("open")) reqSheet(QS.get("open"));
 })();

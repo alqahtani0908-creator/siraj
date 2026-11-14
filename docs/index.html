@@ -303,6 +303,7 @@ input:focus,textarea:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3
 .dayv{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.dayv span{padding:2px 10px;border-radius:12px;font-size:.78rem;background:#EFECE4;color:#B5AFA0}.dayv span.on{background:var(--ok-bg);color:var(--ok);font-weight:700}
 .tb.rpt td small{display:block;margin-top:2px}
 @media (min-width:480px){.dayp{grid-template-columns:repeat(7,1fr)}}
+.pushrow{display:flex;align-items:center;gap:10px;margin-top:16px;padding:10px 12px;border-radius:14px;background:#FAF0D9;font-size:.9rem;line-height:1.55}.pushrow.on{background:var(--ok-bg)}.pushrow .aic{color:var(--gold-deep)}.pushrow.on .aic{color:var(--ok)}
 
 </style>
 </head>
@@ -311,7 +312,7 @@ input:focus,textarea:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3
 <div id="app"></div>
 <div id="toasts" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js"></script>
+<script src="config.js?v=3"></script>
 <script>
 // ───────────────────────── أدوات عامة ─────────────────────────
 const $ = (s, r = document) => r.querySelector(s);
@@ -725,7 +726,7 @@ if (CFG && window.supabase && !DEMO) {
     notify() {},
     async signIn(email, password) { must(await sb.auth.signInWithPassword({ email: email.trim(), password })); await this.load(); if (!ME) throw new Error("هذا الحساب غير مرتبط بالمنصة"); },
     async activate(email, code, password) { must(await sb.rpc("activate_account", { p_email: email, p_code: code, p_password: password })); await this.signIn(email, password); },
-    async signOut() { if (chan) { sb.removeChannel(chan); chan = null; } await sb.auth.signOut(); ME = null; S = blank(); buildReqs(); },
+    async signOut() { await unsubscribePush(); if (chan) { sb.removeChannel(chan); chan = null; } await sb.auth.signOut(); ME = null; S = blank(); buildReqs(); },
     async markRead(ids) { if (!ids.length) return; must(await sb.from("notifs").update({ read: true }).in("id", ids)); S.notifs.forEach((n) => { if (ids.includes(n.id)) n.read = true; }); },
     async submit(reqId, { title, body, file }) {
       const prev = S.subs[reqId]; let f = prev?.file || null;
@@ -765,6 +766,8 @@ if (CFG && window.supabase && !DEMO) {
     },
     async delRef(refId, id) { const refs = { ...(S.settings.refs || {}) }; refs[refId] = (refs[refId] || []).filter((x) => x.id !== id); must(await sb.from("settings").update({ refs }).eq("id", 1)); await this.refresh(); },
     async refUrl(it) { if (it.url) return it.url; const r = await sb.storage.from("brand").createSignedUrl(it.path, 3600); return r.data?.signedUrl || null; },
+    async savePush(endpoint, p256dh, auth) { must(await sb.rpc("save_push", { p_endpoint: endpoint, p_p256dh: p256dh, p_auth: auth })); },
+    async dropPush(endpoint) { await sb.rpc("drop_push", { p_endpoint: endpoint }); },
     async fileUrl(f) { if (!f?.path) return null; const r = await sb.storage.from("files").createSignedUrl(f.path, 3600); return r.data?.signedUrl || null; },
     async memberInvite() { const r = await sb.rpc("member_invite"); return r.data || null; },
     async uploadFonts(files) {
@@ -919,6 +922,7 @@ function accountSheet() {
     <div class="grid2">${[1, 2, 3, 4, 5, 6].map((m) => `<label>اللقاء ${ORD[m]}<input type="date" data-meet="${m}" value="${meetingDate(m)}"></label>`).join("")}</div>
     <button class="btn gold wide" data-save>حفظ الإعدادات</button>
     ${api.mode === "remote" ? `<div id="invite"></div><h3>خط المنصة (ثمانية)</h3><label class="drop">${I.upload}<span id="fn-name">${Object.keys(st.fontFiles || {}).length ? `مرفوع: ${Object.keys(st.fontFiles).length} أوزان — اضغط للاستبدال` : "ارفع ملفات الخط الخمسة (otf) مرة واحدة"}</span><input id="fn-file" type="file" accept=".otf,.ttf" multiple hidden></label>` : ""}` : ""}
+    ${pushState() !== "none" ? `<div class="pushrow ${pushState()}"><span class="aic">${I.bell}</span><span class="grow">${PUSH_TXT[pushState()][0]}</span>${PUSH_TXT[pushState()][1] ? `<button class="btn sm ${pushState() === "on" ? "ghost" : "gold"}" data-push>${PUSH_TXT[pushState()][1]}</button>` : ""}</div>` : ""}
     <div class="row gap"><a class="btn ghost" href="#/report">${I.print} تقرير المستفيد</a><a class="btn ghost" href="guide/" target="_blank">${I.book} شرح المنصة</a></div>
     <div class="row gap"><button class="btn ghost" data-greet>${I.spark} رسالة اليوم</button><button class="btn ghost danger" data-out>${I.out} تسجيل الخروج</button></div>`, (el) => {
     $("[data-out]", el).onclick = async () => { await api.signOut(); closeSheet(); render(); };
@@ -1034,6 +1038,8 @@ function nextMeeting() {
 function alerts(st) {
   const p = nowPos(), t = today(), mem = isMember(), a = [];
   unreadMine().slice(0, 4).forEach((n) => a.push({ k: n.kind === "revise" ? "warn" : n.kind === "approved" ? "ok" : "info", ic: N_IC[n.kind] || I.bell, title: n.title, body: n.body, n: n.id, req: n.req, at: ago(n.at) }));
+  const ps = pushState();
+  if (ps === "off" || ps === "ios-install") a.push({ k: "gold", ic: I.bell, title: ps === "off" ? "فعّل إشعارات الجوال" : "إشعارات الآيفون", body: PUSH_TXT[ps][0], push: ps === "off" });
   if (p.phase === "before") a.push({ k: "info", ic: I.spark, title: `ينطلق المشروع بعد ${daysWord(-p.di)}`, body: `${fmtDay(startDate())} · ${fmtHijri(startDate())}` });
   if (!mem && st.pending.length) a.push({ k: "gold", ic: I.clock, title: `${st.pending.length} من المتطلبات بانتظار تقييمك`, body: st.pending.slice(0, 3).map((r) => r.title).join("، "), req: st.pending[0].id });
   if (mem) st.revise.forEach((r) => { if (!a.some((x) => x.req === r.id)) a.push({ k: "warn", ic: I.alert, title: `يحتاج استكمالاً: ${r.title}`, body: S.subs[r.id]?.note || "", req: r.id }); });
@@ -1045,7 +1051,7 @@ function alerts(st) {
   if (nm && nm.n <= 10 && p.phase !== "before") a.push({ k: "navy", ic: I.people, title: `اللقاء ${ORD[nm.m]} ${nm.n === 0 ? "اليوم" : nm.n === 1 ? "غداً" : "بعد " + daysWord(nm.n)}`, body: `«${MONTHS[nm.m].meet}» · ${fmtDay(nm.date)}`, go: "#/cal" });
   return a;
 }
-const alertRow = (x) => `<div class="al k-${x.k}" ${x.req ? `data-req="${x.req}"` : ""} ${x.n ? `data-readn="${x.n}"` : ""} ${x.go ? `data-go="${x.go}"` : ""} ${x.tafsir ? "data-tafsir-today" : ""} role="button" tabindex="0"><span class="aic">${x.ic}</span><span class="grow"><b>${esc(x.title)}</b>${x.body ? `<small>${esc(x.body)}</small>` : ""}</span>${x.at ? `<em>${x.at}</em>` : ""}${x.nudge ? `<button class="btn sm ghost" data-nudge="${x.req}">${I.bell} ذكّره</button>` : ""}</div>`;
+const alertRow = (x) => `<div class="al k-${x.k}" ${x.req ? `data-req="${x.req}"` : ""} ${x.n ? `data-readn="${x.n}"` : ""} ${x.go ? `data-go="${x.go}"` : ""} ${x.tafsir ? "data-tafsir-today" : ""} role="button" tabindex="0"><span class="aic">${x.ic}</span><span class="grow"><b>${esc(x.title)}</b>${x.body ? `<small>${esc(x.body)}</small>` : ""}</span>${x.at ? `<em>${x.at}</em>` : ""}${x.push ? `<button class="btn sm gold" data-push>تفعيل</button>` : ""}${x.nudge ? `<button class="btn sm ghost" data-nudge="${x.req}">${I.bell} ذكّره</button>` : ""}</div>`;
 
 function homeView() {
   const st = stats(), p = nowPos(), mem = isMember(), t = today(), al = alerts(st);
@@ -1295,6 +1301,61 @@ function reportView() {
   </article>`;
 }
 
+// ───────────────────────── إشعارات الجوال (Web Push) ─────────────────────────
+const PUSH_OK = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const IS_STANDALONE = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+let swReg = null;
+const b64u = (s) => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(s.length / 4) * 4, "=")), (c) => c.charCodeAt(0));
+// on | off | denied | ios-install | unsupported | none (الوضع المحلي)
+function pushState() {
+  if (api.mode !== "remote" || !CFG?.vapidPublicKey) return "none";
+  if (!PUSH_OK) return IS_IOS && !IS_STANDALONE ? "ios-install" : "unsupported";
+  if (Notification.permission === "denied") return "denied";
+  return Notification.permission === "granted" && localStorage.getItem("siraj.push") === "1" ? "on" : "off";
+}
+async function initPush() {
+  if (api.mode !== "remote" || !("serviceWorker" in navigator)) return;
+  try {
+    swReg = await navigator.serviceWorker.register("sw.js");
+    navigator.serviceWorker.addEventListener("message", (e) => { if (ME && e.data?.open && REQ[e.data.open]) reqSheet(e.data.open); });
+    if (ME && pushState() === "on") await subscribePush(true); // يجدّد الاشتراك إن تغيّر
+  } catch (e) { console.warn("sw", e); }
+}
+async function subscribePush(silent) {
+  if (!PUSH_OK) throw new Error(IS_IOS && !IS_STANDALONE ? "أضف المنصة إلى الشاشة الرئيسية وافتحها من أيقونتها أولاً" : "هذا المتصفح لا يدعم الإشعارات");
+  if (!silent && (await Notification.requestPermission()) !== "granted") throw new Error("لم يُسمح بالإشعارات — فعّلها من إعدادات المتصفح لهذا الموقع");
+  const reg = swReg || (await navigator.serviceWorker.ready);
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64u(CFG.vapidPublicKey) });
+  const j = sub.toJSON();
+  await api.savePush(j.endpoint, j.keys.p256dh, j.keys.auth);
+  localStorage.setItem("siraj.push", "1");
+}
+async function unsubscribePush() {
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    const sub = await reg?.pushManager.getSubscription();
+    if (sub) { await api.dropPush(sub.endpoint); await sub.unsubscribe(); }
+  } catch (e) { console.warn("unsub", e); }
+  localStorage.removeItem("siraj.push");
+}
+const PUSH_TXT = {
+  on: ["إشعارات الجوال مفعّلة على هذا الجهاز", "إيقاف"],
+  off: ["فعّل إشعارات الجوال لتصلك التنبيهات والمنصة مغلقة", "تفعيل الإشعارات"],
+  denied: ["الإشعارات محظورة لهذا الموقع — اسمح بها من إعدادات المتصفح ثم أعد المحاولة", ""],
+  "ios-install": ["على الآيفون: أضف المنصة إلى الشاشة الرئيسية وافتحها من أيقونتها، ثم فعّل الإشعارات من هنا", ""],
+  unsupported: ["هذا المتصفح لا يدعم إشعارات الجوال", ""],
+};
+async function togglePush() {
+  const st = pushState();
+  try {
+    if (st === "on") { await unsubscribePush(); toast("أُوقفت الإشعارات على هذا الجهاز"); }
+    else { await subscribePush(false); toast("فُعّلت إشعارات الجوال", "ok"); }
+  } catch (e) { toast(e.message || String(e), "err"); }
+  if (sheetEl) { closeSheet(); accountSheet(); } else rerender();
+}
+
 // ───────────────────────── التشغيل والتوجيه ─────────────────────────
 function route() { const [r, a] = (location.hash.replace(/^#\/?/, "") || "home").split("/"); return { r: ["home", "path", "cal", "file", "guide", "report"].includes(r) ? r : "home", a }; }
 function render() {
@@ -1313,6 +1374,7 @@ document.addEventListener("click", async (e) => {
   let b;
   if ((b = q("[data-authmode]"))) { const f = $("#authf"); f.dataset.mode = f.dataset.mode === "in" ? "act" : "in"; $("[name=password]", f).autocomplete = f.dataset.mode === "in" ? "current-password" : "new-password"; return; }
   if ((b = q("[data-login]"))) { await api.signIn(b.dataset.login); location.hash = "#/home"; render(); showGreeting(); return; }
+  if ((b = q("[data-push]"))) { e.stopPropagation(); return togglePush(); }
   if ((b = q("[data-act]"))) return { notifs: notifSheet, account: accountSheet }[b.dataset.act]?.();
   if (sheetEl?.contains(e.target)) return;
   if ((b = q("[data-nudge]"))) { e.stopPropagation(); await api.nudge(b.dataset.nudge); return toast("أُرسل التذكير للمستفيد", "ok"); }
@@ -1361,6 +1423,7 @@ window.addEventListener("storage", (e) => {
   try { await api.load(); } catch (err) { console.error(err); toast("تعذّر الاتصال بقاعدة البيانات", "err"); }
   try { await Promise.race([document.fonts.load('700 20px "Thmanyah Serif Text"'), new Promise((r) => setTimeout(r, 1500))]); } catch {}
   render();
+  initPush();
   showGreeting();
   if (DEMO && QS.get("open")) reqSheet(QS.get("open"));
 })();
