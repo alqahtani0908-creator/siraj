@@ -116,7 +116,10 @@ const TYPES = {
   report: { name: "التقرير الشهري", hint: "ما أُنجز وما تأخر، وخطة الشهر القادم", icon: I.flag, review: true },
 };
 const ATT = { present: "حاضر", excused: "غائب بعذر", absent: "غائب" };
-const rasdText = (x) => `${ATT[x.attendance]}${x.from || x.to ? ` · التسميع من ${x.from || "—"} إلى ${x.to || "—"}` : ""}`;
+const DAYN = ["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"];
+const rasdDays = (x) => (Array.isArray(x.days) ? x.days.filter((d) => d >= 0 && d < 7).sort((a, b) => a - b) : []);
+const attText = (x) => { const d = rasdDays(x); return d.length ? `حضر ${daysWord(d.length)}: ${d.map((i) => DAYN[i]).join("، ")}` : ATT[x.attendance]; };
+const rasdText = (x) => `${attText(x)}${x.from || x.to ? ` · التسميع من ${x.from || "—"} إلى ${x.to || "—"}` : ""}`;
 const ST = {
   approved: { label: "معتمد", icon: I.check }, done: { label: "تمّ", icon: I.check },
   submitted: { label: "بانتظار التقييم", icon: I.clock }, revise: { label: "يحتاج استكمال", icon: I.alert },

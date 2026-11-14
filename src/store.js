@@ -47,7 +47,7 @@ const api = {
     this.save();
   },
   async saveRasd(week, d) {
-    const was = S.rasd[week]; S.rasd[week] = { week, ...d, at: new Date().toISOString() };
+    const was = S.rasd[week]; S.rasd[week] = { week, days: [], ...d, at: new Date().toISOString() };
     this.notify("reviewer", "submit", was ? "عُدّل الرصد الأسبوعي" : "رُفع الرصد الأسبوعي", `${weekName(week)} — ${rasdText(S.rasd[week])}`, `rasd-w${week}`); this.save();
   },
   async toggleCheck(reqId) { if (S.checks[reqId]) delete S.checks[reqId]; else S.checks[reqId] = new Date().toISOString(); this.save(); },
@@ -82,7 +82,7 @@ function seedDemo() {
   const notes = ["ملخص متقن ووقفات عميقة، بارك الله فيك", "جيد، ويحسن ربط الوقفة بتطبيق عملي في الحلقة", "أحسنت، استمر على هذا المستوى", "اختصار مفيد، أضف الأدلة في المرة القادمة"];
   REQS.filter((r) => r.open <= today()).forEach((r) => {
     const past = r.due < today(), last = r.week === p.week - 1;
-    if (r.type === "rasd") { if (past && rnd() > 0.1) { const a = 440 + (r.week - 1) * 7; S.rasd[r.week] = { week: r.week, attendance: rnd() > 0.15 ? "present" : "excused", from: `${surahsOf(a, a)} ص ${a}`, to: `${surahsOf(a + 6, a + 6)} ص ${a + 6}`, note: "", at: new Date(s2d(r.due)).toISOString() }; } return; }
+    if (r.type === "rasd") { if (past && rnd() > 0.1) { const a = 440 + (r.week - 1) * 7; S.rasd[r.week] = { week: r.week, attendance: "present", days: [0, 2, 4].filter(() => rnd() > 0.2), from: `${surahsOf(a, a)} ص ${a}`, to: `${surahsOf(a + 6, a + 6)} ص ${a + 6}`, note: "", at: new Date(s2d(r.due)).toISOString() }; } return; }
     if (r.type === "read") { if (past ? rnd() > 0.1 : rnd() > 0.6) S.checks[r.id] = new Date().toISOString(); return; }
     if (!past || (r.monthly && r.due >= today())) return;
     if (rnd() < 0.1) return;

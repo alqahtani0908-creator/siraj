@@ -152,19 +152,25 @@ function reqSheet(id) {
     <p class="hint">${esc(r.sub)}${T.review ? ` — ${esc(T.hint)}` : ""}</p>`;
   if (r.type === "rasd") {
     const x = S.rasd[r.week];
-    const view = x ? `<div class="subm"><div class="sm-h"><b>${ATT[x.attendance]}</b><em>سُجّل ${fmtShort(d2s(new Date(x.at)))}</em></div><div class="mgrid2"><div><small>التسميع من</small><b>${esc(x.from || "—")}</b></div><div><small>إلى</small><b>${esc(x.to || "—")}</b></div></div>${x.note ? `<p class="body">${esc(x.note)}</p>` : ""}</div>` : "";
+    const view = x ? `<div class="subm"><div class="sm-h"><b>${rasdDays(x).length ? `حضر ${daysWord(rasdDays(x).length)}` : ATT[x.attendance]}</b><em>سُجّل ${fmtShort(d2s(new Date(x.at)))}</em></div>${rasdDays(x).length ? `<div class="dayv">${DAYN.map((n, i) => `<span class="${rasdDays(x).includes(i) ? "on" : ""}">${n}</span>`).join("")}</div>` : ""}<div class="mgrid2"><div><small>التسميع من</small><b>${esc(x.from || "—")}</b></div><div><small>إلى</small><b>${esc(x.to || "—")}</b></div></div>${x.note ? `<p class="body">${esc(x.note)}</p>` : ""}</div>` : "";
     if (!mem) return openSheet(head + (view || `<p class="mute center">لم يُرفع رصد هذا الأسبوع بعد.</p>${st !== "upcoming" ? `<button class="btn ghost wide" data-nudge>${I.bell} أرسل تذكيراً للمستفيد</button>` : ""}`), (el) => { $("[data-nudge]", el)?.addEventListener("click", async () => { await api.nudge(id); closeSheet(); toast("أُرسل التذكير", "ok"); }); });
-    return openSheet(head + `<h3>حضور الحلقة هذا الأسبوع</h3><div class="seg" id="att">${Object.entries(ATT).map(([k, v]) => `<button type="button" data-att="${k}" class="${(x?.attendance || "present") === k ? "on" : ""}">${v}</button>`).join("")}</div>
+    return openSheet(head + `<h3>أيام حضور الحلقة هذا الأسبوع</h3><p class="mute sm">اضغط الأيام التي حضرتها</p>
+      <div class="dayp" id="days">${DAYN.map((n, i) => { const ds = addDays(r.open, i); return `<button type="button" data-day-i="${i}" class="${x && rasdDays(x).includes(i) ? "on" : ""}" ${ds > today() ? "disabled" : ""}><b>${n}</b><small>${fmtShort(ds)}</small></button>`; }).join("")}</div>
+      <div id="absbox"><h3>لم تحضر أي يوم؟</h3><div class="seg two" id="att">${["excused", "absent"].map((k) => `<button type="button" data-att="${k}" class="${(x?.attendance === "absent" ? "absent" : "excused") === k ? "on" : ""}">${ATT[k]}</button>`).join("")}</div></div>
       <h3>التسميع</h3><div class="grid2"><label>من<input id="rs-from" value="${esc(x?.from || "")}" placeholder="مثال: يس آية 1"></label><label>إلى<input id="rs-to" value="${esc(x?.to || "")}" placeholder="مثال: يس آية 40"></label></div>
       <label>ملاحظات (اختياري)<textarea id="rs-note" rows="2" placeholder="مثل: سبب الغياب، أو مستوى الحفظ">${esc(x?.note || "")}</textarea></label>
       <button class="btn gold wide" data-save>${I.check} ${x ? "حفظ التعديل" : "رفع الرصد"}</button>`, (el) => {
-      let att = x?.attendance || "present";
+      let att = x?.attendance === "absent" ? "absent" : "excused";
+      const days = new Set(x ? rasdDays(x) : []);
+      const paint = () => { $("#absbox", el).hidden = days.size > 0; };
+      paint();
+      $("#days", el).onclick = (e) => { const b = e.target.closest("[data-day-i]"); if (!b || b.disabled) return; const i = +b.dataset.dayI; days.has(i) ? days.delete(i) : days.add(i); b.classList.toggle("on", days.has(i)); paint(); };
       $("#att", el).onclick = (e) => { const b = e.target.closest("[data-att]"); if (!b) return; att = b.dataset.att; $$("[data-att]", el).forEach((q) => q.classList.toggle("on", q === b)); };
       $("[data-save]", el).onclick = async (e) => {
         const from = $("#rs-from", el).value.trim(), to = $("#rs-to", el).value.trim();
-        if (att === "present" && (!from || !to)) return toast("اكتب التسميع من وإلى", "err");
+        if (days.size && (!from || !to)) return toast("اكتب التسميع من وإلى", "err");
         e.currentTarget.disabled = true;
-        try { await api.saveRasd(r.week, { attendance: att, from, to, note: $("#rs-note", el).value.trim() }); closeSheet(); render.keep = true; render(); toast("حُفظ الرصد، وأُرسل تنبيه للمتابع", "ok"); } catch (err) { e.currentTarget.disabled = false; toast("تعذّر الحفظ: " + err.message, "err"); }
+        try { await api.saveRasd(r.week, { attendance: days.size ? "present" : att, days: [...days].sort((a, b) => a - b), from, to, note: $("#rs-note", el).value.trim() }); closeSheet(); render.keep = true; render(); toast("حُفظ الرصد، وأُرسل تنبيه للمتابع", "ok"); } catch (err) { e.currentTarget.disabled = false; toast("تعذّر الحفظ: " + err.message, "err"); }
       };
     });
   }
