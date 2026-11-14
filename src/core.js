@@ -118,7 +118,9 @@ const TYPES = {
 const ATT = { present: "حاضر", excused: "غائب بعذر", absent: "غائب" };
 const DAYN = ["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"];
 const rasdDays = (x) => (Array.isArray(x.days) ? x.days.filter((d) => d >= 0 && d < 7).sort((a, b) => a - b) : []);
-const attText = (x) => { const d = rasdDays(x); return d.length ? `حضر ${daysWord(d.length)}: ${d.map((i) => DAYN[i]).join("، ")}` : ATT[x.attendance]; };
+const dayName = (ds) => DAYN[(s2d(ds).getDay() + 1) % 7];
+const rasdDayNames = (x) => rasdDays(x).map((i) => dayName(addDays(weekStart(x.week), i)));
+const attText = (x) => { const d = rasdDayNames(x); return d.length ? `حضر ${daysWord(d.length)}: ${d.join("، ")}` : ATT[x.attendance]; };
 const rasdText = (x) => `${attText(x)}${x.from || x.to ? ` · التسميع من ${x.from || "—"} إلى ${x.to || "—"}` : ""}`;
 const ST = {
   approved: { label: "معتمد", icon: I.check }, done: { label: "تمّ", icon: I.check },

@@ -64,7 +64,7 @@ function pathView(arg) {
   const p = nowPos(), m = Math.min(6, Math.max(1, +arg || p.month)), M = MONTHS[m], t = today(), mem = isMember();
   const weeks = [1, 2, 3, 4].map((i) => {
     const w = (m - 1) * 4 + i, ws = weekStart(w), state = weekState(w);
-    const days = WD.map((l, d) => { const ds = addDays(ws, d), on = S.tafsir[ds], fut = ds > t; return `<button class="td ${on ? "on" : fut ? "fut" : "miss"} ${ds === t ? "today" : ""}" ${mem && !fut ? `data-tafsir="${ds}"` : "disabled"} title="${fmtDay(ds)} · ${tafsirLabel(diffDays(ds, startDate()))}"><i>${on ? I.check : l}</i></button>`; }).join("");
+    const days = WD.map((l, d) => { const ds = addDays(ws, d), on = S.tafsir[ds], fut = ds > t; return `<button class="td ${on ? "on" : fut ? "fut" : "miss"} ${ds === t ? "today" : ""}" ${mem && !fut ? `data-tafsir="${ds}"` : "disabled"} title="${fmtDay(ds)} · ${tafsirLabel(diffDays(ds, startDate()))}"><i>${on ? I.check : WD[(s2d(ds).getDay() + 1) % 7]}</i></button>`; }).join("");
     return `<section class="card week ${state}"><div class="ch"><h3><i class="lamp ${state}"></i> الأسبوع ${w}</h3><small>${fmtShort(ws)} – ${fmtShort(weekEnd(w))}</small></div>
       <div class="tafsir"><small>${I.quran} التفسير: وجهٌ كل يوم (${w > 23 ? "مراجعة جزء عمّ" : `ص ${tafsirRange((w - 1) * 7)[0]}–${(tafsirRange(w * 7 - 1) || [0, 604])[1]}`})</small><div class="tds">${days}</div></div>
       <div class="reqs">${REQS.filter((r) => r.week === w && !r.monthly).map((r) => reqRow(r)).join("")}</div></section>`;
